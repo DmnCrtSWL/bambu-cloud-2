@@ -257,7 +257,7 @@ const handleProductInput = async () => {
         return;
     }
     try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/products/search?q=${encodeURIComponent(newItem.productName)}`);
+        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'`}/api/products/search?q=${encodeURIComponent(newItem.productName)}`);
         if (response.ok) {
             productSuggestions.value = await response.json();
             showSuggestions.value = true;
@@ -280,7 +280,7 @@ const selectProduct = async (name: string) => {
     
     // Fetch average cost and unit
     try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/products/cost?name=${encodeURIComponent(name)}`);
+        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'`}/api/products/cost?name=${encodeURIComponent(name)}`);
         if(response.ok) {
             const data = await response.json();
             newItem.unitCost = Number(data.cost) || 0;
@@ -335,7 +335,7 @@ const handleSubmit = async () => {
     }
 
     try {
-        const response = await fetch('${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/recipes', {
+        const response = await fetch("${import.meta.env.VITE_API_URL || 'http://localhost:3001'`}/api/recipes', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

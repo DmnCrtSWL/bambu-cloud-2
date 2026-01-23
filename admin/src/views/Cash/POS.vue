@@ -538,7 +538,7 @@ const total = computed(() => subtotal.value);
 // Actions
 const fetchProducts = async () => {
     try {
-        const res = await fetch('${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/menu-items');
+        const res = await fetch("${import.meta.env.VITE_API_URL || 'http://localhost:3001'`}/api/menu-items');
         if (res.ok) {
             products.value = await res.json();
         }
@@ -658,7 +658,7 @@ const handleCustomerSearch = async () => {
     }
 
     try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/customers?q=${encodeURIComponent(query)}`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'`}/api/customers?q=${encodeURIComponent(query)}`);
         if (res.ok) {
             customerSearchResults.value = await res.json();
         }
@@ -726,7 +726,7 @@ const processPayment = async (method) => {
         // SCENARIO 0: Bulk Liquidation (Multiple Orders)
         if (currentBulkOrderIds.value.length > 0) {
              const updates = currentBulkOrderIds.value.map(id => 
-                fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/orders/${id}`, {
+                fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'`}/api/orders/${id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -756,7 +756,7 @@ const processPayment = async (method) => {
         }
         // SCENARIO 1: Existing Single Order (Loaded from Kanban) -> UPDATE it
         else if (currentOrderId.value) {
-            res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/orders/${currentOrderId.value}`, {
+            res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'`}/api/orders/${currentOrderId.value}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -799,7 +799,7 @@ const processPayment = async (method) => {
                 cxcCustomerPhone: method === 'CXC' ? cxcCustomer.value.phone : null
             };
 
-            res = await fetch('${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/orders', {
+            res = await fetch("${import.meta.env.VITE_API_URL || 'http://localhost:3001'`}/api/orders', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(orderPayload)

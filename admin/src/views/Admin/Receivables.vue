@@ -118,7 +118,7 @@ const searchQuery = ref("");
 const fetchCXC = async () => {
     loading.value = true;
     try {
-        const res = await fetch('${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/cxc');
+        const res = await fetch("${import.meta.env.VITE_API_URL || 'http://localhost:3001'`}/api/cxc');
         if (res.ok) {
             cxcList.value = await res.json();
         }
@@ -176,7 +176,7 @@ const liquidateDebt = async (items) => {
         const orderIds = items.map(i => i.order_id);
         
         // Fetch all order details
-        const orderPromises = orderIds.map(id => fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/orders?id=${id}`).then(r => r.json()));
+        const orderPromises = orderIds.map(id => fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'`}/api/orders?id=${id}`).then(r => r.json()));
         const results = await Promise.all(orderPromises);
         
         // Flatten: specific order fetch returns array [0]

@@ -130,7 +130,7 @@ const itemsPerPage = 10;
 
 const fetchMenu = async () => {
   try {
-    const response = await fetch('${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/menu-items');
+    const response = await fetch("${import.meta.env.VITE_API_URL || 'http://localhost:3001'`}/api/menu-items');
     if (response.ok) {
         menuItems.value = await response.json();
     }
@@ -142,7 +142,7 @@ const fetchMenu = async () => {
 const handleDelete = async (id: number) => {
     if (!confirm('¿Estás seguro de eliminar este platillo?')) return;
     try {
-        await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/menu-items/${id}`, { method: 'DELETE' });
+        await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'`}/api/menu-items/${id}`, { method: 'DELETE' });
         fetchMenu();
     } catch (e) {
         console.error(e);

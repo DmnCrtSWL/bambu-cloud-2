@@ -140,7 +140,7 @@ const formData = reactive({
 // Fetch user data
 const fetchUser = async () => {
     try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/users/${userId}`);
+        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'`}/api/users/${userId}`);
         if (response.ok) {
             const user = await response.json();
             formData.name = user.name;
@@ -169,7 +169,7 @@ const handleSubmit = async () => {
     }
 
     try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/users/${userId}`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'`}/api/users/${userId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

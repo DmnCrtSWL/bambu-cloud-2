@@ -209,7 +209,7 @@ const handleSubmit = async () => {
         let apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
         apiUrl = apiUrl.replace(/\/$/, '');
 
-        const response = await fetch(`${apiUrl}/api/auth/login`, {
+        const response = await fetch(`${apiUrl`}/api/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

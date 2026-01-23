@@ -148,7 +148,7 @@ const getTodayString = () => {
 
 const fetchExpenses = async () => {
   try {
-    const response = await fetch('${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/expenses');
+    const response = await fetch("${import.meta.env.VITE_API_URL || 'http://localhost:3001'`}/api/expenses');
     if (response.ok) {
       expenses.value = await response.json();
       
@@ -202,7 +202,7 @@ const handleDelete = async (id: number) => {
   if (!confirm('¿Estás seguro de que deseas eliminar este gasto?')) return;
   
   try {
-    const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/expenses/${id}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'`}/api/expenses/${id}`, {
       method: 'DELETE',
     });
     
