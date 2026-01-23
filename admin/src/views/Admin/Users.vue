@@ -86,7 +86,7 @@ const users = ref<any[]>([]);
 
 const fetchUsers = async () => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'`}/api/users`);
+    const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/users`);
     if (response.ok) {
       users.value = await response.json();
     }
@@ -99,7 +99,7 @@ const handleDelete = async (id: number) => {
   if (!confirm('¿Estás seguro de que deseas eliminar este usuario?')) return;
   
   try {
-    const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'`}/api/users/${id}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/users/${id}`, {
       method: 'DELETE',
     });
     

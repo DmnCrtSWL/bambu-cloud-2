@@ -148,7 +148,7 @@ const fetchReport = async () => {
     loading.value = true;
     try {
         const userIdForReport = currentUser.value ? currentUser.value.id : '';
-        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'`}/api/reports/daily-sales?date=${selectedDate.value}&userId=${userIdForReport}`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/reports/daily-sales?date=${selectedDate.value}&userId=${userIdForReport}`);
         if (res.ok) {
             reportData.value = await res.json();
         }

@@ -115,7 +115,7 @@ const formData = reactive({
 
 const fetchPurchase = async () => {
     try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'`}/api/purchases/${purchaseId}`);
+        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/purchases/${purchaseId}`);
         if(response.ok) {
            const data = await response.json();
            formData.ticketNumber = data.ticketNumber;
@@ -141,7 +141,7 @@ const handleSubmit = async () => {
     }
 
     try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'`}/api/purchases/${purchaseId}`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/purchases/${purchaseId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

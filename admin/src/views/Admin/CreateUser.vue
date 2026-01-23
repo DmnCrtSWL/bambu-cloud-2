@@ -141,7 +141,7 @@ const handleSubmit = async () => {
     }
 
     try {
-        const response = await fetch("${import.meta.env.VITE_API_URL || 'http://localhost:3001'`}/api/users', {
+        const response = await fetch("${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/users', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

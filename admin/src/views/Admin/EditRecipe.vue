@@ -256,7 +256,7 @@ const handleProductInput = async () => {
         return;
     }
     try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'`}/api/products/search?q=${encodeURIComponent(newItem.productName)}`);
+        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/products/search?q=${encodeURIComponent(newItem.productName)}`);
         if (response.ok) {
             productSuggestions.value = await response.json();
             showSuggestions.value = true;
@@ -277,7 +277,7 @@ const selectProduct = async (name: string) => {
     selectedProductIsValid.value = true;
     showSuggestions.value = false;
     try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'`}/api/products/cost?name=${encodeURIComponent(name)}`);
+        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/products/cost?name=${encodeURIComponent(name)}`);
         if(response.ok) {
             const data = await response.json();
             newItem.unitCost = Number(data.cost) || 0;
@@ -325,7 +325,7 @@ const syncLatestCosts = async () => {
         for (const item of variant.items) {
              if (!item.productName) continue;
             try {
-                const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'`}/api/products/cost?name=${encodeURIComponent(item.productName)}`);
+                const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/products/cost?name=${encodeURIComponent(item.productName)}`);
                 if (response.ok) {
                     const data = await response.json();
                     const latestCost = Number(data.cost);
@@ -348,7 +348,7 @@ const syncLatestCosts = async () => {
 
 onMounted(async () => {
     try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'`}/api/recipes/${recipeId}`);
+        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/recipes/${recipeId}`);
         if(response.ok) {
             const data = await response.json();
             formData.name = data.name;
@@ -398,7 +398,7 @@ const handleSubmit = async () => {
     }
 
     try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'`}/api/recipes/${recipeId}`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/recipes/${recipeId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

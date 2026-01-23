@@ -227,7 +227,7 @@ const handleProductInput = async () => {
     }
     
     try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'`}/api/products/search?q=${encodeURIComponent(newItem.productName)}`);
+        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/products/search?q=${encodeURIComponent(newItem.productName)}`);
         if (response.ok) {
             productSuggestions.value = await response.json();
             showSuggestions.value = true;
@@ -250,14 +250,14 @@ const handleBlur = () => {
 
 const fetchPurchase = async () => {
     try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'`}/api/purchases/${purchaseId}`);
+        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/purchases/${purchaseId}`);
         if(response.ok) {
             purchase.value = await response.json();
             
             if(purchase.value.status === 'Desglosado') {
                // Fetch existing items
                try {
-                   const itemsResponse = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'`}/api/purchases/${purchaseId}/items`);
+                   const itemsResponse = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/purchases/${purchaseId}/items`);
                    if (itemsResponse.ok) {
                        const existingItems = await itemsResponse.json();
                        items.value = existingItems.map((i: any) => ({
@@ -310,7 +310,7 @@ const saveBreakdown = async () => {
     if (!isBalanced.value) return;
     
     try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'`}/api/purchases/${purchaseId}/items`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/purchases/${purchaseId}/items`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

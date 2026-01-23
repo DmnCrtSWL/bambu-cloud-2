@@ -146,7 +146,7 @@ const itemsPerPage = 10;
 
 const fetchInventory = async () => {
   try {
-    const response = await fetch("${import.meta.env.VITE_API_URL || 'http://localhost:3001'`}/api/inventory');
+    const response = await fetch("${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/inventory');
     if (response.ok) {
       inventory.value = await response.json();
     }

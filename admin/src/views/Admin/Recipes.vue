@@ -108,7 +108,7 @@ const itemsPerPage = 10;
 
 const fetchRecipes = async () => {
   try {
-    const response = await fetch("${import.meta.env.VITE_API_URL || 'http://localhost:3001'`}/api/recipes');
+    const response = await fetch("${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/recipes');
     if (response.ok) {
         recipes.value = await response.json();
     }
@@ -120,7 +120,7 @@ const fetchRecipes = async () => {
 const handleDelete = async (id: number) => {
     if (!confirm('¿Estás seguro de eliminar esta receta?')) return;
     try {
-        await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'`}/api/recipes/${id}`, { method: 'DELETE' });
+        await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/recipes/${id}`, { method: 'DELETE' });
         fetchRecipes();
     } catch (e) {
         console.error(e);
