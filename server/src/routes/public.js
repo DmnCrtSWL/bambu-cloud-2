@@ -107,7 +107,7 @@ router.get('/menu', async (req, res) => {
 
     } catch (err) {
         console.error('Error fetching public menu:', err);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: err.message, stack: err.stack });
     }
 });
 

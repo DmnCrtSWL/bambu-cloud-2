@@ -87,8 +87,9 @@ const fetchProducts = async () => {
     if (response.ok) {
         products.value = await response.json();
     } else {
-        console.error('Failed to fetch menu:', response.statusText);
-        fetchError.value = 'No se pudo cargar el menú. Intente nuevamente.';
+        const errorData = await response.json().catch(() => ({}));
+        console.error('Failed to fetch menu:', response.statusText, errorData);
+        fetchError.value = errorData.error || `Error del servidor (${response.status}): No se pudo cargar el menú.`;
     }
   } catch (err) {
     console.error('Error connecting to backend:', err);
