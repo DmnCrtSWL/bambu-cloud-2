@@ -137,7 +137,7 @@ let pollingInterval;
 // Fetch Orders
 const fetchOrders = async () => {
   try {
-    const res = await fetch('http://localhost:3001/api/orders');
+    const res = await fetch('${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/orders');
     if (res.ok) {
         const data = await res.json();
         // Preserve client-side reactivity if possible, or just replace
@@ -150,7 +150,7 @@ const fetchOrders = async () => {
 
 const updateOrderStatus = async (orderId, newStatus) => {
     try {
-        const res = await fetch(`http://localhost:3001/api/orders/${orderId}/status`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/orders/${orderId}/status`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ status: newStatus })

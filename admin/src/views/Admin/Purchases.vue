@@ -149,7 +149,7 @@ const purchases = ref<any[]>([]);
 
 const fetchPurchases = async () => {
   try {
-    const response = await fetch('http://localhost:3001/api/purchases');
+    const response = await fetch('${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/purchases');
     if (response.ok) {
       purchases.value = await response.json();
     }
@@ -185,7 +185,7 @@ const handleDelete = async (id: number) => {
   if (!confirm('¿Estás seguro de que deseas eliminar este ticket?')) return;
   
   try {
-    const response = await fetch(`http://localhost:3001/api/purchases/${id}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/purchases/${id}`, {
       method: 'DELETE',
     });
     

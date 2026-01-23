@@ -117,8 +117,8 @@ const orderCount = ref(0)
 const fetchMetrics = async () => {
     try {
         const [resCust, resOrd] = await Promise.all([
-            fetch('http://localhost:3001/api/customers'),
-            fetch('http://localhost:3001/api/orders')
+            fetch('${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/customers'),
+            fetch('${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/orders')
         ])
         
         if (resCust.ok) {
