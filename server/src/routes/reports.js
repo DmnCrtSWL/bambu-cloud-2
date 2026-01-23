@@ -30,8 +30,8 @@ router.get('/daily-sales', async (req, res) => {
                 SELECT o.payment_method, SUM(o.total) as total
                 FROM orders o
                 LEFT JOIN accounts_receivable ar ON o.id = ar.order_id
-                WHERE (o.created_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City') >= $1::timestamp 
-                AND (o.created_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City') < $2::timestamp
+                WHERE (o.created_at AT TIME ZONE 'America/Mexico_City') >= $1::timestamp 
+                AND (o.created_at AT TIME ZONE 'America/Mexico_City') < $2::timestamp
                 AND o.payment_method NOT IN ('CXC', 'Cortesía')
                 AND ar.id IS NULL
                 ${userFilterOrder}
@@ -42,6 +42,15 @@ router.get('/daily-sales', async (req, res) => {
                 FROM accounts_receivable ar
                 JOIN orders o ON ar.order_id = o.id
                 WHERE ar.status = 'paid'
+                -- ar.updated_at is TIMESTAMP (No Time Zone) storing Mexico time based on default
+                -- But if updated logic uses NOW(), it stores UTC in TIMESTAMP column?
+                -- The migration says: updated_at TIMESTAMP
+                -- If we do `updated_at = NOW()` in JS client or SQL, NOW() is timestamptz. 
+                -- If inserted into TIMESTAMP column, it converts to local server time (UTC usually).
+                -- So ar.updated_at holds UTC wall clock time.
+                -- To get Mexico time: (ar.updated_at AT TIME ZONE 'UTC') AT TIME ZONE 'America/Mexico_City' ??
+                -- Wait, if it holds UTC time (e.g. 14:00 for 14:00 UTC), treating it as UTC is correct.
+                -- Let's try explicit casting assuming it stores UTC time.
                 AND (ar.updated_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City') >= $1::timestamp 
                 AND (ar.updated_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City') < $2::timestamp
                 ${userFilterColl}
@@ -58,8 +67,8 @@ router.get('/daily-sales', async (req, res) => {
             courtesies AS (
                 SELECT SUM(total) as total
                 FROM orders o
-                WHERE (created_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City') >= $1::timestamp 
-                AND (created_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City') < $2::timestamp
+                WHERE (created_at AT TIME ZONE 'America/Mexico_City') >= $1::timestamp 
+                AND (created_at AT TIME ZONE 'America/Mexico_City') < $2::timestamp
                 AND payment_method = 'Cortesía'
                 ${userFilterOrder}
             )
