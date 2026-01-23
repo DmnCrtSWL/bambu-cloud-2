@@ -147,7 +147,9 @@ const getColorForMethod = (method) => {
 const fetchReport = async () => {
     loading.value = true;
     try {
-        const userIdForReport = currentUser.value ? currentUser.value.id : '';
+        const isadmin = currentUser.value?.role === 'admin' || currentUser.value?.role === 'administrador';
+        // If admin, fetch ALL sales (userId=''). If waiter, fetch only their sales.
+        const userIdForReport = isadmin ? '' : (currentUser.value ? currentUser.value.id : '');
         const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/reports/daily-sales?date=${selectedDate.value}&userId=${userIdForReport}`);
         if (res.ok) {
             reportData.value = await res.json();
