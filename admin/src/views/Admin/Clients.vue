@@ -152,7 +152,7 @@ const fetchClients = async () => {
     if (searchQuery.value) params.append('q', searchQuery.value);
     if (currentFilter.value !== 'all') params.append('filter', currentFilter.value);
 
-    const response = await fetch(`http://localhost:3001/api/customers?${params.toString()}`);
+    const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/customers?${params.toString()}`);
     if (response.ok) {
         clients.value = await response.json();
     }

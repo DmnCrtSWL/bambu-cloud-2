@@ -115,7 +115,7 @@ const formData = reactive({
 
 const fetchExpense = async () => {
     try {
-        const response = await fetch(`http://localhost:3001/api/expenses/${expenseId}`);
+        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/expenses/${expenseId}`);
         if(response.ok) {
            const data = await response.json();
            formData.concept = data.concept;
@@ -141,7 +141,7 @@ const handleSubmit = async () => {
     }
 
     try {
-        const response = await fetch(`http://localhost:3001/api/expenses/${expenseId}`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/expenses/${expenseId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
