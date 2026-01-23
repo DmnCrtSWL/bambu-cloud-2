@@ -220,14 +220,19 @@ const handleScroll = () => {
   const currentScrollY = window.scrollY;
   isScrolledPastHeader.value = currentScrollY > 100;
   
-  // Mobile Footer Logic: Show on Scroll Down (> 100px), Hide on Scroll Up
+  // Mobile Footer Logic: Show on Scroll Down (> 100px) or at Bottom, Hide on Scroll Up
   // Only apply logic if we have scrolled past header
+  const isAtBottom = (window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 50);
+
   if (currentScrollY > 100) {
-    if (currentScrollY > lastScrollY.value) {
+    if (isAtBottom) {
+       // Keep visible if at bottom (prevents flickering on IOS rubber-band effect)
+       isMobileFooterVisible.value = true;
+    } else if (currentScrollY > lastScrollY.value) {
       // Scrolling Down
       isMobileFooterVisible.value = true;
     } else {
-      // Scrolling Up
+      // Scrolling Up and NOT at bottom
       isMobileFooterVisible.value = false;
     }
   } else {
