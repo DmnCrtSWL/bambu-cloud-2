@@ -215,6 +215,7 @@ const isScrolledPastHeader = ref(false); // Replaces showFloatingStore for Filte
 const isMobileFooterVisible = ref(false);
 const lastScrollY = ref(0);
 const activeCategory = ref('bebidas');
+const isManualScrolling = ref(false);
 
 const handleScroll = () => {
   const currentScrollY = window.scrollY;
@@ -242,18 +243,20 @@ const handleScroll = () => {
   
   lastScrollY.value = currentScrollY;
   
-  // Update active category based on scroll position
-  const sections = categoryOrder.value.map(cat => document.getElementById(cat.id));
-  const filterBarHeight = 70; // Approximation
-  
-  const isMobile = window.innerWidth < 768;
-  const activationThreshold = filterBarHeight + (isMobile ? 90 : 30); 
-  
-  for (const section of sections) {
-    if (!section) continue;
-    const rect = section.getBoundingClientRect();
-    if (rect.top <= activationThreshold && rect.bottom > filterBarHeight) {
-      activeCategory.value = section.id;
+  // Update active category based on scroll position (ONLY if not scrolling manually)
+  if (!isManualScrolling.value) {
+    const sections = categoryOrder.value.map(cat => document.getElementById(cat.id));
+    const filterBarHeight = 70; // Approximation
+    
+    const isMobile = window.innerWidth < 768;
+    const activationThreshold = filterBarHeight + (isMobile ? 90 : 30); 
+    
+    for (const section of sections) {
+      if (!section) continue;
+      const rect = section.getBoundingClientRect();
+      if (rect.top <= activationThreshold && rect.bottom > filterBarHeight) {
+        activeCategory.value = section.id;
+      }
     }
   }
 };
@@ -261,6 +264,8 @@ const handleScroll = () => {
 const scrollToCategory = (id) => {
   const element = document.getElementById(id);
   if (element) {
+    // Active manual scrolling lock
+    isManualScrolling.value = true;
     activeCategory.value = id; 
     
     const isMobile = window.innerWidth < 768;
@@ -274,6 +279,11 @@ const scrollToCategory = (id) => {
       top: offsetPosition,
       behavior: "smooth"
     });
+
+    // Release lock after scroll animation (approx 800ms)
+    setTimeout(() => {
+        isManualScrolling.value = false;
+    }, 800);
   }
 };
 
