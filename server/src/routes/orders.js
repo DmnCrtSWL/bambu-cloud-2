@@ -225,9 +225,9 @@ router.put('/:id', async (req, res) => {
             // "Liquidar": If payment method is NOT CXC, mark any active AR as paid
             await client.query(`
                 UPDATE accounts_receivable 
-                SET status = 'paid', paid_amount = $1, updated_at = NOW()
+                SET status = 'paid', paid_amount = $1, payment_method = $3, updated_at = NOW()
                 WHERE order_id = $2 AND status = 'active'
-            `, [total, id]);
+            `, [total, id, paymentMethod]);
         }
 
         await client.query('COMMIT');

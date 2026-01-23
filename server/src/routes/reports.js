@@ -38,14 +38,14 @@ router.get('/daily-sales', async (req, res) => {
                 GROUP BY o.payment_method
             ),
             collections AS (
-                SELECT o.payment_method, SUM(ar.paid_amount) as total
+                SELECT ar.payment_method, SUM(ar.paid_amount) as total
                 FROM accounts_receivable ar
                 JOIN orders o ON ar.order_id = o.id
                 WHERE ar.status = 'paid'
                 AND (ar.updated_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City') >= $1::timestamp 
                 AND (ar.updated_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City') < $2::timestamp
                 ${userFilterColl}
-                GROUP BY o.payment_method
+                GROUP BY ar.payment_method
             ),
             cxc_generated AS (
                 SELECT SUM(amount) as total
