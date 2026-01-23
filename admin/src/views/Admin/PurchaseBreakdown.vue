@@ -42,7 +42,7 @@
                             v-model="newItem.productName"
                             @input="handleProductInput"
                             @focus="showSuggestions = true"
-                            @blur="setTimeout(() => showSuggestions = false, 200)"
+                            @blur="handleBlur"
                             placeholder="Nombre" 
                             class="h-[38px] w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
                         />
@@ -240,6 +240,12 @@ const handleProductInput = async () => {
 const selectProduct = (name: string) => {
     newItem.productName = name;
     showSuggestions.value = false;
+};
+
+const handleBlur = () => {
+    setTimeout(() => {
+        showSuggestions.value = false;
+    }, 200);
 };
 
 const fetchPurchase = async () => {
