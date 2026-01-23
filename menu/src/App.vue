@@ -3,17 +3,21 @@ import SiteHeader from './components/SiteHeader.vue';
 import CategoryFilterBar from './components/CategoryFilterBar.vue';
 import SectionTitle from './components/SectionTitle.vue';
 import ProductCard from './components/ProductCard.vue';
-import SiteFooter from './components/SiteFooter.vue';
+
 import FloatingStoreButton from './components/FloatingStoreButton.vue';
+import MobileFooterNav from './components/MobileFooterNav.vue';
+import DevelopmentModal from './components/DevelopmentModal.vue';
 import ProductModal from './components/ProductModal.vue';
 import SearchModal from './components/SearchModal.vue';
 import SectionSeparator from './components/SectionSeparator.vue';
 import CartDrawer from './components/CartDrawer.vue';
 import VirtualWaiterModal from './components/VirtualWaiterModal.vue';
-import { products } from './data/mockProducts';
 import { computed, ref, onMounted, onUnmounted } from 'vue';
 import CheckoutView from './components/CheckoutView.vue';
 import { Egg, Coffee, Sandwich, GlassWater, Utensils, Sun } from 'lucide-vue-next';
+
+// Dynamic Products State
+const products = ref([]);
 
 // Determine Category Order based on Time of Day
 const getCategoryOrder = () => {
@@ -55,7 +59,7 @@ const searchQuery = ref('');
 
 // Helper to get products for a specific category ID (with search filtering)
 const getProductsByCategory = (catId) => {
-  let items = products.filter(p => p.category_id === catId);
+  let items = products.value.filter(p => p.category_id === catId);
   
   if (searchQuery.value.trim()) {
     const lower = searchQuery.value.toLowerCase();
@@ -66,6 +70,21 @@ const getProductsByCategory = (catId) => {
   }
   
   return items;
+};
+
+// Fetch Products from Backend
+const fetchProducts = async () => {
+  try {
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+    const response = await fetch(`${apiUrl}/api/public/menu`);
+    if (response.ok) {
+        products.value = await response.json();
+    } else {
+        console.error('Failed to fetch menu:', response.statusText);
+    }
+  } catch (err) {
+    console.error('Error connecting to backend:', err);
+  }
 };
 
 // Computed property to only show categories with products
@@ -84,17 +103,23 @@ const handleProductClick = (product) => {
   isModalOpen.value = true;
 };
 
+// Development Modal State
+const isDevelopmentModalOpen = ref(false);
+const openDevelopmentModal = () => isDevelopmentModalOpen.value = true;
+
 // Cart State
 const cartItems = ref([]);
 const isCartOpen = ref(false);
-const isWaiterOpen = ref(false);
+const isWaiterOpen = ref(false); // Kept in code but not triggered by UI currently
 
 const totalCartCount = computed(() => {
   return cartItems.value.reduce((total, item) => total + item.quantity, 0);
 });
 
+
 const addToCart = (payload) => {
-  const { product, quantity, options, totalPrice } = payload;
+  // console.log('Adding to cart payload:', payload);
+  const { product, quantity, options, totalPrice, notes } = payload;
   
   // Create variant description
   const description = Object.values(options)
@@ -111,13 +136,15 @@ const addToCart = (payload) => {
     price: unitPrice,
     quantity: quantity,
     description: description,
-    options: options 
+    options: options,
+    notes: notes || ''
   };
   
-  // Check for duplicates
+  // Check for duplicates (same ID, same options, same notes)
   const existingIndex = cartItems.value.findIndex(item => 
     item.id === newItem.id && 
-    JSON.stringify(item.options) === JSON.stringify(newItem.options)
+    JSON.stringify(item.options) === JSON.stringify(newItem.options) &&
+    (item.notes || '') === (newItem.notes || '')
   );
 
   if (existingIndex > -1) {
@@ -157,33 +184,57 @@ const handleCheckout = () => {
 };
 
 const handleOrderSubmit = (orderData) => {
-  console.log('Order Data:', orderData);
-  alert('¡Pedido Confirmado! (Revisa la consola)');
+  // console.log('Order Data:', orderData);
   // Reset flow for demo
   isCheckoutOpen.value = false;
   cartItems.value = [];
 };
 
+const handleLogoClick = () => {
+  isCheckoutOpen.value = false;
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
+};
+
 // FAB Logic & Scroll State
-const showFloatingStore = ref(false);
+const isScrolledPastHeader = ref(false); // Replaces showFloatingStore for FilterBar
+const isMobileFooterVisible = ref(false);
+const lastScrollY = ref(0);
 const activeCategory = ref('bebidas');
 
 const handleScroll = () => {
-  showFloatingStore.value = window.scrollY > 100;
+  const currentScrollY = window.scrollY;
+  isScrolledPastHeader.value = currentScrollY > 100;
+  
+  // Mobile Footer Logic: Show on Scroll Down (> 100px), Hide on Scroll Up
+  // Only apply logic if we have scrolled past header
+  if (currentScrollY > 100) {
+    if (currentScrollY > lastScrollY.value) {
+      // Scrolling Down
+      isMobileFooterVisible.value = true;
+    } else {
+      // Scrolling Up
+      isMobileFooterVisible.value = false;
+    }
+  } else {
+    // Top of page
+    isMobileFooterVisible.value = false;
+  }
+  
+  lastScrollY.value = currentScrollY;
   
   // Update active category based on scroll position
   const sections = categoryOrder.value.map(cat => document.getElementById(cat.id));
   const filterBarHeight = 70; // Approximation
   
   const isMobile = window.innerWidth < 768;
-  // Threshold must be slightly greater than the scroll offset (150 mobile, 85 desktop)
-  // to ensure the section is considered "active" immediately after auto-scrolling to it.
   const activationThreshold = filterBarHeight + (isMobile ? 90 : 30); 
   
   for (const section of sections) {
     if (!section) continue;
     const rect = section.getBoundingClientRect();
-    // If section top is within the activation zone
     if (rect.top <= activationThreshold && rect.bottom > filterBarHeight) {
       activeCategory.value = section.id;
     }
@@ -210,6 +261,7 @@ const scrollToCategory = (id) => {
 };
 
 onMounted(() => {
+  fetchProducts();
   window.addEventListener('scroll', handleScroll);
 });
 
@@ -224,14 +276,16 @@ onUnmounted(() => {
     :cart-count="totalCartCount"
     @update:search-query="searchQuery = $event"
     @open-search="isSearchModalOpen = true" 
+    @open-message="openDevelopmentModal"
+    @open-user="openDevelopmentModal"
+    @logo-click="handleLogoClick"
     @open-cart="isCartOpen = true"
-    @open-waiter="isWaiterOpen = true"
   />
 
   <CategoryFilterBar 
     v-if="!isCheckoutOpen"
     :active-id="activeCategory"
-    :is-scrolled="showFloatingStore"
+    :is-scrolled="isScrolledPastHeader"
     :search-query="searchQuery"
     :categories="filteredCategories"
     @update:search-query="searchQuery = $event"
@@ -275,12 +329,24 @@ onUnmounted(() => {
     </div>
   </main>
   
-  <SiteFooter v-if="!isCheckoutOpen" />
+
   
+  <MobileFooterNav 
+    v-if="!isCheckoutOpen"
+    :is-visible="isMobileFooterVisible"
+    :cart-count="totalCartCount"
+    @open-message="openDevelopmentModal"
+    @open-search="isSearchModalOpen = true"
+    @open-user="openDevelopmentModal"
+    @open-map="openDevelopmentModal"
+    @open-cart="isCartOpen = true"
+  />
+
   <FloatingStoreButton 
     v-if="!isCheckoutOpen"
-    :is-visible="showFloatingStore" 
+    :is-visible="isScrolledPastHeader" 
     :count="totalCartCount"
+    class="desktop-fab"
     @click="isCartOpen = true" 
   />
 
@@ -291,8 +357,14 @@ onUnmounted(() => {
     @add-to-cart="addToCart"
   />
 
+  <DevelopmentModal 
+    :is-open="isDevelopmentModalOpen"
+    @close="isDevelopmentModalOpen = false"
+  />
+
   <SearchModal 
     :is-open="isSearchModalOpen"
+    :products="products"
     @close="isSearchModalOpen = false"
     @select-product="handleProductClick"
   />
@@ -314,6 +386,10 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+.desktop-fab {
+  display: none;
+}
+
 .main-content {
   min-height: calc(100vh - 140px);
   background-color: #ffffff;
@@ -327,7 +403,6 @@ onUnmounted(() => {
 }
 
 .category-section {
-  margin-bottom: 5rem;
   scroll-margin-top: 140px; 
 }
 
@@ -351,8 +426,11 @@ onUnmounted(() => {
     gap: 1.5rem;
   }
   
-  .category-section {
-    margin-bottom: 2rem;
+  .desktop-fab {
+    display: flex;
   }
 }
+
+
+
 </style>

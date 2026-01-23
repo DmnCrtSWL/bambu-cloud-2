@@ -26,6 +26,7 @@
           alt="Logo"
           width="150"
           height="40"
+          class="hidden lg:block"
         />
         <img
           v-else
@@ -217,72 +218,84 @@ import { useRoute } from "vue-router";
 // Imported icons should be updated in the import section above first.
 import {
   GridIcon,
-  CalenderIcon,
-  UserCircleIcon,
-  ChatIcon,
-  MailIcon,
-  DocsIcon,
   PieChartIcon,
   ChevronDownIcon,
   HorizontalDots,
-  PageIcon,
   TableIcon,
-  ListIcon,
-  PlugInIcon,
-  UserGroupIcon,
-  BoxIcon,
-  ArchiveIcon,
-  BarChartIcon,
-  StaredIcon,
-  MenuIcon,
-  FolderIcon
 } from "../../icons";
 
-import BoxCubeIcon from "@/icons/BoxCubeIcon.vue";
+
 import { useSidebar } from "@/composables/useSidebar";
 
 const route = useRoute();
 
 const { isExpanded, isMobileOpen, isHovered, openSubmenu } = useSidebar();
 
-const menuGroups = [
+const rawMenuGroups = [
   {
     title: "Menu",
     items: [
+      // {
+      //   icon: GridIcon,
+      //   name: "Dashboard",
+      //   path: "/",
+      // },
       {
-        icon: GridIcon,
-        name: "Dashboard",
-        path: "/",
-      },
-      {
-        icon: BoxCubeIcon,
+        icon: PieChartIcon,
         name: "Administración",
         subItems: [
-          { name: "Usuarios", path: "/users", icon: UserGroupIcon },
-          { name: "Compras", path: "/purchases", icon: BoxIcon },
-          { name: "Gastos", path: "/expenses", icon: PieChartIcon },
-          { name: "Inventario", path: "/inventory", icon: FolderIcon },
-          { name: "Recetas", path: "/recipes", icon: PageIcon },
-          { name: "Pacientes", path: "/patients", icon: UserCircleIcon },
-          { name: "Fidelidad", path: "/loyalty", icon: StaredIcon },
-          { name: "Carta", path: "/menu", icon: MenuIcon },
-          { name: "Clientes", path: "/clients", icon: ChatIcon },
-          { name: "CXC", path: "/receivables", icon: DocsIcon },
+          { name: "Usuarios", path: "/users" },
+          { name: "Compras", path: "/purchases" },
+          { name: "Gastos", path: "/expenses" },
+          { name: "Inventario", path: "/inventory" },
+          { name: "Recetas", path: "/recipes" },
+          { name: "Carta", path: "/menu" },
+          { name: "Clientes", path: "/clients" },
+          { name: "CXC", path: "/receivables" },
         ],
       },
       {
-        icon: ArchiveIcon,
+        icon: TableIcon,
         name: "Caja",
         subItems: [
-          { name: "Órdenes", path: "/orders", icon: ListIcon },
-          { name: "POS", path: "/pos", icon: PlugInIcon },
-          { name: "Reportes", path: "/reports", icon: BarChartIcon },
-          { name: "Historial", path: "/history", icon: CalenderIcon },
+          { name: "Órdenes", path: "/orders" },
+          { name: "POS", path: "/pos" },
+          { name: "Reportes", path: "/reports" },
         ],
       },
     ],
   },
 ];
+
+const menuGroups = computed(() => {
+    const userStr = localStorage.getItem('user');
+    const user = userStr ? JSON.parse(userStr) : {};
+    const role = user.role;
+
+    if (role === 'Operativo') {
+        return rawMenuGroups.map(group => ({
+            ...group,
+            items: group.items.map(item => {
+                if (item.name === 'Administración') {
+                    // Operativo allowed: Compras, Inventario, CXC (Receivables)
+                    // Note: 'Clientes' is often needed for CXC/POS, but user didn't explicitly ask. 
+                    // User said: "Compras, Inventario, CXC, y todo el segmento de caja".
+                    // I'll stick strict.
+                    return {
+                        ...item,
+                        subItems: item.subItems.filter(sub => 
+                            ['Compras', 'Inventario', 'CXC'].includes(sub.name)
+                        )
+                    };
+                }
+                return item;
+            })
+        }));
+    }
+    
+    // Admin or others see all
+    return rawMenuGroups;
+});
 
 const isActive = (path) => route.path === path;
 
@@ -292,7 +305,7 @@ const toggleSubmenu = (groupIndex, itemIndex) => {
 };
 
 const isAnySubmenuRouteActive = computed(() => {
-  return menuGroups.some((group) =>
+  return menuGroups.value.some((group) =>
     group.items.some(
       (item) =>
         item.subItems && item.subItems.some((subItem) => isActive(subItem.path))
@@ -305,7 +318,7 @@ const isSubmenuOpen = (groupIndex, itemIndex) => {
   return (
     openSubmenu.value === key ||
     (isAnySubmenuRouteActive.value &&
-      menuGroups[groupIndex].items[itemIndex].subItems?.some((subItem) =>
+      menuGroups.value[groupIndex].items[itemIndex].subItems?.some((subItem) =>
         isActive(subItem.path)
       ))
   );

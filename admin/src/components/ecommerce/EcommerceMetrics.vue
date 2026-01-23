@@ -26,7 +26,7 @@
       <div class="flex items-end justify-between mt-5">
         <div>
           <span class="text-sm text-gray-500 dark:text-gray-400">Customers</span>
-          <h4 class="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">3,782</h4>
+          <h4 class="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">{{ customerCount }}</h4>
         </div>
 
         <span
@@ -79,7 +79,7 @@
       <div class="flex items-end justify-between mt-5">
         <div>
           <span class="text-sm text-gray-500 dark:text-gray-400">Orders</span>
-          <h4 class="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">5,359</h4>
+          <h4 class="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">{{ orderCount }}</h4>
         </div>
 
         <span
@@ -107,3 +107,35 @@
     </div>
   </div>
 </template>
+
+<script setup>
+import { ref, onMounted } from 'vue'
+
+const customerCount = ref(0)
+const orderCount = ref(0)
+
+const fetchMetrics = async () => {
+    try {
+        const [resCust, resOrd] = await Promise.all([
+            fetch('http://localhost:3001/api/customers'),
+            fetch('http://localhost:3001/api/orders')
+        ])
+        
+        if (resCust.ok) {
+            const users = await resCust.json()
+            customerCount.value = users.length
+        }
+        
+        if (resOrd.ok) {
+            const orders = await resOrd.json()
+            orderCount.value = orders.length
+        }
+    } catch (e) {
+        console.error(e)
+    }
+}
+
+onMounted(() => {
+    fetchMetrics()
+})
+</script>

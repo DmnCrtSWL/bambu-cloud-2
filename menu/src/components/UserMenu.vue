@@ -1,33 +1,14 @@
 <script setup>
-import { ref } from 'vue';
-import { User, LogOut } from 'lucide-vue-next';
+import { User } from 'lucide-vue-next';
 
-const isDropdownOpen = ref(false);
-
-const toggleDropdown = () => {
-  isDropdownOpen.value = !isDropdownOpen.value;
-};
-
-const handleLogout = () => {
-  // Logic to handle logout will go here
-  console.log('Cerrar sesión');
-  isDropdownOpen.value = false;
-};
+defineEmits(['click-user']);
 </script>
 
 <template>
   <div class="user-menu-container">
-    <button class="icon-btn" aria-label="Usuario" @click="toggleDropdown">
+    <button class="icon-btn" aria-label="Usuario" @click="$emit('click-user')">
       <User :size="24" color="var(--color-brand)" stroke-width="2" />
     </button>
-    
-    <!-- Dropdown -->
-    <div v-if="isDropdownOpen" class="dropdown-menu">
-      <button class="dropdown-item" @click="handleLogout">
-        <LogOut :size="16" color="var(--color-brand)" class="dropdown-icon"/>
-        <span>Cerrar sesión</span>
-      </button>
-    </div>
   </div>
 </template>
 

@@ -6,114 +6,16 @@ const router = createRouter({
     return savedPosition || { left: 0, top: 0 }
   },
   routes: [
+
     {
       path: '/',
       name: 'Ecommerce',
       component: () => import('../views/Ecommerce.vue'),
       meta: {
-        title: 'eCommerce Dashboard',
+        title: 'Dashboard',
       },
     },
-    {
-      path: '/calendar',
-      name: 'Calendar',
-      component: () => import('../views/Others/Calendar.vue'),
-      meta: {
-        title: 'Calendar',
-      },
-    },
-    {
-      path: '/profile',
-      name: 'Profile',
-      component: () => import('../views/Others/UserProfile.vue'),
-      meta: {
-        title: 'Profile',
-      },
-    },
-    {
-      path: '/form-elements',
-      name: 'Form Elements',
-      component: () => import('../views/Forms/FormElements.vue'),
-      meta: {
-        title: 'Form Elements',
-      },
-    },
-    {
-      path: '/basic-tables',
-      name: 'Basic Tables',
-      component: () => import('../views/Tables/BasicTables.vue'),
-      meta: {
-        title: 'Basic Tables',
-      },
-    },
-    {
-      path: '/line-chart',
-      name: 'Line Chart',
-      component: () => import('../views/Chart/LineChart/LineChart.vue'),
-    },
-    {
-      path: '/bar-chart',
-      name: 'Bar Chart',
-      component: () => import('../views/Chart/BarChart/BarChart.vue'),
-    },
-    {
-      path: '/alerts',
-      name: 'Alerts',
-      component: () => import('../views/UiElements/Alerts.vue'),
-      meta: {
-        title: 'Alerts',
-      },
-    },
-    {
-      path: '/avatars',
-      name: 'Avatars',
-      component: () => import('../views/UiElements/Avatars.vue'),
-      meta: {
-        title: 'Avatars',
-      },
-    },
-    {
-      path: '/badge',
-      name: 'Badge',
-      component: () => import('../views/UiElements/Badges.vue'),
-      meta: {
-        title: 'Badge',
-      },
-    },
-
-    {
-      path: '/buttons',
-      name: 'Buttons',
-      component: () => import('../views/UiElements/Buttons.vue'),
-      meta: {
-        title: 'Buttons',
-      },
-    },
-
-    {
-      path: '/images',
-      name: 'Images',
-      component: () => import('../views/UiElements/Images.vue'),
-      meta: {
-        title: 'Images',
-      },
-    },
-    {
-      path: '/videos',
-      name: 'Videos',
-      component: () => import('../views/UiElements/Videos.vue'),
-      meta: {
-        title: 'Videos',
-      },
-    },
-    {
-      path: '/blank',
-      name: 'Blank',
-      component: () => import('../views/Pages/BlankPage.vue'),
-      meta: {
-        title: 'Blank',
-      },
-    },
+    // ... Admin Routes start here
 
     {
       path: '/error-404',
@@ -132,16 +34,64 @@ const router = createRouter({
       meta: { title: 'Usuarios' },
     },
     {
+      path: '/users/create',
+      name: 'CreateUser',
+      component: () => import('../views/Admin/CreateUser.vue'),
+      meta: { title: 'Nuevo Usuario' },
+    },
+    {
+      path: '/users/:id/edit',
+      name: 'EditUser',
+      component: () => import('../views/Admin/EditUser.vue'),
+      meta: { title: 'Editar Usuario' },
+    },
+    {
       path: '/purchases',
       name: 'Purchases',
       component: () => import('../views/Admin/Purchases.vue'),
       meta: { title: 'Compras' },
     },
     {
+      path: '/purchases/create',
+      name: 'CreatePurchase',
+      component: () => import('../views/Admin/CreatePurchase.vue'),
+      meta: { title: 'Nuevo Ticket' },
+    },
+    {
       path: '/expenses',
       name: 'Expenses',
       component: () => import('../views/Admin/Expenses.vue'),
       meta: { title: 'Gastos' },
+    },
+    {
+      path: '/expenses/create',
+      name: 'CreateExpense',
+      component: () => import('../views/Admin/CreateExpense.vue'),
+      meta: { title: 'Nuevo Gasto' },
+    },
+    {
+      path: '/expenses/:id/edit',
+      name: 'EditExpense',
+      component: () => import('../views/Admin/EditExpense.vue'),
+      meta: { title: 'Editar Gasto' },
+    },
+    {
+      path: '/inventory',
+      name: 'Inventory',
+      component: () => import('../views/Admin/Inventory.vue'),
+      meta: { title: 'Inventario' },
+    },
+    {
+      path: '/purchases/:id/edit',
+      name: 'EditPurchase',
+      component: () => import('../views/Admin/EditPurchase.vue'),
+      meta: { title: 'Editar Compra' },
+    },
+    {
+      path: '/purchases/:id/breakdown',
+      name: 'PurchaseBreakdown',
+      component: () => import('../views/Admin/PurchaseBreakdown.vue'),
+      meta: { title: 'Desglose de Compra' },
     },
     {
       path: '/inventory',
@@ -156,22 +106,34 @@ const router = createRouter({
       meta: { title: 'Recetas' },
     },
     {
-      path: '/patients',
-      name: 'Patients',
-      component: () => import('../views/Admin/Patients.vue'),
-      meta: { title: 'Pacientes' },
+      path: '/recipes/create',
+      name: 'CreateRecipe',
+      component: () => import('../views/Admin/CreateRecipe.vue'),
+      meta: { title: 'Nueva Receta' },
     },
     {
-      path: '/loyalty',
-      name: 'Loyalty',
-      component: () => import('../views/Admin/Loyalty.vue'),
-      meta: { title: 'Fidelidad' },
+      path: '/recipes/:id/edit',
+      name: 'EditRecipe',
+      component: () => import('../views/Admin/EditRecipe.vue'),
+      meta: { title: 'Editar Receta' },
     },
     {
       path: '/menu',
       name: 'Menu',
       component: () => import('../views/Admin/Menu.vue'),
       meta: { title: 'Carta' },
+    },
+    {
+      path: '/menu/create',
+      name: 'CreateDish',
+      component: () => import('../views/Admin/CreateDish.vue'),
+      meta: { title: 'Nuevo Platillo' },
+    },
+    {
+      path: '/menu/:id/edit',
+      name: 'EditDish',
+      component: () => import('../views/Admin/EditDish.vue'),
+      meta: { title: 'Editar Platillo' },
     },
     {
       path: '/clients',
@@ -205,12 +167,6 @@ const router = createRouter({
       component: () => import('../views/Cash/Reports.vue'),
       meta: { title: 'Reportes' },
     },
-    {
-      path: '/history',
-      name: 'History',
-      component: () => import('../views/Cash/History.vue'),
-      meta: { title: 'Historial' },
-    },
 
     {
       path: '/login',
@@ -219,6 +175,12 @@ const router = createRouter({
       meta: {
         title: 'Login',
       },
+    },
+    {
+      path: '/notifications',
+      name: 'Notifications',
+      component: () => import('../views/Notifications/Timeline.vue'),
+      meta: { title: 'Notificaciones' },
     },
     {
       path: '/signup',
@@ -234,6 +196,46 @@ const router = createRouter({
 export default router
 
 router.beforeEach((to, from, next) => {
-  document.title = `Vue.js ${to.meta.title} | TailAdmin - Vue.js Tailwind CSS Dashboard Template`
-  next()
+  document.title = `Bambu Admin | ${to.meta.title || 'Dashboard'}`;
+
+  const publicPages = ['/login', '/signup', '/error-404'];
+  const authRequired = !publicPages.includes(to.path);
+  const loggedIn = localStorage.getItem('token');
+  const userStr = localStorage.getItem('user');
+
+  // console.log('Navigating to:', to.path, 'AuthRequired:', authRequired, 'LoggedIn:', !!loggedIn);
+
+  if (authRequired && !loggedIn) {
+    if (to.path !== '/login') {
+      return next('/login');
+    }
+    return next();
+  }
+
+  // Check Role Access
+  if (loggedIn && userStr) {
+    try {
+      const user = JSON.parse(userStr);
+      const role = user.role;
+
+      // Operativo Restrictions
+      if (role === 'Operativo') {
+        if (to.path === '/') {
+          return next('/orders');
+        }
+
+        const restrictedPrefixes = ['/users', '/recipes', '/menu', '/purchases', '/expenses', '/inventory', '/clients', '/receivables']; // Added more based on sidebar restrictions
+        // Check if current path starts with any restricted prefix
+        if (restrictedPrefixes.some(prefix => to.path.startsWith(prefix))) {
+          return next('/orders');
+        }
+      }
+    } catch (e) {
+      console.error('Error parsing user data:', e);
+      localStorage.clear(); // Clear everything
+      return next('/login');
+    }
+  }
+
+  next();
 })

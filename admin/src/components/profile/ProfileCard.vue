@@ -12,14 +12,14 @@
             <h4
               class="mb-2 text-lg font-semibold text-center text-gray-800 dark:text-white/90 xl:text-left"
             >
-              Musharof Chowdhury
+              {{ user.name }}
             </h4>
             <div
               class="flex flex-col items-center gap-1 text-center xl:flex-row xl:gap-3 xl:text-left"
             >
-              <p class="text-sm text-gray-500 dark:text-gray-400">Team Manager</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400">{{ user.role }}</p>
               <div class="hidden h-3.5 w-px bg-gray-300 dark:bg-gray-700 xl:block"></div>
-              <p class="text-sm text-gray-500 dark:text-gray-400">Arizona, United States</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400">{{ user.location }}</p>
             </div>
           </div>
           <div class="flex items-center order-2 gap-2 grow xl:order-3 xl:justify-end">
@@ -312,14 +312,30 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import Modal from './Modal.vue'
 
 const isProfileInfoModal = ref(false)
+const user = ref({
+    name: '',
+    role: '',
+    location: ''
+})
+
+onMounted(() => {
+    const userStr = localStorage.getItem('user')
+    if (userStr) {
+        const u = JSON.parse(userStr)
+        user.value = {
+            name: (u.firstName && u.lastName) ? `${u.firstName} ${u.lastName}` : (u.username || 'User'),
+            role: u.role || 'User',
+            location: 'Mexico' // Default as we don't store location in user obj yet
+        }
+    }
+})
 
 const saveProfile = () => {
   // Implement save profile logic here
-  console.log('Profile saved')
   isProfileInfoModal.value = false
 }
 </script>

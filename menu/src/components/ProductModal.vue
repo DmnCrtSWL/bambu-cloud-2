@@ -440,6 +440,7 @@ onUnmounted(() => {
   font-size: 0.95rem;
   resize: none;
   background-color: #f9fafb;
+  color: #1a1a1a; /* Ensure text is visible */
   transition: border-color 0.2s;
 }
 

@@ -11,13 +11,24 @@
         <slot></slot>
       </div>
     </div>
+    <!-- Global Notification Toast -->
+    <ToastNotification />
   </div>
 </template>
 
 <script setup>
+import { onMounted } from 'vue'
 import AppSidebar from './AppSidebar.vue'
 import AppHeader from './AppHeader.vue'
-import { useSidebar } from '@/composables/useSidebar'
+import ToastNotification from '@/components/common/ToastNotification.vue'
 import Backdrop from './Backdrop.vue'
+import { useSidebar } from '@/composables/useSidebar'
+import { useNotifications } from '@/composables/useNotifications'
+
 const { isExpanded, isHovered } = useSidebar()
+const { startPolling } = useNotifications()
+
+onMounted(() => {
+    startPolling()
+})
 </script>

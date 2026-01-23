@@ -1,5 +1,5 @@
 <script setup>
-import { Activity } from 'lucide-vue-next';
+import { Activity, X } from 'lucide-vue-next';
 import AppButton from './AppButton.vue';
 import { ref } from 'vue';
 
@@ -66,8 +66,11 @@ const handleClose = () => {
 </script>
 
 <template>
-  <div v-if="show" class="success-modal-overlay">
+  <div v-if="show" class="success-modal-overlay" @click.self="handleClose">
     <div class="success-modal">
+      <button class="close-btn" @click="handleClose">
+        <X :size="24" />
+      </button>
       
       <h2>¡Gracias por tu pedido!</h2>
       
@@ -181,6 +184,28 @@ const handleClose = () => {
   gap: 1.25rem;
   max-height: 90vh;
   overflow-y: auto;
+  position: relative;
+}
+
+.close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9ca3af; /* Gray-400 */
+  padding: 4px;
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.close-btn:hover {
+  color: #4b5563; /* Gray-600 */
+  background-color: #f3f4f6;
 }
 
 .success-icon-wrapper {

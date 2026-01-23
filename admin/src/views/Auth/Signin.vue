@@ -26,20 +26,20 @@
               <div>
                 <form @submit.prevent="handleSubmit">
                   <div class="space-y-5">
-                    <!-- Email -->
+                    <!-- Username -->
                     <div>
                       <label
-                        for="email"
+                        for="username"
                         class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400"
                       >
-                        Correo Electrónico<span class="text-error-500">*</span>
+                        Usuario<span class="text-error-500">*</span>
                       </label>
                       <input
-                        v-model="email"
-                        type="email"
-                        id="email"
-                        name="email"
-                        placeholder="ejemplo@correo.com"
+                        v-model="username"
+                        type="text"
+                        id="username"
+                        name="username"
+                        placeholder="Ingresa tu usuario"
                         class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
                       />
                     </div>
@@ -189,7 +189,7 @@ import { useRouter } from 'vue-router'
 import CommonGridShape from '@/components/common/CommonGridShape.vue'
 import FullScreenLayout from '@/components/layout/FullScreenLayout.vue'
 
-const email = ref('')
+const username = ref('') // Changed from email
 const password = ref('')
 const showPassword = ref(false)
 const keepLoggedIn = ref(false)
@@ -199,15 +199,39 @@ const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value
 }
 
-const handleSubmit = () => {
-  // Handle form submission
-  console.log('Form submitted', {
-    email: email.value,
-    password: password.value,
-    keepLoggedIn: keepLoggedIn.value,
-  })
-  
-  // For now, simple redirect to dashboard
-  router.push('/')
+const handleSubmit = async () => {
+    if (!username.value || !password.value) {
+        alert('Por favor ingresa usuario y contraseña');
+        return;
+    }
+
+    try {
+        const response = await fetch('http://localhost:3001/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                username: username.value,
+                password: password.value
+            })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('user', JSON.stringify(data.user));
+            // Redirect based on role? Or just root and let router guard handle?
+            if (data.user.role === 'Operativo') {
+                router.push('/orders');
+            } else {
+                router.push('/');
+            }
+        } else {
+            const err = await response.json();
+            alert(err.error || 'Autenticación fallida');
+        }
+    } catch (e) {
+        console.error(e);
+        alert('Error de conexión');
+    }
 }
 </script>

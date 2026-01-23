@@ -13,7 +13,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 15px 0;
+  margin-top: 3rem;
+  margin-bottom: 1.5rem;
   width: 100%;
 }
 

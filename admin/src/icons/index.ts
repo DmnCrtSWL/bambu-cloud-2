@@ -45,6 +45,12 @@ import LayoutDashboardIcon from "./LayoutDashboardIcon.vue";
 import UserGroupIcon from "./UserGroupIcon.vue";
 import BellIcon from "./BellIcon.vue";
 import BarChartIcon from "./BarChartIcon.vue";
+import LockIcon from "./LockIcon.vue";
+import PencilIcon from "./PencilIcon.vue";
+import UserIcon from "./UserIcon.vue";
+import DollarIcon from "./DollarIcon.vue";
+
+
 
 export {
   BellIcon,
@@ -93,5 +99,8 @@ export {
   CheckIcon,
   MailBox,
   SendIcon,
-  DraftIcon,
+  LockIcon,
+  PencilIcon,
+  UserIcon,
+  DollarIcon,
 };

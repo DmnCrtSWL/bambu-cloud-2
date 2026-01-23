@@ -63,13 +63,13 @@
         <thead>
           <tr class="border-t border-gray-100 dark:border-gray-800">
             <th class="py-3 text-left">
-              <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Products</p>
+              <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Order Item</p>
             </th>
             <th class="py-3 text-left">
-              <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Category</p>
+              <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Location</p>
             </th>
             <th class="py-3 text-left">
-              <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Price</p>
+              <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Total</p>
             </th>
             <th class="py-3 text-left">
               <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Status</p>
@@ -78,44 +78,44 @@
         </thead>
         <tbody>
           <tr
-            v-for="(product, index) in products"
+            v-for="(order, index) in orders"
             :key="index"
             class="border-t border-gray-100 dark:border-gray-800"
           >
             <td class="py-3 whitespace-nowrap">
               <div class="flex items-center gap-3">
                 <div class="h-[50px] w-[50px] overflow-hidden rounded-md">
-                  <img :src="product.image" :alt="product.name" />
+                  <img :src="order.image" :alt="order.name" />
                 </div>
                 <div>
                   <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                    {{ product.name }}
+                    {{ order.name }}
                   </p>
                   <span class="text-gray-500 text-theme-xs dark:text-gray-400"
-                    >{{ product.variants }} Variants</span
+                    >{{ order.itemCount }} Items</span
                   >
                 </div>
               </div>
             </td>
             <td class="py-3 whitespace-nowrap">
-              <p class="text-gray-500 text-theme-sm dark:text-gray-400">{{ product.category }}</p>
+              <p class="text-gray-500 text-theme-sm dark:text-gray-400">{{ order.category }}</p>
             </td>
             <td class="py-3 whitespace-nowrap">
-              <p class="text-gray-500 text-theme-sm dark:text-gray-400">{{ product.price }}</p>
+              <p class="text-gray-500 text-theme-sm dark:text-gray-400">{{ order.price }}</p>
             </td>
             <td class="py-3 whitespace-nowrap">
               <span
                 :class="{
                   'rounded-full px-2 py-0.5 text-theme-xs font-medium': true,
                   'bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-500':
-                    product.status === 'Delivered',
+                    order.status === 'Delivered',
                   'bg-warning-50 text-warning-600 dark:bg-warning-500/15 dark:text-orange-400':
-                    product.status === 'Pending',
+                    order.status === 'Pending',
                   'bg-error-50 text-error-600 dark:bg-error-500/15 dark:text-error-500':
-                    product.status === 'Canceled',
+                    order.status === 'Canceled',
                 }"
               >
-                {{ product.status }}
+                {{ order.status }}
               </span>
             </td>
           </tr>
@@ -126,48 +126,33 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 
-const products = ref([
-  {
-    name: 'Macbook pro 13"',
-    variants: 2,
-    image: '/images/product/product-01.jpg',
-    category: 'Laptop',
-    price: '$2399.00',
-    status: 'Delivered',
-  },
-  {
-    name: 'Apple Watch Ultra',
-    variants: 1,
-    image: '/images/product/product-02.jpg',
-    category: 'Watch',
-    price: '$879.00',
-    status: 'Pending',
-  },
-  {
-    name: 'iPhone 15 Pro Max',
-    variants: 2,
-    image: '/images/product/product-03.jpg',
-    category: 'SmartPhone',
-    price: '$1869.00',
-    status: 'Delivered',
-  },
-  {
-    name: 'iPad Pro 3rd Gen',
-    variants: 2,
-    image: '/images/product/product-04.jpg',
-    category: 'Electronics',
-    price: '$1699.00',
-    status: 'Canceled',
-  },
-  {
-    name: 'Airpods Pro 2nd Gen',
-    variants: 1,
-    image: '/images/product/product-05.jpg',
-    category: 'Accessories',
-    price: '$240.00',
-    status: 'Delivered',
-  },
-])
+const orders = ref([])
+
+const fetchOrders = async () => {
+    try {
+        const res = await fetch('http://localhost:3001/api/orders')
+        if (res.ok) {
+            const data = await res.json()
+            // Sort by ID desc and take 5
+            orders.value = data.sort((a, b) => b.id - a.id).slice(0, 5).map(o => ({
+                id: o.id,
+                name: o.items && o.items.length > 0 ? o.items[0].title : 'Orden sin items',
+                itemCount: o.items ? o.items.length : 0,
+                category: o.location || 'Local',
+                price: `$${Number(o.total).toFixed(2)}`,
+                status: o.status === 'completed' ? 'Delivered' : (o.status === 'cancelled' ? 'Canceled' : 'Pending'),
+                // Placeholder image based on ID
+                image: `https://ui-avatars.com/api/?name=${encodeURIComponent(o.customerName || 'Cliente')}&background=random`
+            }))
+        }
+    } catch (e) {
+        console.error(e)
+    }
+}
+
+onMounted(() => {
+    fetchOrders()
+})
 </script>

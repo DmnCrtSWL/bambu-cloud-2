@@ -10,12 +10,26 @@ const app = express();
 // Middleware
 app.use(helmet());
 app.use(cors());
+app.use(require('compression')()); // Optimize response size
 app.use(morgan('dev'));
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Routes
+app.use('/api/auth', require('./routes/auth'));
 app.use('/api/public', publicRoutes);
 app.use('/api/admin', protectedRoutes);
+app.use('/api/users', require('./routes/users'));
+app.use('/api/purchases', require('./routes/purchases'));
+app.use('/api/expenses', require('./routes/expenses'));
+app.use('/api/inventory', require('./routes/inventory'));
+app.use('/api/recipes', require('./routes/recipes'));
+app.use('/api/menu-items', require('./routes/menuItems'));
+app.use('/api/products', require('./routes/products'));
+app.use('/api/orders', require('./routes/orders'));
+app.use('/api/customers', require('./routes/customers'));
+app.use('/api/cxc', require('./routes/cxc'));
+app.use('/api/reports', require('./routes/reports'));
 
 // Health check
 app.use('/health', (req, res) => {

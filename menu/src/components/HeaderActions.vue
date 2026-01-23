@@ -1,5 +1,5 @@
 <script setup>
-import { Store, ShoppingCart, Search, ConciergeBell } from 'lucide-vue-next';
+import { Search, MessageSquare, ShoppingCart } from 'lucide-vue-next';
 import UserMenu from './UserMenu.vue';
 import SearchBar from './SearchBar.vue';
 
@@ -8,7 +8,7 @@ defineProps({
   cartCount: { type: Number, default: 0 }
 });
 
-defineEmits(['open-search', 'update:searchQuery', 'open-cart', 'open-waiter']);
+defineEmits(['open-search', 'update:searchQuery', 'open-message', 'open-user', 'open-cart']);
 </script>
 
 <template>
@@ -28,21 +28,19 @@ defineEmits(['open-search', 'update:searchQuery', 'open-cart', 'open-waiter']);
       <Search :size="24" color="var(--color-brand)" stroke-width="2" />
     </button>
     
-    <button class="icon-btn" aria-label="Tienda">
-      <Store :size="24" color="var(--color-brand)" stroke-width="2" />
+    <!-- Mensaje -->
+    <button class="icon-btn" aria-label="Mensajes" @click="$emit('open-message')">
+      <MessageSquare :size="24" color="var(--color-brand)" stroke-width="2" />
     </button>
 
-    <button class="icon-btn" aria-label="Mesero Virtual" @click="$emit('open-waiter')">
-      <!-- Icono de servicio/mesero -->
-      <ConciergeBell :size="24" color="var(--color-brand)" stroke-width="2" />
-    </button>
-    
-    <button class="icon-btn cart-wrapper" aria-label="Carrito" @click="$emit('open-cart')">
+    <!-- Cart -->
+    <button class="icon-btn cart-btn-header" aria-label="Carrito" @click="$emit('open-cart')">
       <ShoppingCart :size="24" color="var(--color-brand)" stroke-width="2" />
       <span v-if="cartCount > 0" class="badge-header">{{ cartCount }}</span>
     </button>
     
-    <UserMenu />
+    <!-- User Menu -->
+    <UserMenu @click-user="$emit('open-user')" />
   </nav>
 </template>
 
@@ -50,18 +48,45 @@ defineEmits(['open-search', 'update:searchQuery', 'open-cart', 'open-waiter']);
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1rem;
+}
+
+.cart-btn-header {
+  position: relative;
+}
+
+.badge-header {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #dc2626;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+  transform: translate(25%, -25%);
 }
 
 .icon-btn {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0;
-  transition: transform 0.2s;
+  padding: 0.5rem;
+  transition: background-color 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 50%;
+}
+
+.icon-btn:hover {
+  background-color: rgba(55, 97, 103, 0.1);
 }
 
 .icon-btn:active {
@@ -76,27 +101,7 @@ defineEmits(['open-search', 'update:searchQuery', 'open-cart', 'open-waiter']);
   display: block;
 }
 
-.cart-wrapper {
-  position: relative;
-}
 
-.badge-header {
-  position: absolute;
-  top: -6px;
-  right: -8px;
-  background-color: #dc2626; /* Strong red */
-  color: white;
-  font-size: 0.7rem;
-  font-weight: 700;
-  min-width: 18px;
-  height: 18px;
-  border-radius: 9px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 4px;
-  border: 2px solid white; /* Outline to separate from icon */
-}
 
 @media (min-width: 768px) {
   .search-pill-desktop {

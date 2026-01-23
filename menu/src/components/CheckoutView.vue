@@ -90,11 +90,7 @@ const handleOrderComplete = () => {
 };
 
 const submitOrder = async () => {
-  // 1. Payment Method: Online -> Dev Alert
-  if (form.value.paymentMethod === 'linea') {
-    alert('Esta opción está en desarrollo 🛠️');
-    return;
-  }
+
 
   // Validate basic fields
   if (!form.value.name || !form.value.phone || !form.value.deliveryLocation || !form.value.deliveryTime) {
@@ -114,21 +110,71 @@ const submitOrder = async () => {
 
   isSubmitting.value = true;
   
-  // Simulate API call
-  await new Promise(resolve => setTimeout(resolve, 1500));
-  
-  // Create Mock Order Info
-  const now = new Date();
-  orderInfo.value = {
-    id: Math.floor(1000 + Math.random() * 9000), // Random 4 digit ID
-    name: form.value.name,
-    time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    total: props.total,
-    paymentMethod: form.value.paymentMethod
-  };
-  
-  isSubmitting.value = false;
-  showSuccessModal.value = true;
+  // Construct Payload
+  const items = props.cartItems.map(item => {
+    // Transform options object to array of strings "Option: Choice"
+    // Handle cases where option value is object { label, price } or just string
+    const variations = Object.entries(item.options || {}).map(([key, value]) => {
+         const valStr = (value && typeof value === 'object' && value.label) ? value.label : value;
+         return `${key}: ${valStr}`; 
+    });
+    
+    return {
+        id: item.id, // matches menu_item_id
+        name: item.title,
+        quantity: item.quantity,
+        price: item.price,
+        variations: variations,
+        note: item.notes || '' 
+    };
+  });
+
+  // console.log('Items prepared for checkout:', items);
+ 
+   const payload = {
+     customerName: form.value.name,
+     customerPhone: `${form.value.phonePrefix} ${form.value.phone}`,
+     location: form.value.deliveryLocation === 'Otro (Especificar)' ? form.value.customLocation : form.value.deliveryLocation,
+     paymentMethod: form.value.paymentMethod,
+     deliveryTime: form.value.deliveryTime,
+     items: items,
+     generalNote: form.value.generalNotes,
+     total: props.total
+   };
+ 
+   try {
+     const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+     const response = await fetch(`${apiUrl}/api/orders`, {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify(payload)
+     });
+
+    if (response.ok) {
+        const resData = await response.json();
+        
+        // Populate Success Modal Info
+        orderInfo.value = {
+            id: resData.id,
+            name: form.value.name,
+            time: resData.time,
+            total: props.total,
+            paymentMethod: form.value.paymentMethod
+        };
+        
+        // Show Success
+        showSuccessModal.value = true;
+    } else {
+        const err = await response.json();
+        console.error('Order Error:', err);
+        alert('Hubo un error al crear la orden. Por favor intenta de nuevo.');
+    }
+  } catch (e) {
+      console.error('Network Error:', e);
+      alert('Error de conexión con el servidor.');
+  } finally {
+      isSubmitting.value = false;
+  }
 };
 </script>
 
@@ -258,12 +304,6 @@ const submitOrder = async () => {
             <input type="radio" value="transferencia" v-model="form.paymentMethod">
             <Landmark :size="32" class="payment-icon" />
             <span>Transfer</span>
-          </label>
-          
-          <label class="payment-card" :class="{ active: form.paymentMethod === 'linea' }">
-            <input type="radio" value="linea" v-model="form.paymentMethod">
-            <Smartphone :size="32" class="payment-icon" />
-            <span>Online</span>
           </label>
         </div>
       </section>
@@ -430,6 +470,15 @@ input, select, textarea {
   background-color: #fff;
   color: #1a1a1a; /* Force text color */
   box-sizing: border-box;
+}
+
+/* Force white background for autofill */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px white inset !important;
+    -webkit-text-fill-color: #1a1a1a !important;
 }
 
 input, select {

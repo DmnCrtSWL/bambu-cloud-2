@@ -39,7 +39,22 @@ interface SidebarContextType {
 const SidebarSymbol = Symbol()
 
 export function useSidebarProvider() {
-  const isExpanded = ref(true)
+  let initialExpanded = true;
+  if (typeof window !== 'undefined') { // Check if client-side
+    try {
+      const userStr = localStorage.getItem('user');
+      if (userStr) {
+        const user = JSON.parse(userStr);
+        if (user && user.role === 'Operativo') {
+          initialExpanded = false;
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  const isExpanded = ref(initialExpanded)
   const isMobileOpen = ref(false)
   const isMobile = ref(false)
   const isHovered = ref(false)

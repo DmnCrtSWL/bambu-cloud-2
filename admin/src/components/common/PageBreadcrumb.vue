@@ -10,7 +10,7 @@
             class="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400"
             to="/"
           >
-            Home
+            Dashboard
             <svg
               class="stroke-current"
               width="17"
@@ -29,6 +29,50 @@
             </svg>
           </router-link>
         </li>
+        <li v-for="(item, index) in items" :key="index" class="flex items-center gap-1.5">
+           <router-link
+            v-if="item.path"
+            class="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white"
+            :to="item.path"
+          >
+            {{ item.label }}
+             <svg
+              class="stroke-current"
+              width="17"
+              height="16"
+              viewBox="0 0 17 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M6.0765 12.667L10.2432 8.50033L6.0765 4.33366"
+                stroke=""
+                stroke-width="1.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </router-link>
+          <span v-else class="text-sm text-gray-500 dark:text-gray-400">
+             {{ item.label }}
+             <svg
+              class="stroke-current inline-block ml-1.5"
+              width="17"
+              height="16"
+              viewBox="0 0 17 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M6.0765 12.667L10.2432 8.50033L6.0765 4.33366"
+                stroke=""
+                stroke-width="1.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </span>
+        </li>
         <li class="text-sm text-gray-800 dark:text-white/90">
           {{ pageTitle }}
         </li>
@@ -38,10 +82,16 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps } from 'vue'
+
+
+interface BreadcrumbItem {
+  label: string
+  path?: string
+}
 
 interface BreadcrumbProps {
   pageTitle: string
+  items?: BreadcrumbItem[]
 }
 
 defineProps<BreadcrumbProps>()

@@ -1,12 +1,14 @@
 <script setup>
 import { ref, watch, nextTick, computed } from 'vue';
 import { Search, X } from 'lucide-vue-next';
-import { products } from '../data/mockProducts';
-
 const props = defineProps({
   isOpen: {
     type: Boolean,
     default: false
+  },
+  products: {
+    type: Array,
+    default: () => []
   }
 });
 
@@ -29,7 +31,7 @@ watch(() => props.isOpen, (newVal) => {
 const results = computed(() => {
   if (!query.value) return [];
   const lower = query.value.toLowerCase();
-  return products.filter(p => 
+  return props.products.filter(p => 
     p.title.toLowerCase().includes(lower) || 
     p.description.toLowerCase().includes(lower)
   );

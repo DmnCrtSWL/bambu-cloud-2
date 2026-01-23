@@ -6,12 +6,12 @@ defineProps({
   cartCount: { type: Number, default: 0 }
 });
 
-defineEmits(['open-search', 'update:searchQuery', 'open-cart', 'open-waiter']);
+defineEmits(['open-search', 'update:searchQuery', 'open-message', 'open-user', 'logo-click', 'open-cart']);
 </script>
 
 <template>
   <header class="site-header">
-    <div class="logo-container">
+    <div class="logo-container" @click="$emit('logo-click')">
       <img src="/logo-bambu.png" alt="Bambú Lomas" class="logo" />
     </div>
     
@@ -20,8 +20,9 @@ defineEmits(['open-search', 'update:searchQuery', 'open-cart', 'open-waiter']);
       :cart-count="cartCount"
       @update:search-query="$emit('update:searchQuery', $event)"
       @open-search="$emit('open-search')" 
+      @open-message="$emit('open-message')"
+      @open-user="$emit('open-user')"
       @open-cart="$emit('open-cart')"
-      @open-waiter="$emit('open-waiter')"
     />
   </header>
 </template>
@@ -41,6 +42,7 @@ defineEmits(['open-search', 'update:searchQuery', 'open-cart', 'open-waiter']);
 .logo-container {
   display: flex;
   align-items: center;
+  cursor: pointer;
 }
 
 .logo {

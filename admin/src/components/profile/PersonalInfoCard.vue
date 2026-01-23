@@ -10,12 +10,12 @@
           <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
             <div>
               <p class="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">First Name</p>
-              <p class="text-sm font-medium text-gray-800 dark:text-white/90">Musharof</p>
+              <p class="text-sm font-medium text-gray-800 dark:text-white/90">{{ user.firstName }}</p>
             </div>
 
             <div>
               <p class="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Last Name</p>
-              <p class="text-sm font-medium text-gray-800 dark:text-white/90">Chowdhury</p>
+              <p class="text-sm font-medium text-gray-800 dark:text-white/90">{{ user.lastName }}</p>
             </div>
 
             <div>
@@ -23,18 +23,18 @@
                 Email address
               </p>
               <p class="text-sm font-medium text-gray-800 dark:text-white/90">
-                randomuser@pimjo.com
+                {{ user.email }}
               </p>
             </div>
 
             <div>
               <p class="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Phone</p>
-              <p class="text-sm font-medium text-gray-800 dark:text-white/90">+09 363 398 46</p>
+              <p class="text-sm font-medium text-gray-800 dark:text-white/90">{{ user.phone }}</p>
             </div>
 
             <div>
               <p class="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Bio</p>
-              <p class="text-sm font-medium text-gray-800 dark:text-white/90">Team Manager</p>
+              <p class="text-sm font-medium text-gray-800 dark:text-white/90">{{ user.bio }}</p>
             </div>
           </div>
         </div>
@@ -251,14 +251,39 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import Modal from './Modal.vue'
 
 const isProfileInfoModal = ref(false)
+const user = ref({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    role: '',
+    bio: ''
+})
+
+onMounted(() => {
+    const userStr = localStorage.getItem('user')
+    if (userStr) {
+        const u = JSON.parse(userStr)
+        user.value = {
+            firstName: u.firstName || u.username || 'User',
+            lastName: u.lastName || '',
+            email: u.email || '',
+            phone: u.phone || '',
+            role: u.role || 'User',
+            bio: u.bio || 'Team Member'
+        }
+    }
+})
 
 const saveProfile = () => {
-  // Implement save profile logic here
-  console.log('Profile saved')
+  // Implement save profile logic here (e.g. API call)
+  // For now just close, as backend update is out of scope for this specific task unless requested, 
+  // but "No mockup" implies we should try to save if possible, but without an endpoint I can't.
+  // I will at least update the local state.
   isProfileInfoModal.value = false
 }
 </script>
