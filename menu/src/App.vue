@@ -79,7 +79,10 @@ const fetchProducts = async () => {
   isLoading.value = true;
   fetchError.value = '';
   try {
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+    let apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+    // Remove trailing slash if present to avoid double slashes (e.g. .app//api) which cause CORS redirects
+    apiUrl = apiUrl.replace(/\/$/, '');
+
     const response = await fetch(`${apiUrl}/api/public/menu`);
     if (response.ok) {
         products.value = await response.json();

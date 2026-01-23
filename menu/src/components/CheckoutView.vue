@@ -143,7 +143,9 @@ const submitOrder = async () => {
    };
  
    try {
-     const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+     let apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+     apiUrl = apiUrl.replace(/\/$/, '');
+     
      const response = await fetch(`${apiUrl}/api/orders`, {
          method: 'POST',
          headers: { 'Content-Type': 'application/json' },
