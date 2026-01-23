@@ -132,7 +132,7 @@ const orders = ref([])
 
 const fetchOrders = async () => {
     try {
-        const res = await fetch("${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/orders')
+        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/orders`)
         if (res.ok) {
             const data = await res.json()
             // Sort by ID desc and take 5

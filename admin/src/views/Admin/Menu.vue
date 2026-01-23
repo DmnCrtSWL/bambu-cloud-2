@@ -130,7 +130,7 @@ const itemsPerPage = 10;
 
 const fetchMenu = async () => {
   try {
-    const response = await fetch("${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/menu-items');
+    const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/menu-items`);
     if (response.ok) {
         menuItems.value = await response.json();
     }

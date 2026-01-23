@@ -538,7 +538,7 @@ const total = computed(() => subtotal.value);
 // Actions
 const fetchProducts = async () => {
     try {
-        const res = await fetch("${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/menu-items');
+        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/menu-items`);
         if (res.ok) {
             products.value = await res.json();
         }
@@ -799,7 +799,7 @@ const processPayment = async (method) => {
                 cxcCustomerPhone: method === 'CXC' ? cxcCustomer.value.phone : null
             };
 
-            res = await fetch("${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/orders', {
+            res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/orders`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(orderPayload)

@@ -374,7 +374,7 @@ const filteredRecipes = computed(() => {
 
 const loadRecipes = async () => {
     try {
-         const response = await fetch("${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/recipes');
+         const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/recipes`);
          if (response.ok) recipes.value = await response.json();
     } catch (e) {
         console.error(e);
@@ -505,7 +505,7 @@ const handleSubmit = async () => {
     };
 
     try {
-        const response = await fetch("${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/menu-items', {
+        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/menu-items`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)

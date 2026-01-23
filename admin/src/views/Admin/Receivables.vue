@@ -118,7 +118,7 @@ const searchQuery = ref("");
 const fetchCXC = async () => {
     loading.value = true;
     try {
-        const res = await fetch("${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/cxc');
+        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/cxc`);
         if (res.ok) {
             cxcList.value = await res.json();
         }

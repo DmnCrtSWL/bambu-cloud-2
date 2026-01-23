@@ -149,7 +149,7 @@ const purchases = ref<any[]>([]);
 
 const fetchPurchases = async () => {
   try {
-    const response = await fetch("${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/purchases');
+    const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/purchases`);
     if (response.ok) {
       purchases.value = await response.json();
     }
