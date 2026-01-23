@@ -18,6 +18,8 @@ import { Egg, Coffee, Sandwich, GlassWater, Utensils, Sun } from 'lucide-vue-nex
 
 // Dynamic Products State
 const products = ref([]);
+const isLoading = ref(true);
+const fetchError = ref('');
 
 // Determine Category Order based on Time of Day
 const getCategoryOrder = () => {
@@ -74,6 +76,8 @@ const getProductsByCategory = (catId) => {
 
 // Fetch Products from Backend
 const fetchProducts = async () => {
+  isLoading.value = true;
+  fetchError.value = '';
   try {
     const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
     const response = await fetch(`${apiUrl}/api/public/menu`);
@@ -81,9 +85,13 @@ const fetchProducts = async () => {
         products.value = await response.json();
     } else {
         console.error('Failed to fetch menu:', response.statusText);
+        fetchError.value = 'No se pudo cargar el menú. Intente nuevamente.';
     }
   } catch (err) {
     console.error('Error connecting to backend:', err);
+    fetchError.value = 'Error de conexión con el servidor.';
+  } finally {
+    isLoading.value = false;
   }
 };
 
@@ -322,9 +330,34 @@ onUnmounted(() => {
         <SectionSeparator v-if="index < filteredCategories.length - 1" />
       </template>
       
-      <!-- No Results Message -->
-      <div v-if="filteredCategories.length === 0" class="no-results-main">
-        <p>No se encontraron productos que coincidan con "{{ searchQuery }}"</p>
+      <!-- Status Messages -->
+      <div v-if="isLoading" class="py-12 text-center">
+         <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mb-2"></div>
+         <p class="text-gray-500">Cargando menú...</p>
+      </div>
+
+      <div v-else-if="fetchError" class="py-12 text-center px-4">
+         <p class="font-bold text-red-500 mb-2">{{ fetchError }}</p>
+         <p class="text-sm text-gray-500">Verifique su conexión e intente recargar la página.</p>
+      </div>
+
+      <div v-else-if="filteredCategories.length === 0" class="no-results-main py-12 text-center px-4">
+         <div v-if="products.length === 0">
+            <Utensils class="w-12 h-12 text-gray-300 mx-auto mb-4" />
+            <h3 class="font-bold text-lg text-gray-800 mb-2">Menú Vacío</h3>
+             <p class="text-gray-600 mb-4">No hay platillos disponibles para mostrar.</p>
+             <div class="bg-gray-50 p-4 rounded-lg inline-block text-left text-sm text-gray-500 border border-gray-200">
+                <p class="font-semibold text-xs uppercase mb-1">Nota para el Administrador:</p>
+                <p>Asegúrese de que los platillos:</p>
+                <ul class="list-disc pl-4 mt-1 space-y-1">
+                   <li>Estén registrados en el sistema.</li>
+                   <li>Tengan el estado <strong>"Publicado"</strong> activado.</li>
+                </ul>
+             </div>
+         </div>
+         <div v-else>
+            <p class="text-gray-600">No se encontraron productos que coincidan con "{{ searchQuery }}"</p>
+         </div>
       </div>
     </div>
   </main>
