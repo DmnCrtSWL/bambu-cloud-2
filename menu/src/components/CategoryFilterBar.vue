@@ -150,8 +150,6 @@ const selectCategory = (id) => {
   .desktop-sticky-search {
     display: none;
   }
-  
-  }
 }
 
 @media (max-width: 767px) {
