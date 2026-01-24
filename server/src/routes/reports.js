@@ -56,11 +56,13 @@ router.get('/daily-sales', async (req, res) => {
                 ${userFilterAR}
             ),
             courtesies AS (
-                SELECT SUM(total) as total
+                SELECT SUM(o.total) as total
                 FROM orders o
-                WHERE (created_at AT TIME ZONE 'America/Mexico_City') >= $1::timestamp 
-                AND (created_at AT TIME ZONE 'America/Mexico_City') < $2::timestamp
-                AND payment_method = 'Cortesía'
+                LEFT JOIN accounts_receivable ar ON o.id = ar.order_id
+                WHERE (o.created_at AT TIME ZONE 'America/Mexico_City') >= $1::timestamp 
+                AND (o.created_at AT TIME ZONE 'America/Mexico_City') < $2::timestamp
+                AND o.payment_method = 'Cortesía'
+                AND ar.id IS NULL
                 ${userFilterOrder}
             )
             SELECT 
