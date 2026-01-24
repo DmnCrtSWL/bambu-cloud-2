@@ -367,6 +367,7 @@ const submitOrder = async () => {
   display: flex;
   flex-direction: column;
   overflow-x: hidden; /* Prevent horizontal movement */
+  overscroll-behavior: none; /* Prevent elastic bounce globally */
 }
 
 .checkout-header {
@@ -392,6 +393,10 @@ const submitOrder = async () => {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   padding-bottom: 2rem;
+  width: 100%;
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
+  touch-action: pan-y; /* Allow only vertical scroll gestures */
 }
 
 .back-btn {
