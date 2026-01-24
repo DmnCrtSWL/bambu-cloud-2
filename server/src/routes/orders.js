@@ -196,6 +196,8 @@ router.put('/:id', async (req, res) => {
             return res.status(404).json({ error: 'Order not found' });
         }
 
+        const updatedOrder = result.rows[0];
+
         // Handle CXC logic for existing order updates
         if (paymentMethod === 'CXC') {
             let finalCustomerId = cxcCustomerId;
@@ -218,7 +220,7 @@ router.put('/:id', async (req, res) => {
                     await client.query(`
                         INSERT INTO accounts_receivable (customer_id, order_id, amount, status, user_id)
                         VALUES ($1, $2, $3, 'active', $4)
-                    `, [finalCustomerId, id, total, userId]);
+                    `, [finalCustomerId, id, updatedOrder.total, userId]);
                 }
             }
         } else {
@@ -227,7 +229,7 @@ router.put('/:id', async (req, res) => {
                 UPDATE accounts_receivable 
                 SET status = 'paid', paid_amount = $1, payment_method = $3, updated_at = NOW()
                 WHERE order_id = $2 AND status = 'active'
-            `, [total, id, paymentMethod]);
+            `, [updatedOrder.total, id, paymentMethod]);
         }
 
         await client.query('COMMIT');
