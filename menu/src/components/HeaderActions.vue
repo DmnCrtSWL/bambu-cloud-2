@@ -36,7 +36,7 @@ defineEmits(['open-search', 'update:searchQuery', 'open-message', 'open-user', '
     <!-- Cart -->
     <button class="icon-btn cart-btn-header" aria-label="Carrito" @click="$emit('open-cart')">
       <ShoppingCart :size="24" color="var(--color-brand)" stroke-width="2" />
-      <span v-if="cartCount > 0" class="badge-header">{{ cartCount }}</span>
+      <span v-if="cartCount > 0" :key="cartCount" class="badge-header">{{ cartCount }}</span>
     </button>
     
     <!-- User Menu -->
@@ -71,6 +71,15 @@ defineEmits(['open-search', 'update:searchQuery', 'open-message', 'open-user', '
   justify-content: center;
   border: 2px solid white;
   transform: translate(25%, -25%);
+  animation: wiggle 0.5s ease-in-out;
+}
+
+@keyframes wiggle {
+  0% { transform: translate(25%, -25%) rotate(0deg); }
+  25% { transform: translate(25%, -25%) rotate(-15deg) scale(1.2); }
+  50% { transform: translate(25%, -25%) rotate(15deg) scale(1.2); }
+  75% { transform: translate(25%, -25%) rotate(-5deg) scale(1.1); }
+  100% { transform: translate(25%, -25%) rotate(0deg) scale(1); }
 }
 
 .icon-btn {

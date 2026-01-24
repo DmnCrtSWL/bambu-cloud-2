@@ -35,8 +35,16 @@ defineEmits(['open-search', 'update:searchQuery', 'open-message', 'open-user', '
   padding: 1rem;
   background-color: #ffffff;
   /* box-shadow removed as requested */
-  position: relative; /* Scrolls away */
+  position: relative; /* Scrolls away on mobile */
   z-index: 100;
+}
+
+@media (min-width: 768px) {
+  .site-header {
+    position: sticky;
+    top: 0;
+    border-bottom: 1px solid #f3f4f6; /* Optional: adds separation when sticky */
+  }
 }
 
 .logo-container {

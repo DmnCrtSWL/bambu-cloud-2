@@ -83,6 +83,8 @@ const fetchProducts = async () => {
     // Remove trailing slash if present to avoid double slashes (e.g. .app//api) which cause CORS redirects
     apiUrl = apiUrl.replace(/\/$/, '');
 
+const showMinLoader = ref(true);
+    
     const response = await fetch(`${apiUrl}/api/public/menu`);
     if (response.ok) {
         products.value = await response.json();
@@ -96,6 +98,9 @@ const fetchProducts = async () => {
     fetchError.value = 'Error de conexión con el servidor.';
   } finally {
     isLoading.value = false;
+    setTimeout(() => {
+        showMinLoader.value = false;
+    }, 2000); // Enforce 2s minimum animation
   }
 };
 
@@ -351,12 +356,25 @@ onUnmounted(() => {
       </template>
       
       <!-- Status Messages -->
-      <div v-if="isLoading" class="py-12 text-center">
-         <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mb-2"></div>
-         <p class="text-gray-500">Cargando menú...</p>
-      </div>
+      <!-- Custom Bamboo Loader -->
+      <transition name="fade">
+        <div v-if="isLoading || showMinLoader" class="loader-overlay">
+          <div class="loader-content">
+            <div class="loader-circle-wrapper">
+              <svg class="loader-svg" viewBox="0 0 100 100">
+                <circle class="loader-track" cx="50" cy="50" r="45"></circle>
+                <circle class="loader-progress" cx="50" cy="50" r="45"></circle>
+              </svg>
+              <div class="loader-icon">
+                <img src="/bambu-icon.png" alt="Loading..." />
+              </div>
+            </div>
+            <p class="loader-text">Cargando menú...</p>
+          </div>
+        </div>
+      </transition>
 
-      <div v-else-if="fetchError" class="py-12 text-center px-4">
+      <div v-if="fetchError" class="py-12 text-center px-4">
          <p class="font-bold text-red-500 mb-2">{{ fetchError }}</p>
          <p class="text-sm text-gray-500">Verifique su conexión e intente recargar la página.</p>
       </div>
@@ -486,4 +504,94 @@ onUnmounted(() => {
 
 
 
+
+/* Loader Styles */
+.loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  background-color: #ffffff;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.loader-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.loader-circle-wrapper {
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+
+.loader-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.loader-track {
+  fill: none;
+  stroke: #f3f4f6;
+  stroke-width: 4;
+}
+
+.loader-progress {
+  fill: none;
+  stroke: var(--color-brand);
+  stroke-width: 4;
+  stroke-dasharray: 283; /* 2 * PI * 45 */
+  stroke-dashoffset: 283;
+  stroke-linecap: round;
+  animation: loadCircle 2s ease-in-out forwards;
+}
+
+.loader-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+}
+
+.loader-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.loader-text {
+  font-weight: 600;
+  color: #6b7280;
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
+}
+
+@keyframes loadCircle {
+  0% {
+    stroke-dashoffset: 283;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Animations */
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
 </style>

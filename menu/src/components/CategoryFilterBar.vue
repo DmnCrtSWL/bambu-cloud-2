@@ -159,8 +159,12 @@ const selectCategory = (id) => {
 
 /* Responsive Logic */
 @media (min-width: 768px) {
+  .filter-bar-container {
+    top: 73px;
+  }
+
   .desktop-sticky-search {
-    display: block;
+    display: none;
   }
   
   .mobile-sticky-search-row {
