@@ -304,8 +304,8 @@ const submitOrder = async () => {
           
           <label class="payment-card" :class="{ active: form.paymentMethod === 'transferencia' }">
             <input type="radio" value="transferencia" v-model="form.paymentMethod">
-            <Landmark :size="32" class="payment-icon" />
-            <span>Transfer</span>
+            <Smartphone :size="32" class="payment-icon" />
+            <span>Transferencia</span>
           </label>
         </div>
       </section>
@@ -362,6 +362,7 @@ const submitOrder = async () => {
   top: 0;
   left: 0;
   width: 100%;
+  max-width: 100vw; /* Prevent horizontal scroll */
   z-index: 2000;
   display: flex;
   flex-direction: column;
@@ -581,8 +582,14 @@ textarea {
 /* Payment Grid Squares */
 .payment-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1fr;
   gap: 12px;
+}
+
+@media (min-width: 768px) {
+  .payment-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 .payment-card {
