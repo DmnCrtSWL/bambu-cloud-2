@@ -22,9 +22,7 @@ defineEmits(['open-search', 'open-message', 'open-user', 'open-map', 'open-cart'
         <User :size="24" stroke-width="2" />
       </button>
       
-      <button class="nav-item" @click="$emit('open-map')">
-        <MapPin :size="24" stroke-width="2" />
-      </button>
+
 
       <!-- Central Cart Action -->
       <button class="nav-item cart-item" @click="$emit('open-cart')">
