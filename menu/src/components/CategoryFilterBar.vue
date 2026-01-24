@@ -63,18 +63,7 @@ const selectCategory = (id) => {
     </div>
 
     <!-- Mobile Sticky Search (Bottom Row) -->
-    <transition name="slide-down">
-      <div v-if="isScrolled" class="mobile-sticky-search-row">
-        <div class="mobile-search-bar-wrapper">
-          <SearchBar 
-            placeholder="Buscar en el menú..." 
-            icon-position="left" 
-            :readonly="true"
-            @click="$emit('open-search')" 
-          />
-        </div>
-      </div>
-    </transition>
+
 
   </div>
 </template>
@@ -142,19 +131,6 @@ const selectCategory = (id) => {
   flex-shrink: 0;
 }
 
-/* Mobile Sticky Search Row */
-.mobile-sticky-search-row {
-  padding: 0.5rem 1rem 0.75rem 1rem;
-  width: 100%;
-  border-top: 1px solid #f0f0f0;
-  margin-top: 0.25rem;
-  background-color: #fcfdfe;
-}
-
-.mobile-search-bar-wrapper {
-  height: 44px;
-  width: 100%;
-}
 
 
 /* Responsive Logic */
@@ -167,8 +143,6 @@ const selectCategory = (id) => {
     display: none;
   }
   
-  .mobile-sticky-search-row {
-    display: none; /* Hide mobile row on desktop */
   }
 }
 
@@ -184,18 +158,5 @@ const selectCategory = (id) => {
 }
 .fade-enter-from, .fade-leave-to {
   opacity: 0;
-}
-
-.slide-down-enter-active, .slide-down-leave-active {
-  transition: all 0.3s ease;
-  max-height: 100px;
-  opacity: 1;
-}
-.slide-down-enter-from, .slide-down-leave-to {
-  max-height: 0;
-  opacity: 0;
-  padding-top: 0;
-  padding-bottom: 0;
-  margin-top: 0;
 }
 </style>
