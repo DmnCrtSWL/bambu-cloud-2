@@ -365,6 +365,7 @@ const submitOrder = async () => {
   z-index: 2000;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden; /* Prevent horizontal movement */
 }
 
 .checkout-header {
@@ -372,15 +373,15 @@ const submitOrder = async () => {
   padding: 1rem;
   display: flex;
   align-items: center;
-  justify-content: center; /* Center logo strictly */
-  position: relative; /* Anchor for absolute btn */
+  justify-content: center;
+  position: relative;
   flex-shrink: 0;
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
   z-index: 20;
 }
 
 .checkout-logo {
-  height: 24px; /* Slightly larger but controlled */
+  height: 24px;
   max-width: 150px;
   object-fit: contain;
 }
@@ -400,7 +401,7 @@ const submitOrder = async () => {
   padding: 8px;
   cursor: pointer;
   color: #4b5563;
-  display: flex; /* Ensure icon centers */
+  display: flex;
 }
 
 .checkout-content {
@@ -464,17 +465,16 @@ const submitOrder = async () => {
 
 input, select, textarea {
   width: 100%;
-  padding: 0 20px; /* Use line-height/height for vertical centering */
+  padding: 0 20px;
   border: 1px solid #e5e7eb;
-  border-radius: 50px; /* Pill shape */
+  border-radius: 50px;
   font-family: inherit;
   font-size: 1rem;
   background-color: #fff;
-  color: #1a1a1a; /* Force text color */
+  color: #1a1a1a;
   box-sizing: border-box;
 }
 
-/* Force white background for autofill */
 input:-webkit-autofill,
 input:-webkit-autofill:hover, 
 input:-webkit-autofill:focus, 
@@ -484,13 +484,13 @@ input:-webkit-autofill:active {
 }
 
 input, select {
-  height: 54px; /* Explicit height for consistency */
+  height: 54px;
   display: flex;
   align-items: center;
 }
 
 textarea {
-  padding: 15px 20px; /* Restore padding for textarea */
+  padding: 15px 20px;
   height: auto;
   border-radius: 20px;
 }
@@ -502,7 +502,7 @@ select {
   background-repeat: no-repeat;
   background-position: right 1rem center;
   background-size: 1em;
-  padding-right: 2.5rem; /* Space for arrow */
+  padding-right: 2.5rem;
 }
 
 input:focus, select:focus, textarea:focus {
@@ -515,23 +515,20 @@ textarea {
   resize: vertical;
 }
 
-/* Phone Input Styles */
 .phone-row {
   display: flex;
   gap: 12px;
 }
 
 .country-select-wrapper {
-  width: 110px; /* Slightly wider for comfort */
+  width: 110px;
   flex-shrink: 0;
 }
 
 .country-select {
-  /* Using pill styling from general input, just adjusting padding if needed */
   padding-right: 8px;
 }
 
-/* Time Input Styles */
 .time-input-container {
   position: relative;
 }
@@ -543,6 +540,8 @@ textarea {
   color: var(--color-brand);
   cursor: pointer;
   letter-spacing: 1px;
+  width: 100%;
+  max-width: 100%;
 }
 
 /* Location Pills */
