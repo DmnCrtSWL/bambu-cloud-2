@@ -550,6 +550,10 @@ textarea {
   max-width: 100%;
   display: block;
   box-sizing: border-box;
+  -webkit-appearance: none;
+  appearance: none;
+  min-width: 0;
+  background-color: white; /* Ensure background is defined */
 }
 
 /* Location Pills */
