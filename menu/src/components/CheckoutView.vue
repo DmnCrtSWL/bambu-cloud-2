@@ -553,7 +553,10 @@ textarea {
   -webkit-appearance: none;
   appearance: none;
   min-width: 0;
-  background-color: white; /* Ensure background is defined */
+  background-color: white;
+  height: 54px;
+  line-height: 52px;
+  padding: 0 20px;
 }
 
 /* Location Pills */
