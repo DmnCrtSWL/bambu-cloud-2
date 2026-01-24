@@ -548,6 +548,8 @@ textarea {
   letter-spacing: 1px;
   width: 100%;
   max-width: 100%;
+  display: block;
+  box-sizing: border-box;
 }
 
 /* Location Pills */
