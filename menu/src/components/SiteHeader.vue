@@ -3,14 +3,15 @@ import HeaderActions from './HeaderActions.vue';
 
 defineProps({
   searchQuery: { type: String, default: '' },
-  cartCount: { type: Number, default: 0 }
+  cartCount: { type: Number, default: 0 },
+  isVisible: { type: Boolean, default: true }
 });
 
 defineEmits(['open-search', 'update:searchQuery', 'open-message', 'open-user', 'logo-click', 'open-cart']);
 </script>
 
 <template>
-  <header class="site-header">
+  <header class="site-header" :class="{ 'header-hidden': !isVisible }">
     <div class="logo-container" @click="$emit('logo-click')">
       <img src="/logo-bambu.png" alt="Bambú Lomas" class="logo" />
     </div>
@@ -34,14 +35,19 @@ defineEmits(['open-search', 'update:searchQuery', 'open-message', 'open-user', '
   align-items: center;
   padding: 1rem;
   background-color: #ffffff;
-  /* box-shadow removed as requested */
-  position: relative; /* Scrolls away on mobile */
+  position: sticky;
+  top: 0;
   z-index: 100;
+  transition: transform 0.3s ease;
+  width: 100%;
+}
+
+.header-hidden {
+  transform: translateY(-100%);
 }
 
 @media (min-width: 768px) {
   .site-header {
-    position: sticky;
     top: 0;
     border-bottom: 1px solid #f3f4f6; /* Optional: adds separation when sticky */
   }

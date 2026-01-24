@@ -215,9 +215,9 @@ const handleLogoClick = () => {
   });
 };
 
-// FAB Logic & Scroll State
 const isScrolledPastHeader = ref(false); // Replaces showFloatingStore for FilterBar
 const isMobileFooterVisible = ref(false);
+const isHeaderVisible = ref(true); // Control header visibility
 const lastScrollY = ref(0);
 const activeCategory = ref('bebidas');
 const isManualScrolling = ref(false);
@@ -226,24 +226,26 @@ const handleScroll = () => {
   const currentScrollY = window.scrollY;
   isScrolledPastHeader.value = currentScrollY > 100;
   
-  // Mobile Footer Logic: Show on Scroll Down (> 100px) or at Bottom, Hide on Scroll Up
-  // Only apply logic if we have scrolled past header
+  // Mobile Footer & Header Logic
   const isAtBottom = (window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 50);
 
-  if (currentScrollY > 100) {
+  if (currentScrollY > 60) { // Threshold to start hiding/showing
     if (isAtBottom) {
-       // Keep visible if at bottom (prevents flickering on IOS rubber-band effect)
        isMobileFooterVisible.value = true;
+       isHeaderVisible.value = false; // Hide header at bottom usually
     } else if (currentScrollY > lastScrollY.value) {
       // Scrolling Down
       isMobileFooterVisible.value = true;
+      isHeaderVisible.value = false;
     } else {
-      // Scrolling Up and NOT at bottom
+      // Scrolling Up
       isMobileFooterVisible.value = false;
+      isHeaderVisible.value = true;
     }
   } else {
     // Top of page
     isMobileFooterVisible.value = false;
+    isHeaderVisible.value = true;
   }
   
   lastScrollY.value = currentScrollY;
@@ -306,6 +308,7 @@ onUnmounted(() => {
   <SiteHeader 
     :search-query="searchQuery"
     :cart-count="totalCartCount"
+    :is-visible="isHeaderVisible"
     @update:search-query="searchQuery = $event"
     @open-search="isSearchModalOpen = true" 
     @open-message="openDevelopmentModal"
@@ -318,6 +321,7 @@ onUnmounted(() => {
     v-if="!isCheckoutOpen"
     :active-id="activeCategory"
     :is-scrolled="isScrolledPastHeader"
+    :header-visible="isHeaderVisible"
     :search-query="searchQuery"
     :categories="filteredCategories"
     @update:search-query="searchQuery = $event"

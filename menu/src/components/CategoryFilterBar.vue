@@ -19,6 +19,10 @@ const props = defineProps({
   categories: {
     type: Array,
     default: () => []
+  },
+  headerVisible: {
+    type: Boolean,
+    default: true
   }
 });
 
@@ -30,7 +34,7 @@ const selectCategory = (id) => {
 </script>
 
 <template>
-  <div class="filter-bar-container" :class="{ 'scrolled-layout': isScrolled }">
+  <div class="filter-bar-container" :class="{ 'scrolled-layout': isScrolled, 'with-header': headerVisible }">
     
     <div class="filter-main-row">
       <div class="filter-scroll-wrapper">
@@ -77,7 +81,11 @@ const selectCategory = (id) => {
   top: 0; 
   z-index: 90;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
+  transition: top 0.3s ease;
+}
+
+.filter-bar-container.with-header {
+  top: 72px; /* Approx header height */
 }
 
 .filter-main-row {
