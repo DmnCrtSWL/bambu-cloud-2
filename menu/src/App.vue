@@ -29,16 +29,16 @@ const getCategoryOrder = () => {
 
   if (hour >= 7 && hour < 8) {
     // 07:00 - 08:00
-    orderIds = ['cafe', 'desayunos', 'huevos', 'sandwiches', 'bebidas', 'menu_dia'];
+    orderIds = ['cafe', 'desayunos', 'huevos', 'sandwiches', 'menu_dia', 'bebidas'];
   } else if (hour >= 8 && hour < 11) {
     // 08:00 - 11:00
-    orderIds = ['desayunos', 'sandwiches', 'huevos', 'cafe', 'bebidas', 'menu_dia'];
+    orderIds = ['desayunos', 'sandwiches', 'huevos', 'cafe', 'menu_dia', 'bebidas'];
   } else if (hour >= 11 && hour < 17) {
     // 11:00 - 17:00
-    orderIds = ['menu_dia', 'sandwiches', 'huevos', 'bebidas', 'cafe', 'desayunos'];
+    orderIds = ['menu_dia', 'sandwiches', 'huevos', 'cafe', 'desayunos', 'bebidas'];
   } else {
     // 17:00 onwards (and early morning < 7)
-    orderIds = ['sandwiches', 'cafe', 'bebidas', 'huevos', 'menu_dia', 'desayunos'];
+    orderIds = ['sandwiches', 'cafe', 'huevos', 'menu_dia', 'desayunos', 'bebidas'];
   }
 
   const allCategories = {
@@ -339,9 +339,10 @@ onUnmounted(() => {
           
           <div class="products-grid">
             <ProductCard 
-              v-for="product in getProductsByCategory(cat.id)"
+              v-for="(product, idx) in getProductsByCategory(cat.id)"
               :key="product.id"
               v-bind="product"
+              :is-best-seller="idx === 0"
               @add="handleProductClick(product)"
             />
           </div>
@@ -474,7 +475,7 @@ onUnmounted(() => {
 @media (min-width: 768px) {
   .products-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 1.5rem;
   }
   

@@ -204,8 +204,8 @@ const total = computed(() => subtotal.value); // Add tax or delivery logic if ne
 .start-order-btn {
   padding: 0.75rem 1.5rem;
   border: 1px solid var(--color-brand);
-  background: transparent;
-  color: var(--color-brand);
+  background: var(--color-brand);
+  color: white;
   border-radius: 50px;
   font-weight: 600;
   cursor: pointer;

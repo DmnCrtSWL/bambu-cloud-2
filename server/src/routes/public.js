@@ -20,10 +20,13 @@ router.get('/menu', async (req, res) => {
     try {
         // 1. Fetch active menu items
         const itemsResult = await db.query(`
-            SELECT id, name as title, description, price, category, type, image_url as image 
-            FROM menu_items 
-            WHERE status = 'active' AND deleted_at IS NULL
-            ORDER BY category, id
+            SELECT m.id, m.name as title, m.description, m.price, m.category, m.type, m.image_url as image,
+            COALESCE(SUM(oi.quantity), 0) as popularity
+            FROM menu_items m
+            LEFT JOIN order_items oi ON m.id = oi.menu_item_id
+            WHERE m.status = 'active' AND m.deleted_at IS NULL
+            GROUP BY m.id
+            ORDER BY popularity DESC, m.category, m.id
         `);
 
         const items = itemsResult.rows;
@@ -35,7 +38,7 @@ router.get('/menu', async (req, res) => {
             SELECT menu_item_id, group_name, name, extra_price 
             FROM menu_item_variants
             ORDER BY menu_item_id, group_name, id
-        `);
+            `);
 
         const variantsMap = {};
         variantsResult.rows.forEach(v => {
