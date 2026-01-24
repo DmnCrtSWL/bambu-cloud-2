@@ -46,32 +46,32 @@ defineEmits(['add']);
       <!-- Title -->
       <h3 class="product-title">{{ title }}</h3>
       
-      <!-- Price -->
-      <div class="price-row">
-        <span class="price-tag">
-          <span v-if="hasVariations" class="from-text">Desde</span>
-          ${{ price.toFixed(2) }}
-        </span>
-      </div>
-
-      <!-- Description (mapped to 'Categoría' text request) -->
+      <!-- Description -->
       <p class="product-description">
         {{ description }}
       </p>
 
-      <!-- Category Pill -->
+      <!-- Category Pill & Price Row -->
       <div class="meta-row">
-        <!-- Mobile: Best Seller replaces Category -->
-        <div v-if="isBestSeller" class="category-pill favorite-pill mobile-only">
-          <Trophy :size="12" class="trophy-icon" />
-          <span>Favorito</span>
+        <div class="pills-container">
+          <!-- Mobile: Best Seller replaces Category -->
+          <div v-if="isBestSeller" class="category-pill favorite-pill mobile-only">
+            <Trophy :size="12" class="trophy-icon" />
+            <span>Favorito</span>
+          </div>
+          
+          <!-- Mobile: Standard Category -->
+          <span v-if="!isBestSeller" class="category-pill mobile-only">{{ category }}</span>
+          
+          <!-- Desktop: Standard Category -->
+          <span class="category-pill desktop-only">{{ category }}</span>
         </div>
-        
-        <!-- Mobile: Standard Category -->
-        <span v-if="!isBestSeller" class="category-pill mobile-only">{{ category }}</span>
-        
-        <!-- Desktop: Standard Category -->
-        <span class="category-pill desktop-only">{{ category }}</span>
+
+        <!-- Desktop: Price (Aligned Right) -->
+        <span class="price-tag desktop-only">
+          <span v-if="hasVariations" class="from-text">Desde</span>
+          ${{ price.toFixed(2) }}
+        </span>
       </div>
       
       <!-- Mobile: Footer (Price + Button) -->
@@ -158,18 +158,21 @@ defineEmits(['add']);
 }
 
 .product-title {
-  font-size: 1.1rem;
-  font-weight: 700;
+  font-size: 1.15rem;
+  font-weight: 800;
   color: var(--color-brand);
   margin: 0;
   line-height: 1.2;
 }
 
-.price-row {
-  display: none; /* Hidden on mobile, shown in footer */
+.meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
 }
 
-.meta-row {
+.pills-container {
   display: flex;
   align-items: center;
 }
@@ -201,7 +204,7 @@ defineEmits(['add']);
   margin: 0;
   line-height: 1.4;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -224,6 +227,16 @@ defineEmits(['add']);
   gap: 2px;
   line-height: 1.1;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* Specific overwrite for desktop price in meta-row */
+@media (min-width: 768px) {
+  .meta-row .price-tag {
+     font-size: 16px;
+     margin-right: 25px;
+     flex-direction: row; 
+     align-items: center; 
+  }
 }
 
 .from-text {
@@ -268,7 +281,7 @@ defineEmits(['add']);
 @media (min-width: 768px) {
   .product-card {
     flex-direction: row; /* Horizontal layout */
-    height: 180px; /* Adjusted height for content */
+    height: 170px; /* Reduced height for balance */
     align-items: stretch;
     background-color: #ffffff; 
     box-shadow: 0 4px 20px rgba(0,0,0,0.05); 
@@ -280,7 +293,7 @@ defineEmits(['add']);
     order: 1;
     flex: 0 0 70%;
     max-width: 70%;
-    padding: 1.25rem;
+    padding: 1rem;
     padding-right: 0.75rem; 
     justify-content: flex-start;
     gap: 0.25rem;
@@ -358,18 +371,19 @@ defineEmits(['add']);
   .favorite-badge-desktop {
     display: flex !important;
     position: absolute;
-    top: 0;
-    left: 0;
+    top: 10px;
+    left: 10px;
     margin: 0;
     padding: 4px 12px;
     background-color: #fbbf24;
     color: #78350f;
     font-size: 0.7rem;
     font-weight: 700;
-    border-bottom-right-radius: 12px;
-    border-top-left-radius: 0; 
+    border-radius: 20px;
+    align-items: center;
+    gap: 4px;
     z-index: 5;
-    box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   }
 
   /* Text Styling */
@@ -379,7 +393,8 @@ defineEmits(['add']);
     display: -webkit-box;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    margin-bottom: 0.1rem;
+    margin-bottom: 0.25rem;
+    line-height: 1.3;
   }
 
   /* Price Row (Desktop Visible) */
@@ -402,9 +417,7 @@ defineEmits(['add']);
     margin-bottom: 0.5rem;
   }
   
-  .meta-row {
-    margin-top: auto; /* Push to bottom of content area if needed, or just flow */
-  }
+
 
   /* Hide Mobile Elements */
   .mobile-only, .mobile-only-footer {
