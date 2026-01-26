@@ -30,8 +30,8 @@ router.get('/daily-sales', async (req, res) => {
                 SELECT o.payment_method, SUM(o.total) as total
                 FROM orders o
                 LEFT JOIN accounts_receivable ar ON o.id = ar.order_id
-                WHERE (o.created_at AT TIME ZONE 'America/Mexico_City') >= $1::timestamp 
-                AND (o.created_at AT TIME ZONE 'America/Mexico_City') < $2::timestamp
+                WHERE (o.created_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City') >= $1::timestamp 
+                AND (o.created_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City') < $2::timestamp
                 AND o.payment_method NOT IN ('CXC', 'Cortesía')
                 AND ar.id IS NULL
                 ${userFilterOrder}
@@ -42,16 +42,16 @@ router.get('/daily-sales', async (req, res) => {
                 FROM accounts_receivable ar
                 JOIN orders o ON ar.order_id = o.id
                 WHERE ar.status = 'paid'
-                AND (ar.updated_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City') >= $1::timestamp 
-                AND (ar.updated_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City') < $2::timestamp
+                AND ar.updated_at >= $1::timestamp 
+                AND ar.updated_at < $2::timestamp
                 ${userFilterColl}
                 GROUP BY ar.payment_method
             ),
             cxc_generated AS (
                 SELECT SUM(amount) as total
                 FROM accounts_receivable ar
-                WHERE (created_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City') >= $1::timestamp 
-                AND (created_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City') < $2::timestamp
+                WHERE created_at >= $1::timestamp 
+                AND created_at < $2::timestamp
                 AND status = 'active'
                 ${userFilterAR}
             ),
@@ -59,8 +59,8 @@ router.get('/daily-sales', async (req, res) => {
                 SELECT SUM(o.total) as total
                 FROM orders o
                 LEFT JOIN accounts_receivable ar ON o.id = ar.order_id
-                WHERE (o.created_at AT TIME ZONE 'America/Mexico_City') >= $1::timestamp 
-                AND (o.created_at AT TIME ZONE 'America/Mexico_City') < $2::timestamp
+                WHERE (o.created_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City') >= $1::timestamp 
+                AND (o.created_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City') < $2::timestamp
                 AND o.payment_method = 'Cortesía'
                 AND ar.id IS NULL
                 ${userFilterOrder}
