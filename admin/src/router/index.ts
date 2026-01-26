@@ -6,6 +6,15 @@ const router = createRouter({
     return savedPosition || { left: 0, top: 0 }
   },
   routes: [
+    // Root route - will be redirected by beforeEach guard
+    {
+      path: '/',
+      name: 'Root',
+      component: () => import('../views/Auth/Signin.vue'),
+      meta: {
+        title: 'Inicio',
+      },
+    },
 
     // ... Admin Routes start here
 
