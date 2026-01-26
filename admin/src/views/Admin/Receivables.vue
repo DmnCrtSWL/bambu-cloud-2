@@ -19,14 +19,16 @@
                 <SearchIcon class="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
              </div>
 
-             <button 
+             <Button 
                 v-if="canLiquidateAll"
                 @click="liquidateAll"
-                class="flex items-center justify-center gap-2 px-4 py-2 bg-brand-600 text-white rounded-full text-sm font-medium hover:bg-brand-700 active:scale-95 transition-all shadow-lg shadow-brand-500/20"
+                variant="primary"
+                size="md"
+                class="rounded-full flex items-center gap-2"
              >
                 <ShoppingCartIcon class="w-4 h-4" />
                 <span>Liquidar Todo ({{ filteredList.length }})</span>
-             </button>
+             </Button>
         </div>
       </div>
 
@@ -107,6 +109,7 @@
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import AdminLayout from '@/components/layout/AdminLayout.vue';
+import Button from '@/components/ui/Button.vue';
 import { ShoppingCartIcon, SearchIcon } from 'lucide-vue-next';
 
 const router = useRouter();

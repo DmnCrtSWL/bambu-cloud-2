@@ -31,7 +31,7 @@ defineProps({
 }
 
 .section-title {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: 'Nunito', sans-serif;
   font-size: 32px;
   font-weight: 800;
   color: var(--color-brand);

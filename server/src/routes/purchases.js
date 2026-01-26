@@ -125,7 +125,8 @@ router.get('/:id/items', async (req, res) => {
                 unit, 
                 unit_price as "unitPrice", 
                 discount, 
-                total 
+                total,
+                cost_type as "costType" 
             FROM purchase_items 
             WHERE purchase_id = $1 AND deleted_at IS NULL
             ORDER BY id ASC
@@ -152,9 +153,9 @@ router.post('/:id/items', async (req, res) => {
             if (!item.productName || !item.productName.trim()) continue;
 
             await db.query(
-                `INSERT INTO purchase_items (purchase_id, product_name, quantity, unit, unit_price, discount, total, created_at)
-                 VALUES ($1, $2, $3, $4, $5, $6, $7, (NOW() AT TIME ZONE 'America/Mexico_City'))`,
-                [id, item.productName.trim(), item.quantity, item.unit, item.unitPrice, item.discount, item.total]
+                `INSERT INTO purchase_items (purchase_id, product_name, quantity, unit, unit_price, discount, total, cost_type, created_at)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, (NOW() AT TIME ZONE 'America/Mexico_City'))`,
+                [id, item.productName.trim(), item.quantity, item.unit, item.unitPrice, item.discount, item.total, item.costType || 'Directo']
             );
         }
 

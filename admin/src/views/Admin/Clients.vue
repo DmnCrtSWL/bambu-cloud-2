@@ -38,19 +38,14 @@
         </div>
         
         <div class="relative w-full sm:w-auto min-w-[300px]">
-             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-             </div>
              <input 
                 v-model="searchQuery"
                 @input="handleSearch"
                 type="text" 
                 placeholder="Buscar por nombre o teléfono..." 
-                class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 pl-10 text-sm text-gray-900 focus:border-brand-500 focus:ring-brand-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-brand-500 dark:focus:ring-brand-500"
+                class="pl-10 pr-4 py-2 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:ring-2 focus:ring-brand-500 w-full"
              />
+             <SearchIcon class="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
         </div>
       </div>
 
@@ -135,6 +130,7 @@
 <script setup>
 import { ref, onMounted, watch } from "vue";
 import AdminLayout from "@/components/layout/AdminLayout.vue";
+import { SearchIcon } from 'lucide-vue-next';
 import { debounce } from "lodash"; 
 
 // If lodash isn't available, I'll use a custom debounce, but admin template likely has it?

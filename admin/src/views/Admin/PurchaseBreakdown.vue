@@ -58,10 +58,19 @@
                             </button>
                         </div>
                     </div>
+
+                    <!-- Type Selector (2 cols) -->
+                    <div class="col-span-6 md:col-span-2">
+                         <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">Tipo</label>
+                         <select v-model="newItem.costType" class="h-[38px] w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800">
+                            <option value="Directo">Directo</option>
+                            <option value="Indirecto">Indirecto</option>
+                        </select>
+                    </div>
                      <!-- Qty (1 col) -->
                     <div class="col-span-6 md:col-span-1">
                         <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">Cant.</label>
-                        <input type="number" v-model.number="newItem.quantity" class="h-[38px] w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" min="1" step="0.01" required />
+                        <input type="number" v-model.number="newItem.quantity" @input="calculateSubtotal" class="h-[38px] w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" min="0.01" step="0.01" required />
                     </div>
                      <!-- Unit (1 col) -->
                     <div class="col-span-6 md:col-span-1">
@@ -74,25 +83,28 @@
                             <option value="Ml">Ml</option>
                         </select>
                     </div>
-                     <!-- Price (2 cols) -->
-                    <div class="col-span-12 md:col-span-2">
-                        <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">P. Unitario</label>
-                        <input type="number" v-model.number="newItem.unitPrice" class="h-[38px] w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" min="0" step="0.00001" required />
+                     <!-- Price (1 col) -->
+                    <div class="col-span-6 md:col-span-1">
+                        <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">$ P. Unit</label>
+                        <input type="number" v-model.number="newItem.unitPrice" @input="calculateSubtotal" class="h-[38px] w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" min="0" step="0.00001" required />
                     </div>
-                     <!-- Subtotal (2 cols) - Readonly -->
-                    <div class="col-span-12 md:col-span-2">
-                        <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">Subtotal</label>
-                        <input type="number" :value="calculatedSubtotal" class="h-[38px] w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 bg-gray-50 dark:bg-gray-800" readonly />
+                     <!-- Subtotal (1 col) - Readonly -->
+                    <div class="col-span-6 md:col-span-1">
+                        <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">$ Subtotal</label>
+                        <input type="number" v-model.number="newItem.subtotal" @input="calculateUnitPrice" class="h-[38px] w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 font-medium" />
                     </div>
                      <!-- Discount (1 col) -->
                     <div class="col-span-6 md:col-span-1">
-                        <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">Desc.</label>
+                        <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">$ Desc.</label>
                         <input type="number" v-model.number="newItem.discount" class="h-[38px] w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" min="0" step="0.01" />
                     </div>
                      <!-- Total (2 cols) - Readonly -->
                      <div class="col-span-6 md:col-span-2">
-                        <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">Total</label>
-                        <input type="number" :value="calculatedTotal" class="h-[38px] w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 bg-gray-50 dark:bg-gray-800 font-bold" readonly />
+                        <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">$ Total</label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 font-medium">$</span>
+                            <input type="number" :value="calculatedTotal" class="h-[38px] w-full rounded-lg border border-gray-300 bg-transparent pl-7 pr-3 py-2 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 bg-gray-50 dark:bg-gray-800 font-normal" readonly />
+                        </div>
                     </div>
                     <!-- Button (1 col) -->
                     <div class="col-span-6 md:col-span-1">
@@ -111,6 +123,7 @@
                     <thead class="bg-gray-50 dark:bg-gray-800">
                         <tr>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Producto</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tipo</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cant.</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Unidad</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Precio</th>
@@ -126,6 +139,11 @@
                         </tr>
                         <tr v-for="(item, index) in items" :key="index">
                             <td class="px-4 py-3 text-sm text-gray-900 dark:text-white">{{ item.productName }}</td>
+                            <td class="px-4 py-3 text-sm text-gray-500">
+                                <span :class="item.costType === 'Directo' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'" class="px-2 py-0.5 rounded-full text-xs font-medium">
+                                    {{ item.costType || 'Directo' }}
+                                </span>
+                            </td>
                             <td class="px-4 py-3 text-sm text-gray-500">{{ item.quantity }}</td>
                             <td class="px-4 py-3 text-sm text-gray-500">{{ item.unit }}</td>
                             <td class="px-4 py-3 text-sm text-gray-500">${{ item.unitPrice }}</td>
@@ -189,19 +207,38 @@ const items = ref<any[]>([])
 
 const newItem = reactive({
     productName: '',
+    costType: 'Directo',
     quantity: 1,
     unit: 'Pzas',
     unitPrice: 0,
+    subtotal: 0,
     discount: 0
 })
 
+// Bidirectional Calculation
+const calculateSubtotal = () => {
+    // When Qty or Unit Price changes -> Update Subtotal
+    if (newItem.quantity && newItem.unitPrice) {
+        newItem.subtotal = parseFloat((newItem.quantity * newItem.unitPrice).toFixed(2));
+    } else {
+        newItem.subtotal = 0;
+    }
+}
+
+const calculateUnitPrice = () => {
+    // When Subtotal changes -> Update Unit Price
+    if (newItem.quantity > 0 && newItem.subtotal) {
+        // Calculate unit price, keep precision high (up to 4 dec) to avoid rounding errors on way back
+        newItem.unitPrice = parseFloat((newItem.subtotal / newItem.quantity).toFixed(4));
+    }
+}
+
 // Validation computed
-const calculatedSubtotal = computed(() => {
-    return (newItem.quantity * newItem.unitPrice).toFixed(2);
-});
+// Removed calculatedSubtotal computed as it is now part of state
 
 const calculatedTotal = computed(() => {
-   const sub = newItem.quantity * newItem.unitPrice;
+   // Use the state subtotal instead of recalculating
+   const sub = newItem.subtotal || 0;
    return (sub - newItem.discount).toFixed(2);
 });
 
@@ -262,6 +299,7 @@ const fetchPurchase = async () => {
                        const existingItems = await itemsResponse.json();
                        items.value = existingItems.map((i: any) => ({
                            productName: i.productName,
+                           costType: i.costType || 'Directo',
                            quantity: Number(i.quantity),
                            unit: i.unit,
                            unitPrice: Number(i.unitPrice),
@@ -296,9 +334,11 @@ const addItem = () => {
     
     // Reset form
     newItem.productName = '';
+    newItem.costType = 'Directo';
     newItem.quantity = 1;
     newItem.unit = 'Pzas';
     newItem.unitPrice = 0;
+    newItem.subtotal = 0;
     newItem.discount = 0;
 };
 

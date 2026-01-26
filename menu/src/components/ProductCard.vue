@@ -158,7 +158,7 @@ defineEmits(['add']);
 }
 
 .product-title {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: 'Nunito', sans-serif;
   font-size: 1.2rem; /* Slightly larger */
   font-weight: 900; /* Extra bold */
   color: var(--color-brand);
@@ -179,7 +179,7 @@ defineEmits(['add']);
 }
 
 .category-pill {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: 'Nunito', sans-serif;
   font-size: 0.7rem;
   font-weight: 600;
   color: #6b4c9a;
@@ -228,7 +228,7 @@ defineEmits(['add']);
   align-items: flex-start;
   gap: 2px;
   line-height: 1.1;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: 'Nunito', sans-serif;
 }
 
 /* Specific overwrite for desktop price in meta-row */

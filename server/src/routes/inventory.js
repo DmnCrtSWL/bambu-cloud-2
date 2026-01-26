@@ -8,7 +8,7 @@ router.get('/', async (req, res) => {
             WITH bought AS (
                 SELECT 
                     LOWER(TRIM(pi.product_name)) as join_name,
-                    MAX(pi.product_name) as display_name, -- Pick one variation for display
+                    MAX(pi.product_name) as display_name,
                     LOWER(TRIM(pi.unit)) as join_unit,
                     MAX(pi.unit) as display_unit,
                     SUM(pi.quantity) as total_quantity,
@@ -26,6 +26,16 @@ router.get('/', async (req, res) => {
                     SUM(quantity) as total_used
                 FROM inventory_usage
                 GROUP BY LOWER(TRIM(product_name)), LOWER(TRIM(unit))
+            ),
+            latest_cost_type AS (
+                SELECT DISTINCT ON (LOWER(TRIM(pi.product_name)), LOWER(TRIM(pi.unit)))
+                    LOWER(TRIM(pi.product_name)) as join_name,
+                    LOWER(TRIM(pi.unit)) as join_unit,
+                    pi.cost_type
+                FROM purchase_items pi
+                JOIN purchases p ON pi.purchase_id = p.id
+                WHERE p.deleted_at IS NULL
+                ORDER BY LOWER(TRIM(pi.product_name)), LOWER(TRIM(pi.unit)), p.purchase_date DESC
             )
             SELECT 
                 b.display_name as "productName",
@@ -33,9 +43,11 @@ router.get('/', async (req, res) => {
                 b.total_quantity as "totalQuantity",
                 COALESCE(u.total_used, 0) as "usedQuantity",
                 b.total_spent as "totalSpent",
-                b.last_purchase_date as "lastPurchaseDate"
+                b.last_purchase_date as "lastPurchaseDate",
+                COALESCE(lct.cost_type, 'Directo') as "costType"
             FROM bought b
             LEFT JOIN used u ON b.join_name = u.join_name AND b.join_unit = u.join_unit
+            LEFT JOIN latest_cost_type lct ON b.join_name = lct.join_name AND b.join_unit = lct.join_unit
             ORDER BY "productName" ASC
         `);
 
@@ -45,7 +57,8 @@ router.get('/', async (req, res) => {
             unit: row.unit,
             averageCost: row.totalQuantity > 0 ? (Number(row.totalSpent) / Number(row.totalQuantity)).toFixed(2) : '0.00',
             lastPurchase: row.lastPurchaseDate ? new Date(row.lastPurchaseDate).toISOString().split('T')[0] : 'N/A',
-            stock: Number(row.totalQuantity) - Number(row.usedQuantity)
+            stock: Number(row.totalQuantity) - Number(row.usedQuantity),
+            costType: row.costType
         }));
 
         res.json(inventory);

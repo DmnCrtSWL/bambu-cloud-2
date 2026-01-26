@@ -2,20 +2,49 @@
   <AdminLayout>
     <div class="space-y-5 sm:space-y-6">
       
-      <!-- Header & Actions -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 print:hidden">
-        <div>
-           <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90">Inventario</h2>
-        </div>
-        <div class="flex gap-3">
-             <Button variant="primary" size="sm" @click="printInventory">
-                Imprimir Inventario
-             </Button>
-            <Button variant="primary" size="sm">
-                Lista de Compras
-             </Button>
-        </div>
-      </div>
+       <!-- Header & Actions -->
+       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 print:hidden">
+         <div class="flex items-center gap-4">
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90">Inventario</h2>
+            <!-- Filter Tabs -->
+            <div class="flex items-center gap-3">
+                <div class="flex p-1 bg-gray-100 rounded-lg dark:bg-gray-800">
+                    <button 
+                        v-for="filter in costTypeFilters" 
+                        :key="filter.value"
+                        @click="activeCostTypeFilter = filter.value"
+                        :class="[
+                            'px-4 py-1.5 text-sm font-medium rounded-md transition-all',
+                            activeCostTypeFilter === filter.value 
+                                ? 'bg-white text-gray-900 shadow-sm dark:bg-gray-700 dark:text-white' 
+                                : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
+                        ]"
+                    >
+                        {{ filter.label }}
+                    </button>
+                </div>
+            </div>
+         </div>
+         <div class="flex flex-col sm:flex-row gap-3 items-center">
+             <!-- Search Bar -->
+             <div class="relative w-full sm:w-auto">
+                 <input 
+                     v-model="searchTerm" 
+                     type="text" 
+                     placeholder="Buscar producto..." 
+                     class="pl-10 pr-4 py-2 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:ring-2 focus:ring-brand-500 w-full sm:w-64"
+                 >
+                 <SearchIcon class="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+             </div>
+
+              <Button variant="primary" size="sm" @click="printInventory">
+                 Imprimir Inventario
+              </Button>
+             <Button variant="primary" size="sm">
+                 Lista de Compras
+              </Button>
+         </div>
+       </div>
 
       <!-- Table Container (Screen Only) -->
       <div class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] print:hidden">
@@ -25,6 +54,9 @@
               <tr class="border-b border-gray-200 dark:border-gray-700">
                 <th class="px-5 py-3 text-left sm:px-6">
                   <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Producto</p>
+                </th>
+                <th class="px-5 py-3 text-left sm:px-6">
+                  <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Tipo</p>
                 </th>
                 <th class="px-5 py-3 text-left sm:px-6">
                   <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Existencia</p>
@@ -51,6 +83,11 @@
                   </span>
                 </td>
                 <td class="px-5 py-4 sm:px-6">
+                  <span :class="item.costType === 'Directo' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'" class="px-2 py-0.5 rounded-full text-xs font-medium">
+                      {{ item.costType || 'Directo' }}
+                  </span>
+                </td>
+                <td class="px-5 py-4 sm:px-6">
                    <p class="text-gray-800 font-medium text-theme-sm dark:text-white/90">{{ Number(item.stock).toFixed(2) }}</p>
                 </td>
                 <td class="px-5 py-4 sm:px-6">
@@ -69,7 +106,7 @@
          <!-- Pagination Controls -->
          <div class="flex items-center justify-between border-t border-gray-200 px-5 py-3 dark:border-gray-800" v-if="inventory.length > itemsPerPage">
              <div class="text-sm text-gray-500">
-                 Mostrando {{ startIndex + 1 }} a {{ Math.min(endIndex, inventory.length) }} de {{ inventory.length }} resultados
+                 Mostrando {{ startIndex + 1 }} a {{ Math.min(endIndex, filteredInventory.length) }} de {{ filteredInventory.length }} resultados
              </div>
              <div class="flex gap-2">
                  <button 
@@ -131,10 +168,20 @@
 import { ref, onMounted, computed } from "vue";
 import AdminLayout from "@/components/layout/AdminLayout.vue";
 import Button from "@/components/ui/Button.vue";
+import { SearchIcon } from 'lucide-vue-next';
 
 const inventory = ref<any[]>([]);
 const currentPage = ref(1);
 const itemsPerPage = 10;
+
+const costTypeFilters = [
+    { label: 'Todos', value: 'all' },
+    { label: 'Directo', value: 'Directo' },
+    { label: 'Indirecto', value: 'Indirecto' },
+];
+
+const activeCostTypeFilter = ref('all');
+const searchTerm = ref('');
 
 const fetchInventory = async () => {
   try {
@@ -148,11 +195,31 @@ const fetchInventory = async () => {
 };
 
 // Pagination Logic
-const totalPages = computed(() => Math.ceil(inventory.value.length / itemsPerPage));
+const filteredInventory = computed(() => {
+    let filtered = inventory.value;
+    
+    // Filter by cost type
+    if (activeCostTypeFilter.value !== 'all') {
+        filtered = filtered.filter(item => item.costType === activeCostTypeFilter.value);
+    }
+    
+    // Filter by search term
+    if (searchTerm.value.trim()) {
+        const search = searchTerm.value.toLowerCase().trim();
+        filtered = filtered.filter(item => 
+            item.productName.toLowerCase().includes(search)
+        );
+    }
+    
+    return filtered;
+});
+
+const totalPages = computed(() => Math.ceil(filteredInventory.value.length / itemsPerPage));
 const startIndex = computed(() => (currentPage.value - 1) * itemsPerPage);
 const endIndex = computed(() => currentPage.value * itemsPerPage);
 const paginatedInventory = computed(() => {
-    return inventory.value.slice(startIndex.value, endIndex.value);
+    // Reset to page 1 when filters change
+    return filteredInventory.value.slice(startIndex.value, endIndex.value);
 });
 
 const printInventory = () => {
