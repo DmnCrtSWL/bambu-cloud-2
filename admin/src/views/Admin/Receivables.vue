@@ -8,7 +8,7 @@
         </div>
       
         <!-- Search and Actions -->
-        <div class="flex flex-col sm:flex-row gap-3">
+        <div class="flex flex-col sm:flex-row gap-3 sm:items-center">
              <div class="relative">
                 <input 
                     v-model="searchQuery" 
