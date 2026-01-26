@@ -280,9 +280,6 @@ const menuGroups = computed(() => {
             .map(item => {
                 if (item.name === 'Administración') {
                     // Operativo allowed: Compras, Inventario, CXC (Receivables)
-                    // Note: 'Clientes' is often needed for CXC/POS, but user didn't explicitly ask. 
-                    // User said: "Compras, Inventario, CXC, y todo el segmento de caja".
-                    // I'll stick strict.
                     return {
                         ...item,
                         subItems: item.subItems.filter(sub => 
@@ -291,6 +288,13 @@ const menuGroups = computed(() => {
                     };
                 }
                 return item;
+            })
+            .filter(item => {
+                // Remove menu items that have subItems but are now empty after filtering
+                if (item.subItems) {
+                    return item.subItems.length > 0;
+                }
+                return true;
             })
         }));
     }

@@ -235,7 +235,10 @@ router.beforeEach((to, from, next) => {
           return next('/orders');
         }
 
-        const restrictedPrefixes = ['/users', '/recipes', '/menu', '/purchases', '/expenses', '/inventory', '/clients', '/receivables', '/stats']; // Added more based on sidebar restrictions
+        // Allowed: Orders, POS, Reports, Purchases, Inventory, Receivables(CXC)
+        // Restricted: Users, Recipes, Menu, Expenses, Clients, Stats
+        const restrictedPrefixes = ['/users', '/recipes', '/menu', '/expenses', '/clients', '/stats'];
+
         // Check if current path starts with any restricted prefix
         if (restrictedPrefixes.some(prefix => to.path.startsWith(prefix))) {
           return next('/orders');
