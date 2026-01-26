@@ -301,28 +301,35 @@ const menuGroups = computed(() => {
 
 const isActive = (path) => route.path === path;
 
+// Ref para rastrear si el usuario ha interactuado manualmente con los menús
+const manuallyToggled = ref(new Set());
+
 const toggleSubmenu = (groupIndex, itemIndex) => {
   const key = `${groupIndex}-${itemIndex}`;
-  openSubmenu.value = openSubmenu.value === key ? null : key;
+  
+  // Marcar que este menú fue toggled manualmente
+  manuallyToggled.value.add(key);
+  
+  // Toggle el estado
+  if (openSubmenu.value === key) {
+    openSubmenu.value = null;
+  } else {
+    openSubmenu.value = key;
+  }
 };
-
-const isAnySubmenuRouteActive = computed(() => {
-  return menuGroups.value.some((group) =>
-    group.items.some(
-      (item) =>
-        item.subItems && item.subItems.some((subItem) => isActive(subItem.path))
-    )
-  );
-});
 
 const isSubmenuOpen = (groupIndex, itemIndex) => {
   const key = `${groupIndex}-${itemIndex}`;
-  return (
-    openSubmenu.value === key ||
-    (isAnySubmenuRouteActive.value &&
-      menuGroups.value[groupIndex].items[itemIndex].subItems?.some((subItem) =>
-        isActive(subItem.path)
-      ))
+  
+  // Si el usuario ha interactuado manualmente con este menú específico
+  // respetamos esa decisión
+  if (manuallyToggled.value.has(key)) {
+    return openSubmenu.value === key;
+  }
+  
+  // Solo si no hay interacción manual, abrimos automáticamente si la ruta está activa
+  return menuGroups.value[groupIndex].items[itemIndex].subItems?.some((subItem) =>
+    isActive(subItem.path)
   );
 };
 
