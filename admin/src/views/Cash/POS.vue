@@ -562,7 +562,16 @@ const addToCart = async (product) => {
     if (product.type === 'variable') {
         currentProduct.value = product;
         currentVariants.value = product.variantGroups || [];
-        selectedOptions.value = {};
+        
+        // Pre-seleccionar la primera opción de cada grupo de variaciones
+        const preselectedOptions = {};
+        currentVariants.value.forEach(group => {
+            if (group.options && group.options.length > 0) {
+                preselectedOptions[group.groupName] = group.options[0];
+            }
+        });
+        selectedOptions.value = preselectedOptions;
+        
         isVariantModalOpen.value = true;
         return;
     }
