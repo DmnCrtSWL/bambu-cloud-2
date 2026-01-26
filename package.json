@@ -1,0 +1,16 @@
+{
+    "name": "bambu-cloud-2",
+    "version": "1.0.0",
+    "description": "Bambu Cloud - Menu, Admin & Server",
+    "private": true,
+    "scripts": {
+        "dev": "concurrently \"npm run dev:server\" \"npm run dev:admin\" \"npm run dev:menu\"",
+        "dev:server": "cd server && npm run dev",
+        "dev:admin": "cd admin && npm run dev",
+        "dev:menu": "cd menu && npm run dev",
+        "install:all": "npm install && cd server && npm install && cd ../admin && npm install && cd ../menu && npm install"
+    },
+    "devDependencies": {
+        "concurrently": "^8.2.2"
+    }
+}

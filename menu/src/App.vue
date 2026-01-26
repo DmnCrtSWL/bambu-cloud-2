@@ -12,7 +12,7 @@ import SearchModal from './components/SearchModal.vue';
 import SectionSeparator from './components/SectionSeparator.vue';
 import CartDrawer from './components/CartDrawer.vue';
 import VirtualWaiterModal from './components/VirtualWaiterModal.vue';
-import { computed, ref, onMounted, onUnmounted } from 'vue';
+import { computed, ref, onMounted, onUnmounted, watch } from 'vue';
 import CheckoutView from './components/CheckoutView.vue';
 import { Egg, Coffee, Sandwich, GlassWater, Utensils, Sun } from 'lucide-vue-next';
 
@@ -133,6 +133,15 @@ const totalCartCount = computed(() => {
   return cartItems.value.reduce((total, item) => total + item.quantity, 0);
 });
 
+// Watch cart changes and persist to localStorage
+watch(cartItems, () => {
+  const cartState = {
+    items: cartItems.value,
+    timestamp: Date.now()
+  };
+  localStorage.setItem('public_menu_cart', JSON.stringify(cartState));
+}, { deep: true });
+
 
 const addToCart = (payload) => {
   // console.log('Adding to cart payload:', payload);
@@ -205,6 +214,8 @@ const handleOrderSubmit = (orderData) => {
   // Reset flow for demo
   isCheckoutOpen.value = false;
   cartItems.value = [];
+  // Clear persisted cart on successful order
+  localStorage.removeItem('public_menu_cart');
 };
 
 const handleLogoClick = () => {
@@ -230,13 +241,15 @@ const handleScroll = () => {
   const isAtBottom = (window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 50);
 
   if (currentScrollY > 60) { // Threshold to start hiding/showing
+    const isDesktop = window.innerWidth >= 768;
+
     if (isAtBottom) {
        isMobileFooterVisible.value = true;
-       isHeaderVisible.value = false; // Hide header at bottom usually
+       isHeaderVisible.value = isDesktop; // Keep header visible on desktop
     } else if (currentScrollY > lastScrollY.value) {
       // Scrolling Down
       isMobileFooterVisible.value = true;
-      isHeaderVisible.value = false;
+      isHeaderVisible.value = isDesktop; // Keep header visible on desktop
     } else {
       // Scrolling Up
       isMobileFooterVisible.value = false;
@@ -276,8 +289,13 @@ const scrollToCategory = (id) => {
     activeCategory.value = id; 
     
     const isMobile = window.innerWidth < 768;
-    // Mobile needs more offset due to the sticky search bar appearing on scroll
-    const totalOffset = isMobile ? 150 : 85; 
+    // Calculate offset based on actual component heights:
+    // Header: ~72px, CategoryFilterBar: ~60px
+    // Add extra padding to ensure title is clearly visible
+    const headerHeight = 72;
+    const filterBarHeight = 60;
+    const extraPadding = isMobile ? 20 : 10; // Extra space for better visibility
+    const totalOffset = headerHeight + filterBarHeight + extraPadding;
     
     const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
     const offsetPosition = elementPosition - totalOffset;
@@ -297,6 +315,28 @@ const scrollToCategory = (id) => {
 onMounted(() => {
   fetchProducts();
   window.addEventListener('scroll', handleScroll);
+  
+  // Restore cart from localStorage if exists
+  try {
+    const savedCart = localStorage.getItem('public_menu_cart');
+    if (savedCart) {
+      const cartState = JSON.parse(savedCart);
+      // Only restore if not too old (e.g., within 4 hours)
+      const maxAge = 4 * 60 * 60 * 1000; // 4 hours
+      if (cartState.timestamp && (Date.now() - cartState.timestamp) < maxAge) {
+        cartItems.value = cartState.items || [];
+        if (cartItems.value.length > 0) {
+          console.log('Carrito restaurado desde sesión anterior');
+        }
+      } else {
+        // Too old, clear it
+        localStorage.removeItem('public_menu_cart');
+      }
+    }
+  } catch (e) {
+    console.error('Error restoring cart:', e);
+    localStorage.removeItem('public_menu_cart');
+  }
 });
 
 onUnmounted(() => {
@@ -478,7 +518,7 @@ onUnmounted(() => {
 }
 
 .category-section {
-  scroll-margin-top: 140px; 
+  scroll-margin-top: 152px; /* Header (72px) + FilterBar (60px) + Padding (20px) */
 }
 
 .products-grid {

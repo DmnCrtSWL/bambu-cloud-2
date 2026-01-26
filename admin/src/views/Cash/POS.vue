@@ -60,7 +60,7 @@
                         class="group relative flex flex-col justify-center items-center p-4 rounded-xl border border-gray-100 dark:border-gray-700 hover:border-brand-500/50 hover:shadow-lg transition-all bg-white dark:bg-gray-800 text-center active:scale-95 h-32"
                     >
                         <!-- Simple Card Content -->
-                        <h3 class="font-bold text-gray-800 dark:text-white line-clamp-3 leading-tight text-lg">
+                        <h3 class="font-normal text-gray-800 dark:text-white line-clamp-3 leading-tight text-lg">
                             {{ product.name }}
                         </h3>
 
@@ -144,7 +144,7 @@
                 <div class="space-y-2 mb-4">
 
 
-                    <div class="flex justify-between text-2xl font-bold text-gray-900 dark:text-white pt-2 border-t border-dashed border-gray-200">
+                    <div class="flex justify-between text-xl font-medium text-gray-900 dark:text-white pt-2 border-t border-dashed border-gray-200">
                         <span>Total</span>
                         <span>${{ total.toFixed(2) }}</span>
                     </div>
@@ -154,15 +154,14 @@
                      <button 
                         @click="clearCart"
                         :disabled="cart.length === 0"
-                        class="flex items-center justify-center gap-2 rounded-xl border border-red-200 text-red-600 font-bold hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        class="flex items-center justify-center gap-2 rounded-xl border border-red-200 text-red-600 font-medium hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
-                        <TrashIcon class="w-5 h-5" />
                         Cancelar
                     </button>
                     <button 
                          @click="openPaymentModal"
                          :disabled="cart.length === 0"
-                         class="flex items-center justify-center gap-2 rounded-xl bg-brand-600 text-white font-bold text-lg hover:bg-brand-700 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 transition-all shadow-lg shadow-brand-500/20"
+                         class="flex items-center justify-center gap-2 rounded-xl bg-brand-600 text-white font-medium text-lg hover:bg-brand-700 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 transition-all"
                     >
                         Cobrar
                     </button>
@@ -529,6 +528,17 @@ watch([selectedCategory, searchQuery], () => {
     currentPage.value = 1;
 });
 
+// Watch cart changes and persist to localStorage
+watch([cart, currentOrderId, currentBulkOrderIds], () => {
+    const cartState = {
+        cart: cart.value,
+        currentOrderId: currentOrderId.value,
+        currentBulkOrderIds: currentBulkOrderIds.value,
+        timestamp: Date.now()
+    };
+    localStorage.setItem('pos_cart_state', JSON.stringify(cartState));
+}, { deep: true });
+
 const subtotal = computed(() => {
     return cart.value.reduce((acc, item) => acc + (item.price * item.quantity), 0);
 });
@@ -629,12 +639,39 @@ const updateQuantity = (index, change) => {
     if (item.quantity <= 0) cart.value.splice(index, 1);
 };
 
-const clearCart = () => {
-    if(confirm('¿Limpiar orden actual?')) {
-        cart.value = [];
-        currentOrderId.value = null; 
-        currentBulkOrderIds.value = [];
+const clearCart = async () => {
+    if(!confirm('¿Limpiar orden actual?')) return;
+    
+    // If there's an order from Kanban, return it to 'delivering' status
+    try {
+        if (currentBulkOrderIds.value.length > 0) {
+            // Return all bulk orders to delivering
+            const updates = currentBulkOrderIds.value.map(id => 
+                fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/orders/${id}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'delivering' })
+                })
+            );
+            await Promise.all(updates);
+        } else if (currentOrderId.value) {
+            // Return single order to delivering
+            await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/orders/${currentOrderId.value}/status`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: 'delivering' })
+            });
+        }
+    } catch (e) {
+        console.error('Error returning order to Kanban:', e);
     }
+    
+    // Clear cart and state
+    cart.value = [];
+    currentOrderId.value = null; 
+    currentBulkOrderIds.value = [];
+    // Clear persisted state
+    localStorage.removeItem('pos_cart_state');
 };
 
 // Payment
@@ -812,6 +849,8 @@ const processPayment = async (method) => {
             cart.value = [];
             currentOrderId.value = null;
             currentBulkOrderIds.value = [];
+            // Clear persisted state on successful payment
+            localStorage.removeItem('pos_cart_state');
             alert('¡Venta registrada correctamente!');
         } else {
             alert('Error al registrar venta');
@@ -825,7 +864,7 @@ const processPayment = async (method) => {
 onMounted(() => {
     fetchProducts();
 
-    // Check for pending order from Orders/Kitchen view
+    // Check for pending order from Orders/Kitchen view (priority)
     const pendingOrder = localStorage.getItem('pending_pos_load');
     const pendingBulk = localStorage.getItem('pending_pos_load_bulk');
 
@@ -887,6 +926,32 @@ onMounted(() => {
             localStorage.removeItem('pending_pos_load');
         } catch (e) {
             console.error("Error loading pending order:", e);
+        }
+    }
+    // If no pending orders from Kanban, try to restore previous cart state
+    else {
+        try {
+            const savedState = localStorage.getItem('pos_cart_state');
+            if (savedState) {
+                const state = JSON.parse(savedState);
+                // Only restore if not too old (e.g., within 24 hours)
+                const maxAge = 4 * 60 * 60 * 1000; // 4 hours
+                if (state.timestamp && (Date.now() - state.timestamp) < maxAge) {
+                    cart.value = state.cart || [];
+                    currentOrderId.value = state.currentOrderId || null;
+                    currentBulkOrderIds.value = state.currentBulkOrderIds || [];
+                    
+                    if (cart.value.length > 0) {
+                        console.log('Carrito restaurado desde sesión anterior');
+                    }
+                } else {
+                    // Too old, clear it
+                    localStorage.removeItem('pos_cart_state');
+                }
+            }
+        } catch (e) {
+            console.error("Error restoring cart state:", e);
+            localStorage.removeItem('pos_cart_state');
         }
     }
 });

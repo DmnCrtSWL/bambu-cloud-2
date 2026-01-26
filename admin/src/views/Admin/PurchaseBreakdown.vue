@@ -77,7 +77,7 @@
                      <!-- Price (2 cols) -->
                     <div class="col-span-12 md:col-span-2">
                         <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">P. Unitario</label>
-                        <input type="number" v-model.number="newItem.unitPrice" class="h-[38px] w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" min="0" step="0.01" required />
+                        <input type="number" v-model.number="newItem.unitPrice" class="h-[38px] w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" min="0" step="0.00001" required />
                     </div>
                      <!-- Subtotal (2 cols) - Readonly -->
                     <div class="col-span-12 md:col-span-2">

@@ -111,10 +111,7 @@
                 <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Pago</h3>
                 <div class="flex justify-between items-center text-base">
                     <div class="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="2" y="5" width="20" height="14" rx="2" ry="2"></rect>
-                            <line x1="2" y1="10" x2="22" y2="10"></line>
-                        </svg>
+                        <component :is="paymentIcon" class="w-5 h-5 text-gray-500" stroke-width="2" />
                         <span class="capitalize">{{ order.paymentMethod }}</span>
                     </div>
                      <span class="text-xl font-bold text-gray-900 dark:text-white">${{ order.total.toFixed(2) }}</span>
@@ -168,6 +165,30 @@ const statusLabel = computed(() => {
         case 'completed': return 'Completado';
         default: return props.order.status;
     }
+});
+
+import { 
+    Banknote, 
+    CreditCard, 
+    Smartphone, 
+    Truck, 
+    FileText, 
+    Gift 
+} from 'lucide-vue-next';
+
+const paymentIcon = computed(() => {
+    if (!props.order.paymentMethod) return CreditCard;
+    
+    const method = props.order.paymentMethod.toLowerCase();
+    
+    if (method.includes('efectivo')) return Banknote;
+    if (method.includes('tarjeta')) return CreditCard;
+    if (method.includes('transferencia')) return Smartphone;
+    if (method.includes('uber')) return Truck;
+    if (method.includes('cxc')) return FileText;
+    if (method.includes('cortesía') || method.includes('cortesia')) return Gift;
+    
+    return CreditCard; // Default
 });
 </script>
 

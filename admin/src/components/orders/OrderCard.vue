@@ -37,10 +37,7 @@
 
        <!-- Payment Badge -->
       <div class="flex items-center gap-1 px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300 rounded text-xs font-semibold border border-gray-200 dark:border-gray-600 capitalize">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="2" y="5" width="20" height="14" rx="2" ry="2"></rect>
-            <line x1="2" y1="10" x2="22" y2="10"></line>
-        </svg>
+        <component :is="paymentIcon" class="w-3 h-3" stroke-width="2" />
         {{ order.paymentMethod }}
       </div>
     </div>
@@ -66,6 +63,14 @@
 
 <script setup>
 import { computed } from 'vue';
+import { 
+    Banknote, 
+    CreditCard, 
+    Smartphone, 
+    Truck, 
+    FileText, 
+    Gift 
+} from 'lucide-vue-next';
 
 const props = defineProps({
   order: {
@@ -81,8 +86,20 @@ const props = defineProps({
 defineEmits(['click', 'advance']);
 
 const timeBadgeClasses = computed(() => {
-  // If order is very recent (e.g. < 10 mins) use red/pink, else maybe distinct?
-  // For now matching the mockup's red style for "Nuevo" or general time.
   return 'bg-red-50 text-red-500 dark:bg-red-900/20 dark:text-red-400';
+});
+
+const paymentIcon = computed(() => {
+    if (!props.order.paymentMethod) return CreditCard;
+    const method = props.order.paymentMethod.toLowerCase();
+    
+    if (method.includes('efectivo')) return Banknote;
+    if (method.includes('tarjeta')) return CreditCard;
+    if (method.includes('transferencia')) return Smartphone;
+    if (method.includes('uber')) return Truck;
+    if (method.includes('cxc')) return FileText;
+    if (method.includes('cortesía') || method.includes('cortesia')) return Gift;
+    
+    return CreditCard;
 });
 </script>

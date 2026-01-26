@@ -1,48 +1,29 @@
 <template>
-  <div
-    class="relative flex flex-col items-center justify-center min-h-screen p-6 overflow-hidden z-1"
-  >
-    <common-grid-shape />
+  <div class="relative flex flex-col items-center justify-center min-h-screen p-6 bg-white dark:bg-gray-900">
     <!-- Centered Content -->
-    <div class="mx-auto w-full max-w-[242px] text-center sm:max-w-[472px]">
-      <h1
-        class="mb-8 font-bold text-gray-800 text-title-md dark:text-white/90 xl:text-title-2xl"
-      >
-        ERROR
+    <div class="text-center">
+      <h1 class="text-9xl font-black text-brand-600 dark:text-brand-500 mb-4">
+        404
       </h1>
-
-      <img src="/images/error/404.svg" alt="404" class="dark:hidden" />
-      <img
-        src="/images/error/404-dark.svg"
-        alt="404"
-        class="hidden dark:block"
-      />
-
-      <p
-        class="mt-10 mb-6 text-base text-gray-700 dark:text-gray-400 sm:text-lg"
-      >
-        We can't seem to find the page you are looking for!
+      
+      <p class="text-2xl font-semibold text-gray-800 dark:text-white mb-2">
+        Página no encontrada
+      </p>
+      
+      <p class="text-base text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">
+        Lo sentimos, la página que buscas no existe o ha sido movida.
       </p>
 
       <router-link
-        to="/"
-        class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-5 py-3.5 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
+        to="/stats"
+        class="inline-flex items-center justify-center rounded-xl bg-brand-600 px-6 py-3 text-base font-semibold text-white shadow-lg hover:bg-brand-700 transition-all active:scale-95"
       >
-        Back to Home Page
+        Volver al inicio
       </router-link>
     </div>
-    <!-- Footer -->
-    <p
-      class="absolute text-sm text-center text-gray-500 -translate-x-1/2 bottom-6 left-1/2 dark:text-gray-400"
-    >
-      &copy; {{ currentYear }} - TailAdmin
-    </p>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
-import CommonGridShape from "../../components/common/CommonGridShape.vue";
-
-const currentYear = ref(new Date().getFullYear());
+// No imports needed
 </script>

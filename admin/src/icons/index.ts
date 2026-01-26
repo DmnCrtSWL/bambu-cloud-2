@@ -49,6 +49,8 @@ import LockIcon from "./LockIcon.vue";
 import PencilIcon from "./PencilIcon.vue";
 import UserIcon from "./UserIcon.vue";
 import DollarIcon from "./DollarIcon.vue";
+import SwitchIcon from "./SwitchIcon.vue";
+import LightningIcon from "./LightningIcon.vue";
 
 
 
@@ -103,4 +105,6 @@ export {
   PencilIcon,
   UserIcon,
   DollarIcon,
+  SwitchIcon,
+  LightningIcon,
 };

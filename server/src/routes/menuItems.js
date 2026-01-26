@@ -50,7 +50,7 @@ router.get('/', async (req, res) => {
 
         // 2. Fetch All Variants
         const variantsResult = await db.query(`
-            SELECT menu_item_id, group_name, name, extra_price, recipe_variant_id
+            SELECT menu_item_id, group_name, name, extra_price, recipe_variant_id, inventory_product_name, replaced_ingredient_name
             FROM menu_item_variants
             ORDER BY menu_item_id, group_name
         `);
@@ -141,15 +141,17 @@ router.post('/', async (req, res) => {
                     for (const opt of group.options) {
                         await client.query(`
                             INSERT INTO menu_item_variants (
-                                menu_item_id, group_name, name, extra_price, recipe_variant_id
+                                menu_item_id, group_name, name, extra_price, recipe_variant_id, inventory_product_name, replaced_ingredient_name
                             )
-                            VALUES ($1, $2, $3, $4, $5)
+                            VALUES ($1, $2, $3, $4, $5, $6, $7)
                         `, [
                             menuItemId,
                             group.groupName,
                             opt.name,
                             opt.extraPrice || 0,
-                            opt.recipeVariantId || null
+                            opt.recipeVariantId || null,
+                            opt.inventoryProductName || null,
+                            opt.replacedIngredientName || null
                         ]);
                     }
                 }
@@ -189,7 +191,7 @@ router.get('/:id', async (req, res) => {
         // Fetch variants if applicable
         if (item.type === 'variable') {
             const varRes = await db.query(`
-                SELECT group_name, name, extra_price, recipe_variant_id
+                SELECT group_name, name, extra_price, recipe_variant_id, inventory_product_name, replaced_ingredient_name
                 FROM menu_item_variants
                 WHERE menu_item_id = $1
             `, [id]);
@@ -206,7 +208,9 @@ router.get('/:id', async (req, res) => {
                 groups[v.group_name].options.push({
                     name: v.name,
                     extraPrice: parseFloat(v.extra_price),
-                    recipeVariantId: v.recipe_variant_id
+                    recipeVariantId: v.recipe_variant_id,
+                    inventoryProductName: v.inventory_product_name,
+                    replacedIngredientName: v.replaced_ingredient_name
                 });
             });
             item.variantGroups = Object.values(groups);
@@ -266,15 +270,17 @@ router.put('/:id', async (req, res) => {
                     for (const opt of group.options) {
                         await client.query(`
                             INSERT INTO menu_item_variants (
-                                menu_item_id, group_name, name, extra_price, recipe_variant_id
+                                menu_item_id, group_name, name, extra_price, recipe_variant_id, inventory_product_name, replaced_ingredient_name
                             )
-                            VALUES ($1, $2, $3, $4, $5)
+                            VALUES ($1, $2, $3, $4, $5, $6, $7)
                         `, [
                             id,
                             group.groupName,
                             opt.name,
                             opt.extraPrice || 0,
-                            opt.recipeVariantId || null
+                            opt.recipeVariantId || null,
+                            opt.inventoryProductName || null,
+                            opt.replacedIngredientName || null
                         ]);
                     }
                 }

@@ -27,7 +27,7 @@
                   <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Producto</p>
                 </th>
                 <th class="px-5 py-3 text-left sm:px-6">
-                  <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Cantidad</p>
+                  <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Existencia</p>
                 </th>
                 <th class="px-5 py-3 text-left sm:px-6">
                   <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">U/M</p>
@@ -37,9 +37,6 @@
                 </th>
                 <th class="px-5 py-3 text-left sm:px-6">
                    <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Última Compra</p>
-                </th>
-                <th class="px-5 py-3 text-left sm:px-6">
-                   <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Stock</p>
                 </th>
               </tr>
             </thead>
@@ -54,7 +51,7 @@
                   </span>
                 </td>
                 <td class="px-5 py-4 sm:px-6">
-                   <p class="text-gray-500 text-theme-sm dark:text-gray-400">{{ item.quantity }}</p>
+                   <p class="text-gray-800 font-medium text-theme-sm dark:text-white/90">{{ Number(item.stock).toFixed(2) }}</p>
                 </td>
                 <td class="px-5 py-4 sm:px-6">
                    <p class="text-gray-500 text-theme-sm dark:text-gray-400">{{ item.unit }}</p>
@@ -64,11 +61,6 @@
                 </td>
                 <td class="px-5 py-4 sm:px-6">
                    <p class="text-gray-500 text-theme-sm dark:text-gray-400">{{ item.lastPurchase }}</p>
-                </td>
-                <td class="px-5 py-4 sm:px-6">
-                   <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                       {{ item.stock }}
-                   </span>
                 </td>
               </tr>
             </tbody>
@@ -120,7 +112,7 @@
                          <div class="flex-1 pr-4">
                              <div class="font-bold text-gray-900 text-base mb-1">{{ item.productName }}</div>
                              <div class="text-xs text-gray-500 font-medium">
-                                 Última compra: {{ item.lastPurchase }} <span class="mx-1">|</span> Stock Sist: {{ item.stock }} {{ item.unit }}
+                                 Última compra: {{ item.lastPurchase }} <span class="mx-1">|</span> Stock Sist: {{ Number(item.stock).toFixed(3) }} {{ item.unit }}
                              </div>
                          </div>
                          <div class="w-24 border border-gray-400 h-10 rounded bg-white relative">

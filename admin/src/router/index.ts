@@ -7,14 +7,6 @@ const router = createRouter({
   },
   routes: [
 
-    {
-      path: '/',
-      name: 'Ecommerce',
-      component: () => import('../views/Ecommerce.vue'),
-      meta: {
-        title: 'Dashboard',
-      },
-    },
     // ... Admin Routes start here
 
     {
@@ -32,6 +24,12 @@ const router = createRouter({
       name: 'Users',
       component: () => import('../views/Admin/Users.vue'),
       meta: { title: 'Usuarios' },
+    },
+    {
+      path: '/stats',
+      name: 'Stats',
+      component: () => import('../views/Admin/Stats.vue'),
+      meta: { title: 'Estadísticas' },
     },
     {
       path: '/users/create',
@@ -182,13 +180,10 @@ const router = createRouter({
       component: () => import('../views/Notifications/Timeline.vue'),
       meta: { title: 'Notificaciones' },
     },
+    // Catch-all route for 404
     {
-      path: '/signup',
-      name: 'Signup',
-      component: () => import('../views/Auth/Signup.vue'),
-      meta: {
-        title: 'Signup',
-      },
+      path: '/:pathMatch(.*)*',
+      redirect: '/error-404'
     },
   ],
 })
@@ -198,7 +193,7 @@ export default router
 router.beforeEach((to, from, next) => {
   document.title = `Bambu Admin | ${to.meta.title || 'Dashboard'}`;
 
-  const publicPages = ['/login', '/signup', '/error-404'];
+  const publicPages = ['/login', '/error-404'];
   const authRequired = !publicPages.includes(to.path);
   const loggedIn = localStorage.getItem('token');
   const userStr = localStorage.getItem('user');
@@ -218,13 +213,20 @@ router.beforeEach((to, from, next) => {
       const user = JSON.parse(userStr);
       const role = user.role;
 
+      // Administrador Default Route
+      if (role === 'Administrador') {
+        if (to.path === '/') {
+          return next('/stats');
+        }
+      }
+
       // Operativo Restrictions
       if (role === 'Operativo') {
         if (to.path === '/') {
           return next('/orders');
         }
 
-        const restrictedPrefixes = ['/users', '/recipes', '/menu', '/purchases', '/expenses', '/inventory', '/clients', '/receivables']; // Added more based on sidebar restrictions
+        const restrictedPrefixes = ['/users', '/recipes', '/menu', '/purchases', '/expenses', '/inventory', '/clients', '/receivables', '/stats']; // Added more based on sidebar restrictions
         // Check if current path starts with any restricted prefix
         if (restrictedPrefixes.some(prefix => to.path.startsWith(prefix))) {
           return next('/orders');

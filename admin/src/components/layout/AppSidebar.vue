@@ -235,11 +235,11 @@ const rawMenuGroups = [
   {
     title: "Menu",
     items: [
-      // {
-      //   icon: GridIcon,
-      //   name: "Dashboard",
-      //   path: "/",
-      // },
+      {
+        icon: GridIcon,
+        name: "Estadísticas",
+        path: "/stats",
+      },
       {
         icon: PieChartIcon,
         name: "Administración",
@@ -275,7 +275,9 @@ const menuGroups = computed(() => {
     if (role === 'Operativo') {
         return rawMenuGroups.map(group => ({
             ...group,
-            items: group.items.map(item => {
+            items: group.items
+            .filter(item => item.name !== 'Estadísticas') // Hide Stats
+            .map(item => {
                 if (item.name === 'Administración') {
                     // Operativo allowed: Compras, Inventario, CXC (Receivables)
                     // Note: 'Clientes' is often needed for CXC/POS, but user didn't explicitly ask. 

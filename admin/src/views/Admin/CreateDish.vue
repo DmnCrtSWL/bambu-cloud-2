@@ -174,16 +174,32 @@
                             />
                         </div>
 
-                        <div class="space-y-2">
-                             <div v-for="(v, vIdx) in group.options" :key="vIdx" class="flex gap-2 items-center">
-                                 <input v-model="v.name" type="text" placeholder="Opción" class="flex-1 h-8 rounded border border-gray-300 px-2 text-sm" />
-                                 <div class="relative w-24">
-                                     <span class="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 text-xs">+ $</span>
-                                     <input v-model.number="v.extraPrice" type="number" min="0" class="pl-6 w-full h-8 rounded border border-gray-300 px-2 text-sm" />
+                        <div class="space-y-3">
+                             <div v-for="(v, vIdx) in group.options" :key="vIdx" class="grid grid-cols-12 gap-3 items-center">
+                                 <input v-model="v.name" type="text" placeholder="Opción" class="col-span-5 h-10 rounded-lg border border-gray-300 dark:border-gray-600 px-3 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all" />
+                                 <div class="relative col-span-2">
+                                     <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 text-xs font-medium">+ $</span>
+                                     <input v-model.number="v.extraPrice" type="number" min="0" class="pl-8 w-full h-10 rounded-lg border border-gray-300 dark:border-gray-600 px-3 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all" />
                                  </div>
-                                 <button @click="removeOptionFromGroup(gIdx, vIdx)" class="text-gray-400 hover:text-red-500"><TrashIcon class="w-3.5 h-3.5" /></button>
+                                 <div class="col-span-4 flex items-center justify-end gap-3">
+                                     <div class="flex-1 text-xs text-right truncate">
+                                         <span v-if="v.replacedIngredientName && v.inventoryProductName" class="text-green-600 dark:text-green-400 font-medium bg-green-50 dark:bg-green-900/30 px-2 py-1 rounded">
+                                             {{ v.replacedIngredientName }} → {{ v.inventoryProductName }}
+                                         </span>
+                                         <span v-else class="text-gray-400 dark:text-gray-500 italic">Sin sustitución</span>
+                                     </div>
+                                     <button 
+                                         @click="openSubstitutionModal(gIdx, vIdx)"
+                                         type="button"
+                                         class="p-2 text-gray-400 hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-lg transition-colors"
+                                         title="Configurar sustitución de inventario"
+                                     >
+                                         <LightningIcon class="w-5 h-5 text-brand-600" />
+                                     </button>
+                                 </div>
+                                 <button @click="removeOptionFromGroup(gIdx, vIdx)" class="col-span-1 text-gray-400 hover:text-red-500 flex justify-center p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"><TrashIcon class="w-4 h-4" /></button>
                              </div>
-                             <button @click="addOptionToGroup(gIdx)" class="text-xs text-brand-600 font-medium hover:underline flex items-center gap-1 mt-2">
+                             <button @click="addOptionToGroup(gIdx)" class="text-xs text-brand-600 dark:text-brand-400 font-medium hover:underline flex items-center gap-1 mt-3 px-1">
                                  + Agregar Opción
                              </button>
                         </div>
@@ -286,6 +302,18 @@
 
       </div>
     </div>
+
+    <!-- Substitution Configuration Modal -->
+    <SubstitutionModal
+      :isOpen="substitutionModal.isOpen"
+      :variantName="substitutionModal.variantName"
+      :recipeIngredients="recipeIngredients"
+      :inventoryProducts="inventoryProducts"
+      :replacedIngredient="substitutionModal.replacedIngredient"
+      :inventoryProduct="substitutionModal.inventoryProduct"
+      @close="closeSubstitutionModal"
+      @save="saveSubstitution"
+    />
   </AdminLayout>
 </template>
 
@@ -294,11 +322,14 @@ import { ref, reactive, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import AdminLayout from '@/components/layout/AdminLayout.vue';
 import Button from '@/components/ui/Button.vue';
+import SubstitutionModal from '@/components/SubstitutionModal.vue';
 import { 
     TaskIcon,
     ChatIcon,
     ChevronDownIcon,
     TrashIcon,
+    SwitchIcon,
+    LightningIcon
 } from '@/icons';
 
 const router = useRouter();
@@ -414,6 +445,9 @@ const selectRecipe = async (recipe: any) => {
             const fullRecipe = await response.json();
             selectedRecipe.value = fullRecipe;
 
+            // Load ingredients for substitution modal
+            await loadRecipeIngredients();
+
             // Logic: if recipe has > 1 variant, force variable type
             if (fullRecipe.variants && fullRecipe.variants.length > 1) {
                 formData.type = 'variable';
@@ -445,11 +479,56 @@ const baseCost = computed(() => {
 
 // Variants Logic - Custom Groups
 const customGroups = ref<any[]>([]);
+const inventoryProducts = ref<string[]>([]);
+
+const loadInventoryProducts = async () => {
+    try {
+        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/inventory/products`);
+        if (response.ok) {
+            inventoryProducts.value = await response.json();
+        }
+    } catch (e) {
+        console.error('Error loading inventory products:', e);
+    }
+};
+
+const getFilteredInventory = (search: string) => {
+    if (!search) return inventoryProducts.value.slice(0, 10);
+    const lower = search.toLowerCase();
+    return inventoryProducts.value.filter(p => p.toLowerCase().includes(lower)).slice(0, 10);
+};
+
+const handleInventorySearch = (groupIdx: number, optIdx: number) => {
+    customGroups.value[groupIdx].options[optIdx].showInventorySuggestions = true;
+};
+
+const showInventoryDropdown = (groupIdx: number, optIdx: number) => {
+    customGroups.value[groupIdx].options[optIdx].showInventorySuggestions = true;
+};
+
+const hideInventoryDropdown = (groupIdx: number, optIdx: number) => {
+    setTimeout(() => {
+        customGroups.value[groupIdx].options[optIdx].showInventorySuggestions = false;
+    }, 200);
+};
+
+const selectInventoryProduct = (groupIdx: number, optIdx: number, product: string) => {
+    customGroups.value[groupIdx].options[optIdx].inventoryProductName = product;
+    customGroups.value[groupIdx].options[optIdx].inventorySearch = product;
+    customGroups.value[groupIdx].options[optIdx].showInventorySuggestions = false;
+};
 
 const addCustomGroup = () => {
     customGroups.value.push({
         name: '',
-        options: [{ name: '', extraPrice: 0 }]
+        options: [{ 
+            name: '', 
+            extraPrice: 0, 
+            inventoryProductName: '', 
+            replacedIngredientName: '',
+            inventorySearch: '', 
+            showInventorySuggestions: false 
+        }]
     });
 };
 
@@ -458,11 +537,65 @@ const removeCustomGroup = (idx: number) => {
 };
 
 const addOptionToGroup = (groupIdx: number) => {
-    customGroups.value[groupIdx].options.push({ name: '', extraPrice: 0 });
+    customGroups.value[groupIdx].options.push({ 
+        name: '', 
+        extraPrice: 0, 
+        inventoryProductName: '', 
+        replacedIngredientName: '',
+        inventorySearch: '', 
+        showInventorySuggestions: false 
+    });
 };
 
 const removeOptionFromGroup = (groupIdx: number, optIdx: number) => {
     customGroups.value[groupIdx].options.splice(optIdx, 1);
+};
+
+// Substitution Modal Logic
+const substitutionModal = reactive({
+    isOpen: false,
+    groupIdx: -1,
+    optIdx: -1,
+    variantName: '',
+    replacedIngredient: '',
+    inventoryProduct: ''
+});
+
+const recipeIngredients = ref<string[]>([]);
+
+const loadRecipeIngredients = async () => {
+    if (!selectedRecipe.value || !selectedRecipe.value.variants || selectedRecipe.value.variants.length === 0) {
+        recipeIngredients.value = [];
+        return;
+    }
+    
+    // Get ingredients from first variant
+    const firstVariant = selectedRecipe.value.variants[0];
+    if (firstVariant.items && Array.isArray(firstVariant.items)) {
+        recipeIngredients.value = firstVariant.items.map((item: any) => item.product_name);
+    }
+};
+
+const openSubstitutionModal = (groupIdx: number, optIdx: number) => {
+    const option = customGroups.value[groupIdx].options[optIdx];
+    substitutionModal.isOpen = true;
+    substitutionModal.groupIdx = groupIdx;
+    substitutionModal.optIdx = optIdx;
+    substitutionModal.variantName = option.name || 'Nueva variación';
+    substitutionModal.replacedIngredient = option.replacedIngredientName || '';
+    substitutionModal.inventoryProduct = option.inventoryProductName || '';
+};
+
+const closeSubstitutionModal = () => {
+    substitutionModal.isOpen = false;
+};
+
+const saveSubstitution = (data: { replacedIngredient: string; inventoryProduct: string }) => {
+    const option = customGroups.value[substitutionModal.groupIdx].options[substitutionModal.optIdx];
+    option.replacedIngredientName = data.replacedIngredient;
+    option.inventoryProductName = data.inventoryProduct;
+    option.inventorySearch = data.inventoryProduct;
+    closeSubstitutionModal();
 };
 
 
@@ -492,7 +625,12 @@ const handleSubmit = async () => {
         if (g.name && g.options.length > 0) {
             allVariants.push({
                 groupName: g.name,
-                options: g.options.filter((o: any) => o.name)
+                options: g.options.filter((o: any) => o.name).map((o: any) => ({
+                    name: o.name,
+                    extraPrice: o.extraPrice,
+                    inventoryProductName: o.inventoryProductName,
+                    replacedIngredientName: o.replacedIngredientName
+                }))
             });
         }
     });
@@ -524,6 +662,7 @@ const handleSubmit = async () => {
 
 onMounted(() => {
     loadRecipes();
+    loadInventoryProducts();
 });
 
 </script>

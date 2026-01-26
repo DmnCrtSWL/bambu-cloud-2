@@ -158,11 +158,12 @@ defineEmits(['add']);
 }
 
 .product-title {
-  font-size: 1.15rem;
-  font-weight: 800;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-size: 1.2rem; /* Slightly larger */
+  font-weight: 900; /* Extra bold */
   color: var(--color-brand);
   margin: 0;
-  line-height: 1.2;
+  line-height: 1.1;
 }
 
 .meta-row {
@@ -178,6 +179,7 @@ defineEmits(['add']);
 }
 
 .category-pill {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   font-size: 0.7rem;
   font-weight: 600;
   color: #6b4c9a;
@@ -220,7 +222,7 @@ defineEmits(['add']);
 .price-tag {
   font-weight: 700;
   font-size: 1rem;
-  color: #1a1a1a;
+  color: var(--color-brand);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -232,17 +234,30 @@ defineEmits(['add']);
 /* Specific overwrite for desktop price in meta-row */
 @media (min-width: 768px) {
   .meta-row .price-tag {
-     font-size: 16px;
+     font-size: 1.1rem; /* Slightly larger */
+     font-weight: 800;
+     color: var(--color-brand); /* Brand color */
      margin-right: 25px;
      flex-direction: row; 
-     align-items: center; 
+     align-items: baseline; /* Align 'Desde' baseline with price */
+     gap: 0.35rem;
+  }
+  
+  .meta-row {
+    /* Auto margin removed to let description center itself */
+  }
+
+  .product-description {
+    font-size: 14px;
+    margin-top: 0.25rem;
+    margin-bottom: auto;
   }
 }
 
 .from-text {
   font-size: 0.75rem;
   color: #666;
-  font-weight: 400;
+  font-weight: 500; /* Boldness for visibility */
 }
 
 .add-btn {
@@ -397,25 +412,7 @@ defineEmits(['add']);
     line-height: 1.3;
   }
 
-  /* Price Row (Desktop Visible) */
-  .price-row {
-    display: flex;
-    margin-bottom: 0.25rem;
-  }
-  
-  .price-tag {
-    font-size: 12px;
-    color: #707070;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  }
-  
-  .product-description {
-    font-size: 0.9rem;
-    -webkit-line-clamp: 3; /* Max 3 lines per request */
-    color: #6b7280;
-    margin: 0;
-    margin-bottom: 0.5rem;
-  }
+
   
 
 

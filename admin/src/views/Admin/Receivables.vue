@@ -4,8 +4,7 @@
       <!-- Header & Search -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-           <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90">Cuentas por Cobrar (CXC)</h2>
-           <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Administra los pagos pendientes.</p>
+           <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90">CXC</h2>
         </div>
       
         <!-- Search and Actions -->

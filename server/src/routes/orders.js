@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
+const { deductInventoryForOrder } = require('../utils/inventoryManager');
 
 // GET /api/orders
 // Returns orders relevant for the kitchen/cashier board (new, preparing, delivering).
@@ -154,6 +155,23 @@ router.post('/', async (req, res) => {
         // const io = req.app.get('io');
         // if(io) io.emit('new_order', { id: orderId, ... });
 
+
+
+
+
+
+
+        // Inventory Deduction for Direct POS Sales
+        // Only deduct if order is created as 'completed' (Direct POS sale)
+        // Menu orders (status='new') deduct on liquidation (PUT)
+        if (status === 'completed') {
+            try {
+                await deductInventoryForOrder(orderId);
+            } catch (invError) {
+                console.error('Inventory deduction failed (Direct POS Sale):', invError);
+            }
+        }
+
         res.status(201).json({
             id: orderId,
             message: 'Order created successfully',
@@ -233,6 +251,23 @@ router.put('/:id', async (req, res) => {
         }
 
         await client.query('COMMIT');
+
+        // Inventory Deduction on Liquidation (POS Payment)
+        // This handles:
+        // 1. Menu orders being paid at POS (any payment method including CXC)
+        // 2. Direct POS sales (any payment method including CXC)
+        // Rule: ALWAYS deduct when liquidating, regardless of payment method
+        try {
+            // Check if we already deducted for this order
+            const checkUsage = await db.query('SELECT 1 FROM inventory_usage WHERE order_id = $1 LIMIT 1', [id]);
+            if (checkUsage.rows.length === 0) {
+                // Not deducted yet, so deduct now
+                await deductInventoryForOrder(id);
+            }
+        } catch (inventoryErr) {
+            console.error('Error in inventory deduction during liquidation:', inventoryErr);
+        }
+
         res.json(result.rows[0]);
 
     } catch (err) {
