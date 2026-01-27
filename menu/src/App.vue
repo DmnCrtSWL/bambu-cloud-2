@@ -485,7 +485,7 @@ onUnmounted(() => {
 
 .main-content {
   min-height: calc(100vh - 140px);
-  background-color: #ffffff;
+  background-color: #F5F6F6;
   padding: 1rem;
 }
 

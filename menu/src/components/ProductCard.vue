@@ -51,24 +51,9 @@ defineEmits(['add']);
         {{ description }}
       </p>
 
-      <!-- Category Pill & Price Row -->
-      <div class="meta-row">
-        <div class="pills-container">
-          <!-- Mobile: Best Seller replaces Category -->
-          <div v-if="isBestSeller" class="category-pill favorite-pill mobile-only">
-            <Trophy :size="12" class="trophy-icon" />
-            <span>Favorito</span>
-          </div>
-          
-          <!-- Mobile: Standard Category -->
-          <span v-if="!isBestSeller" class="category-pill mobile-only">{{ category }}</span>
-          
-          <!-- Desktop: Standard Category -->
-          <span class="category-pill desktop-only">{{ category }}</span>
-        </div>
-
-        <!-- Desktop: Price (Aligned Right) -->
-        <span class="price-tag desktop-only">
+      <!-- Price Row -->
+      <div class="price-row desktop-only">
+        <span class="price-tag">
           <span v-if="hasVariations" class="from-text">Desde</span>
           ${{ price.toFixed(2) }}
         </span>
@@ -109,7 +94,7 @@ defineEmits(['add']);
 
 <style scoped>
 .product-card {
-  background-color: #f7f9f9;
+  background-color: #ffffff;
   border-radius: 16px;
   overflow: hidden;
   height: auto;
@@ -166,17 +151,8 @@ defineEmits(['add']);
   line-height: 1.1;
 }
 
-.meta-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-}
-
-.pills-container {
-  display: flex;
-  align-items: center;
-}
+/* Removed meta-row styling */
+/* Removed pills-container styling */
 
 .category-pill {
   font-family: 'Nunito', sans-serif;
@@ -231,26 +207,28 @@ defineEmits(['add']);
   font-family: 'Nunito', sans-serif;
 }
 
-/* Specific overwrite for desktop price in meta-row */
+/* Specific overwrite for desktop price */
 @media (min-width: 768px) {
-  .meta-row .price-tag {
+  .price-row {
+     display: flex;
+     margin-top: auto; /* Push to bottom of content area if needed, or just let it flow */
+     margin-bottom: 0.5rem;
+  }
+
+  .price-row .price-tag {
      font-size: 1.1rem; /* Slightly larger */
      font-weight: 800;
      color: var(--color-brand); /* Brand color */
-     margin-right: 25px;
      flex-direction: row; 
      align-items: baseline; /* Align 'Desde' baseline with price */
      gap: 0.35rem;
-  }
-  
-  .meta-row {
-    /* Auto margin removed to let description center itself */
+     /* Aligned Left by default in flex column parent */
   }
 
   .product-description {
     font-size: 14px;
     margin-top: 0.25rem;
-    margin-bottom: auto;
+    margin-bottom: 1rem; /* Add spacing between desc and price */
   }
 }
 
