@@ -2,6 +2,7 @@
 import { defineProps, defineEmits } from 'vue';
 import CategoryButton from './CategoryButton.vue';
 import SearchBar from './SearchBar.vue';
+import { LayoutGrid } from 'lucide-vue-next';
 
 const props = defineProps({
   activeId: {
@@ -39,6 +40,14 @@ const selectCategory = (id) => {
     <div class="filter-main-row">
       <div class="filter-scroll-wrapper">
         <div class="filter-scroll-area">
+
+          <CategoryButton 
+            key="all"
+            label="Todos"
+            :icon="LayoutGrid"
+            :is-active="activeId === 'all'"
+            @click="selectCategory('all')"
+          />
           <CategoryButton 
             v-for="cat in categories" 
             :key="cat.id"

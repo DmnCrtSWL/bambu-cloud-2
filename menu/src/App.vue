@@ -14,7 +14,7 @@ import CartDrawer from './components/CartDrawer.vue';
 import VirtualWaiterModal from './components/VirtualWaiterModal.vue';
 import { computed, ref, onMounted, onUnmounted, watch } from 'vue';
 import CheckoutView from './components/CheckoutView.vue';
-import { Egg, Coffee, Sandwich, GlassWater, Utensils, Sun } from 'lucide-vue-next';
+import { Egg, Coffee, Sandwich, GlassWater, Utensils, Sun, LayoutGrid } from 'lucide-vue-next';
 
 // Dynamic Products State
 const products = ref([]);
@@ -55,6 +55,9 @@ const getCategoryOrder = () => {
 
 // Define the rendering order of categories
 const categoryOrder = ref(getCategoryOrder());
+
+// Filter Selection State
+const selectedFilter = ref('all');
 
 // Search State
 const searchQuery = ref('');
@@ -107,6 +110,14 @@ const showMinLoader = ref(true);
 // Computed property to only show categories with products
 const filteredCategories = computed(() => {
   return categoryOrder.value.filter(cat => getProductsByCategory(cat.id).length > 0);
+});
+
+// Computed property determines which categories to display based on selection
+const displayedCategories = computed(() => {
+  if (selectedFilter.value === 'all') {
+    return filteredCategories.value;
+  }
+  return filteredCategories.value.filter(cat => cat.id === selectedFilter.value);
 });
 
 // Modal State
@@ -230,7 +241,7 @@ const isScrolledPastHeader = ref(false); // Replaces showFloatingStore for Filte
 const isMobileFooterVisible = ref(false);
 const isHeaderVisible = ref(true); // Control header visibility
 const lastScrollY = ref(0);
-const activeCategory = ref('bebidas');
+// const activeCategory = ref('bebidas'); // Removed in favor of selectedFilter
 const isManualScrolling = ref(false);
 
 const handleScroll = () => {
@@ -263,52 +274,19 @@ const handleScroll = () => {
   
   lastScrollY.value = currentScrollY;
   
-  // Update active category based on scroll position (ONLY if not scrolling manually)
-  if (!isManualScrolling.value) {
-    const sections = categoryOrder.value.map(cat => document.getElementById(cat.id));
-    const filterBarHeight = 70; // Approximation
-    
-    const isMobile = window.innerWidth < 768;
-    const activationThreshold = filterBarHeight + (isMobile ? 90 : 30); 
-    
-    for (const section of sections) {
-      if (!section) continue;
-      const rect = section.getBoundingClientRect();
-      if (rect.top <= activationThreshold && rect.bottom > filterBarHeight) {
-        activeCategory.value = section.id;
-      }
-    }
-  }
+  // Logic specifically for scroll-spy (auto-selecting category) is disabled
+  // as now we use explicit filtering.
 };
 
-const scrollToCategory = (id) => {
-  const element = document.getElementById(id);
-  if (element) {
-    // Active manual scrolling lock
-    isManualScrolling.value = true;
-    activeCategory.value = id; 
-    
-    const isMobile = window.innerWidth < 768;
-    // Calculate offset based on actual component heights:
-    // Header: ~72px, CategoryFilterBar: ~60px
-    // Add extra padding to ensure title is clearly visible
-    const headerHeight = 72;
-    const filterBarHeight = 60;
-    const extraPadding = isMobile ? 20 : 10; // Extra space for better visibility
-    const totalOffset = headerHeight + filterBarHeight + extraPadding;
-    
-    const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
-    const offsetPosition = elementPosition - totalOffset;
-
-    window.scrollTo({
-      top: offsetPosition,
-      behavior: "smooth"
-    });
-
-    // Release lock after scroll animation (approx 800ms)
-    setTimeout(() => {
-        isManualScrolling.value = false;
-    }, 800);
+const handleCategorySelect = (id) => {
+  selectedFilter.value = id;
+  // Optional: Scroll to top of content if needed, or if "Todos" is selected
+  // For now, the filtering behavior effectively "scrolls" by showing only relevant content.
+  if (id === 'all') {
+     window.scrollTo({ top: 0, behavior: 'smooth' });
+  } else {
+     // If we want to ensure the user sees the start of the category, we can scroll to top too
+     window.scrollTo({ top: 0, behavior: 'smooth' }); 
   }
 };
 
@@ -359,13 +337,13 @@ onUnmounted(() => {
 
   <CategoryFilterBar 
     v-if="!isCheckoutOpen"
-    :active-id="activeCategory"
+    :active-id="selectedFilter"
     :is-scrolled="isScrolledPastHeader"
     :header-visible="isHeaderVisible"
     :search-query="searchQuery"
     :categories="filteredCategories"
     @update:search-query="searchQuery = $event"
-    @selected="scrollToCategory"
+    @selected="handleCategorySelect"
     @open-search="isSearchModalOpen = true"
   />
   
@@ -379,7 +357,7 @@ onUnmounted(() => {
 
   <main v-if="!isCheckoutOpen" class="main-content">
     <div class="content-container">
-      <template v-for="(cat, index) in filteredCategories" :key="cat.id">
+      <template v-for="(cat, index) in displayedCategories" :key="cat.id">
         <div 
           :id="cat.id"
           class="category-section"
@@ -396,7 +374,7 @@ onUnmounted(() => {
             />
           </div>
         </div>
-        <SectionSeparator v-if="index < filteredCategories.length - 1" />
+        <SectionSeparator v-if="index < displayedCategories.length - 1" />
       </template>
       
       <!-- Status Messages -->
