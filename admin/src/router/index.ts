@@ -71,6 +71,12 @@ const router = createRouter({
       meta: { title: 'Gastos' },
     },
     {
+      path: '/sales',
+      name: 'Sales',
+      component: () => import('../views/Admin/Sales.vue'),
+      meta: { title: 'Ventas' },
+    },
+    {
       path: '/expenses/create',
       name: 'CreateExpense',
       component: () => import('../views/Admin/CreateExpense.vue'),
@@ -236,8 +242,8 @@ router.beforeEach((to, from, next) => {
         }
 
         // Allowed: Orders, POS, Reports, Purchases, Inventory, Receivables(CXC)
-        // Restricted: Users, Recipes, Menu, Expenses, Clients, Stats
-        const restrictedPrefixes = ['/users', '/recipes', '/menu', '/expenses', '/clients', '/stats'];
+        // Restricted: Users, Recipes, Menu, Expenses, Clients, Stats, Sales
+        const restrictedPrefixes = ['/users', '/recipes', '/menu', '/expenses', '/clients', '/stats', '/sales'];
 
         // Check if current path starts with any restricted prefix
         if (restrictedPrefixes.some(prefix => to.path.startsWith(prefix))) {

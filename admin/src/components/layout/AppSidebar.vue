@@ -260,6 +260,7 @@ const rawMenuGroups = [
         subItems: [
           { name: "Órdenes", path: "/orders" },
           { name: "POS", path: "/pos" },
+          { name: "Ventas", path: "/sales" },
           { name: "Reportes", path: "/reports" },
         ],
       },
@@ -285,6 +286,13 @@ const menuGroups = computed(() => {
                         subItems: item.subItems.filter(sub => 
                             ['Compras', 'Inventario', 'CXC'].includes(sub.name)
                         )
+                    };
+                }
+                if (item.name === 'Caja') {
+                    // Operativo allowed: Órdenes, POS, Reportes. Hide Ventas.
+                    return {
+                        ...item,
+                        subItems: item.subItems.filter(sub => sub.name !== 'Ventas')
                     };
                 }
                 return item;

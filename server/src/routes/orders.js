@@ -8,7 +8,7 @@ const { deductInventoryForOrder } = require('../utils/inventoryManager');
 // Optionally ?status=completed to see history, but default is active.
 router.get('/', async (req, res) => {
     try {
-        const { status } = req.query;
+        const { status, startDate, endDate } = req.query;
         let query = `
             SELECT o.*, 
             to_char(o.created_at AT TIME ZONE 'UTC', 'HH12:MI a.m.') as formatted_time,
@@ -31,18 +31,42 @@ router.get('/', async (req, res) => {
         `;
 
         const params = [];
+        const conditions = [];
+
         if (req.query.id) {
-            query += ` WHERE o.id = $1`;
+            conditions.push(`o.id = $${params.length + 1}`);
             params.push(req.query.id);
-        } else if (status) {
-            query += ` WHERE o.status = $1`;
-            params.push(status);
         } else {
-            // Default: show active
-            query += ` WHERE o.status IN ('new', 'preparing', 'delivering')`;
+            if (status) {
+                conditions.push(`o.status = $${params.length + 1}`);
+                params.push(status);
+            }
+
+            if (startDate) {
+                conditions.push(`o.created_at >= $${params.length + 1}`);
+                params.push(startDate);
+            }
+            if (endDate) {
+                conditions.push(`o.created_at <= $${params.length + 1}`);
+                params.push(endDate);
+            }
+
+            // Only apply default active filter if NO status AND NO dates are provided (Kanban default)
+            if (!status && !startDate && !endDate) {
+                conditions.push(`o.status IN ('new', 'preparing', 'delivering')`);
+            }
         }
 
-        query += ` ORDER BY o.created_at ASC`;
+        if (conditions.length > 0) {
+            query += ` WHERE ` + conditions.join(' AND ');
+        }
+
+        // Use FIFO (ASC) for Kanban (active orders), LIFO (DESC) for Sales History
+        if (!status && !startDate && !endDate) {
+            query += ` ORDER BY o.created_at ASC`;
+        } else {
+            query += ` ORDER BY o.created_at DESC`;
+        }
 
         const result = await db.query(query, params);
 
