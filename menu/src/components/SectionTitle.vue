@@ -31,9 +31,9 @@ defineProps({
 }
 
 .section-title {
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 32px;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--color-brand);
   line-height: 1;
   margin: 0;

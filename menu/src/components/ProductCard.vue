@@ -57,6 +57,11 @@ defineEmits(['add']);
           <span v-if="hasVariations" class="from-text">Desde</span>
           ${{ price.toFixed(2) }}
         </span>
+        
+        <!-- Desktop Add Button (Now here) -->
+        <button class="add-btn desktop-btn" :class="{ 'btn-highlight': isBestSeller }" @click.stop="$emit('add')">
+           <Plus :size="24" color="white" stroke-width="3" />
+        </button>
       </div>
       
       <!-- Mobile: Footer (Price + Button) -->
@@ -83,11 +88,6 @@ defineEmits(['add']);
       <div v-else class="placeholder-image">
         <span class="placeholder-text">{{ title.charAt(0) }}</span>
       </div>
-
-      <!-- Desktop: Add Button (Overlaid on Image) -->
-      <button class="add-btn desktop-btn" :class="{ 'btn-highlight': isBestSeller }" @click.stop="$emit('add')">
-        <Plus :size="24" color="white" stroke-width="3" />
-      </button>
     </div>
   </article>
 </template>
@@ -143,9 +143,9 @@ defineEmits(['add']);
 }
 
 .product-title {
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 1.2rem; /* Slightly larger */
-  font-weight: 900; /* Extra bold */
+  font-weight: 700; /* Reduced from 900 */
   color: var(--color-brand);
   margin: 0;
   line-height: 1.1;
@@ -155,7 +155,7 @@ defineEmits(['add']);
 /* Removed pills-container styling */
 
 .category-pill {
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 0.7rem;
   font-weight: 600;
   color: #6b4c9a;
@@ -204,7 +204,7 @@ defineEmits(['add']);
   align-items: flex-start;
   gap: 2px;
   line-height: 1.1;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Montserrat', sans-serif;
 }
 
 /* Specific overwrite for desktop price */
@@ -213,16 +213,19 @@ defineEmits(['add']);
      display: flex;
      margin-top: auto; /* Push to bottom of content area if needed, or just let it flow */
      margin-bottom: 0.5rem;
+     align-items: center; /* Center vertically */
+     justify-content: space-between; /* Space out price and button */
+     width: 100%;
   }
 
   .price-row .price-tag {
      font-size: 1.1rem; /* Slightly larger */
-     font-weight: 800;
+     font-weight: 600; /* Reduced from 800 */
      color: var(--color-brand); /* Brand color */
      flex-direction: row; 
      align-items: baseline; /* Align 'Desde' baseline with price */
      gap: 0.35rem;
-     /* Aligned Left by default in flex column parent */
+     margin-right: auto; /* Push price to left, button to right if flex container */
   }
 
   .product-description {
@@ -274,34 +277,38 @@ defineEmits(['add']);
 @media (min-width: 768px) {
   .product-card {
     flex-direction: row; /* Horizontal layout */
-    height: 170px; /* Reduced height for balance */
+    min-height: 170px; /* Reduced height for balance */
+    height: auto; 
     align-items: stretch;
     background-color: #ffffff; 
     box-shadow: 0 4px 20px rgba(0,0,0,0.05); 
     border: 1px solid #f3f4f6;
+    padding: 10px; /* Reduced padding as requested */
+    gap: 15px; /* Use gap for separation instead of reliance on margins */
   }
 
-  /* Content (Left Side - 70%) */
+  /* Content (Right Side) */
   .card-content {
-    order: 1;
-    flex: 0 0 70%;
-    max-width: 70%;
-    padding: 1rem;
-    padding-right: 0.75rem; 
+    order: 2;
+    flex: 1; /* Take available space */
+    max-width: none; /* Reset max-width since we use flex-grow */
+    padding: 0; /* Clear internal padding since container has padding */
+    padding-right: 0; 
     justify-content: flex-start;
     gap: 0.25rem;
   }
   
-  /* Image on Right (Order 2 - 30%) */
+  /* Image on Left (Order 1 - Fixed Width) */
   .image-container {
     display: block;
-    width: 30%;
-    max-width: 30%;
-    flex: 0 0 30%;
+    width: 140px; /* Fixed width for consistency */
+    flex: 0 0 140px;
     height: 100%;
     position: relative;
-    order: 2; 
+    order: 1; 
     background-color: #e0e6e7;
+    border-radius: 12px; /* Add radius to image container to match design aesthetics */
+    overflow: hidden; /* Ensure image stays inside rounded corners */
   }
 
   .product-image {
@@ -331,29 +338,16 @@ defineEmits(['add']);
     opacity: 0.5;
   }
 
-  /* Desktop Add Button (Overlaid on Image) */
+  /* Desktop Add Button (Now in flex row) */
   .desktop-btn {
     display: flex !important;
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    width: 32px;
-    height: 32px;
-    background-color: white; 
-    color: var(--color-brand); /* Icon color handled by svg prop, this is just container */
-    /* Wait, the svg has color="white" in template. I should toggle that for desktop if I want white background.
-       User mockup showed white button. 
-       Let's stick to current template pass but maybe override via CSS or just accept brand color.
-       Logic: The user image had a white button with black icon.
-       My code currently: background-color var(--color-brand) with white icon.
-       For desktop per previous request "replica este diseño", I should probably check that.
-       However, explicit instructions were "30% imagen con simbolo de mas". 
-       I will stick to the brand button for now unless I see a reason to change. 
-       Let's keep it consistent.
-    */
+    position: static; /* Reset absolute */
+    width: 36px; /* Slightly larger */
+    height: 36px;
     background-color: var(--color-brand); 
-    z-index: 5;
     box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    margin-left: 1rem;
+    flex-shrink: 0;
   }
   
   .desktop-btn.btn-highlight {

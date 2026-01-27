@@ -49,10 +49,39 @@ router.get('/', async (req, res) => {
         `);
 
         // 2. Fetch All Variants
+        // 2. Fetch All Variants with Cost
         const variantsResult = await db.query(`
-            SELECT menu_item_id, group_name, name, extra_price, recipe_variant_id, inventory_product_name, replaced_ingredient_name
-            FROM menu_item_variants
-            ORDER BY menu_item_id, group_name
+            SELECT 
+                miv.menu_item_id, 
+                miv.group_name, 
+                miv.name, 
+                miv.extra_price, 
+                miv.recipe_variant_id, 
+                miv.inventory_product_name, 
+                miv.replaced_ingredient_name,
+                COALESCE(
+                    (
+                        SELECT SUM(
+                            (ri.quantity::numeric) * COALESCE(
+                                (
+                                    SELECT pi.unit_price::numeric
+                                    FROM purchase_items pi 
+                                    JOIN purchases p ON pi.purchase_id = p.id 
+                                    WHERE p.deleted_at IS NULL 
+                                    AND pi.deleted_at IS NULL
+                                    AND LOWER(TRIM(pi.product_name)) = LOWER(TRIM(ri.product_name))
+                                    ORDER BY p.purchase_date DESC, p.created_at DESC 
+                                    LIMIT 1
+                                ), 
+                                0
+                            )
+                        )
+                        FROM recipe_items ri
+                        WHERE ri.variant_id = miv.recipe_variant_id
+                    ), 
+                0) as variant_cost
+            FROM menu_item_variants miv
+            ORDER BY miv.menu_item_id, miv.group_name
         `);
 
         // 3. Map variants to items
@@ -79,7 +108,8 @@ router.get('/', async (req, res) => {
                     groups[v.group_name].options.push({
                         name: v.name,
                         extraPrice: parseFloat(v.extra_price),
-                        recipeVariantId: v.recipe_variant_id
+                        recipeVariantId: v.recipe_variant_id,
+                        variantCost: parseFloat(v.variant_cost)
                     });
                 });
                 item.variantGroups = Object.values(groups);

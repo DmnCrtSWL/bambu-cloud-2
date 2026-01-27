@@ -6,9 +6,22 @@
         <div>
            <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90">Carta / Menú</h2>
         </div>
-        <Button variant="primary" size="sm" @click="$router.push('/menu/create')">
-          Nuevo Platillo
-        </Button>
+        <div class="flex gap-3">
+             <!-- Search Bar -->
+             <div class="relative w-full sm:w-auto">
+                 <input 
+                     v-model="searchTerm" 
+                     type="text" 
+                     placeholder="Buscar platillo..." 
+                     class="pl-10 pr-4 py-2 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:ring-2 focus:ring-brand-500 w-full sm:w-64"
+                 >
+                 <SearchIcon class="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+             </div>
+             
+             <Button variant="primary" size="sm" @click="$router.push('/menu/create')">
+               Nuevo Platillo
+             </Button>
+        </div>
       </div>
 
       <!-- Table Container -->
@@ -57,10 +70,20 @@
                    <p class="text-gray-500 text-theme-sm dark:text-gray-400">{{ item.category }}</p>
                 </td>
                 <td class="px-5 py-4 sm:px-6">
-                    <!-- Real Cost (Calculated from Recipe Variant) -->
-                   <div class="flex items-center gap-2">
+                    <!-- Real Cost Logic -->
+                   <div v-if="item.type === 'variable' && hasValidVariants(item)">
+                       <div class="flex flex-col gap-1">
+                            <p class="text-gray-500 text-theme-sm dark:text-gray-400 text-xs">
+                                {{ getVariantCostsDisplay(item) }}
+                            </p>
+                            <span class="text-xs px-1.5 py-0.5 rounded w-fit" :class="calculateAvgMarginColor(item)">
+                                {{ calculateAvgMargin(item) }}% Prom.
+                            </span>
+                       </div>
+                   </div>
+                   <div v-else class="flex items-center gap-2">
                         <p class="text-gray-500 text-theme-sm dark:text-gray-400">${{ Number(item.real_cost).toFixed(2) }}</p>
-                        <!-- Profit Margin Indicator (Optional) -->
+                        <!-- Profit Margin Indicator (Simple) -->
                         <span v-if="Number(item.price) > 0" class="text-xs px-1.5 py-0.5 rounded" :class="calculateMarginColor(item)">
                             {{ calculateMargin(item) }}% Margen
                         </span>
@@ -90,9 +113,9 @@
           </table>
         </div>
          <!-- Pagination Controls -->
-         <div class="flex items-center justify-between border-t border-gray-200 px-5 py-3 dark:border-gray-800" v-if="menuItems.length > itemsPerPage">
+         <div class="flex items-center justify-between border-t border-gray-200 px-5 py-3 dark:border-gray-800" v-if="filteredItems.length > itemsPerPage">
              <div class="text-sm text-gray-500">
-                 Mostrando {{ startIndex + 1 }} a {{ Math.min(endIndex, menuItems.length) }} de {{ menuItems.length }} resultados
+                 Mostrando {{ startIndex + 1 }} a {{ Math.min(endIndex, filteredItems.length) }} de {{ filteredItems.length }} resultados
              </div>
              <div class="flex gap-2">
                  <button 
@@ -122,11 +145,13 @@ import { useRouter } from "vue-router";
 import AdminLayout from "@/components/layout/AdminLayout.vue";
 import Button from "@/components/ui/Button.vue";
 import { TrashIcon, PencilIcon } from "@/icons";
+import { SearchIcon } from 'lucide-vue-next';
 
 const router = useRouter();
 const menuItems = ref<any[]>([]);
 const currentPage = ref(1);
 const itemsPerPage = 10;
+const searchTerm = ref('');
 
 const fetchMenu = async () => {
   try {
@@ -159,17 +184,84 @@ const calculateMargin = (item: any) => {
 
 const calculateMarginColor = (item: any) => {
     const margin = Number(calculateMargin(item));
+    return getMarginColorClass(margin);
+};
+
+const getMarginColorClass = (margin: number) => {
     if (margin >= 70) return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
     if (margin >= 50) return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400';
     return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400';
 };
 
+// Variant Helpers
+const hasValidVariants = (item: any) => {
+    return item.variantGroups && item.variantGroups.length > 0 && item.variantGroups.some((g: any) => g.options.length > 0);
+};
+
+const getVariantCostsDisplay = (item: any) => {
+    const costs: string[] = [];
+    item.variantGroups.forEach((group: any) => {
+        group.options.forEach((opt: any) => {
+            if (opt.variantCost !== undefined) {
+                costs.push(`$${Number(opt.variantCost).toFixed(2)}`);
+            }
+        });
+    });
+    // Filter unique costs or just join them? User asked to show both.
+    // If too many, maybe simplified?
+    // Let's join with pipes ' | '
+    return costs.join(' | ');
+};
+
+const calculateAvgMargin = (item: any) => {
+    let totalMargin = 0;
+    let count = 0;
+    const basePrice = Number(item.price);
+    
+    item.variantGroups.forEach((group: any) => {
+        group.options.forEach((opt: any) => {
+            // Price logic: usually base + extra. 
+            // If extraPrice is high (like a size difference), use that?
+            // Assuming simplified: Price = ItemPrice + OptExtraPrice
+            const finalPrice = basePrice + Number(opt.extraPrice || 0);
+            const cost = Number(opt.variantCost || 0);
+            
+            if (finalPrice > 0) {
+                const margin = ((finalPrice - cost) / finalPrice) * 100;
+                totalMargin += margin;
+                count++;
+            }
+        });
+    });
+    
+    if (count === 0) return 0;
+    return (totalMargin / count).toFixed(0);
+};
+
+const calculateAvgMarginColor = (item: any) => {
+    const margin = Number(calculateAvgMargin(item));
+    return getMarginColorClass(margin);
+};
+
 // Pagination Logic
-const totalPages = computed(() => Math.ceil(menuItems.value.length / itemsPerPage));
+// Pagination Logic
+const filteredItems = computed(() => {
+    let items = menuItems.value;
+    if (searchTerm.value.trim()) {
+        const search = searchTerm.value.toLowerCase().trim();
+        items = items.filter(item => 
+            item.name.toLowerCase().includes(search) || 
+            (item.category && item.category.toLowerCase().includes(search))
+        );
+    }
+    return items;
+});
+
+const totalPages = computed(() => Math.ceil(filteredItems.value.length / itemsPerPage));
 const startIndex = computed(() => (currentPage.value - 1) * itemsPerPage);
 const endIndex = computed(() => currentPage.value * itemsPerPage);
 const paginatedItems = computed(() => {
-    return menuItems.value.slice(startIndex.value, endIndex.value);
+    return filteredItems.value.slice(startIndex.value, endIndex.value);
 });
 
 onMounted(() => {

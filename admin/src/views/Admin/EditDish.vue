@@ -252,8 +252,23 @@
                  </div>
 
                  <div class="mt-4 p-4 bg-gray-50 rounded-xl dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700">
-                     <span class="text-xs text-gray-500 uppercase font-semibold">Costo Real (Base)</span>
-                     <div class="flex items-center gap-2 mt-1">
+                     <span class="text-xs text-gray-500 uppercase font-semibold">Costo Real {{ formData.type === 'variable' ? '(Variantes)' : '(Base)' }}</span>
+                     
+                     <!-- Variable Case -->
+                     <div v-if="formData.type === 'variable' && allVariantCalculations.length > 1" class="flex flex-col gap-1 mt-1">
+                         <span class="text-lg font-bold text-gray-600 dark:text-gray-400 select-none">
+                             {{ formattedVariantCosts }}
+                         </span>
+                         <div class="flex items-center gap-2">
+                             <span class="text-xs text-gray-500">Promedio:</span>
+                             <span class="text-xs text-green-600 bg-green-100 px-2 py-0.5 rounded-full dark:bg-green-900/30 dark:text-green-400">
+                                 {{ averageMargin }}% Margen
+                             </span>
+                         </div>
+                     </div>
+
+                     <!-- Simple Case -->
+                     <div v-else class="flex items-center gap-2 mt-1">
                          <span class="text-lg font-bold text-gray-600 dark:text-gray-400 select-none">$ {{ baseCost.toFixed(2) }}</span>
                          <span class="text-xs text-green-600 bg-green-100 px-2 py-0.5 rounded-full dark:bg-green-900/30 dark:text-green-400" v-if="formData.price > 0 && baseCost > 0">
                              {{ ((formData.price - baseCost) / formData.price * 100).toFixed(0) }}% Margen
@@ -466,9 +481,53 @@ const selectRecipe = async (recipe: any) => {
 
 const baseCost = computed(() => {
     if (!selectedRecipe.value || !selectedRecipe.value.variants) return 0;
+    // Default to first variant cost if multiple or single
     const v = selectedRecipe.value.variants[0];
     if (!v || !v.items) return 0;
-    return v.items.reduce((sum: number, i: any) => sum + i.total_cost, 0);
+    // Ensure we parse quantity/price as numbers if they are strings
+    return v.items.reduce((sum: number, i: any) => sum + (Number(i.quantity) * Number(i.unit_price || 0)), 0); 
+    // Correction: i.total_cost might be pre-calculated by backend, or we calc it. 
+    // In 'selectRecipe' we fetch /api/recipes/:id. 
+    // Let's assume the backend provides 'total_cost' or we calc it.
+    // Looking at previous baseCost code: it used i.total_cost.
+    // If i.total_cost is available use it, else calc.
+});
+
+const allVariantCalculations = computed(() => {
+    if (!selectedRecipe.value || !selectedRecipe.value.variants) return [];
+    
+    return selectedRecipe.value.variants.map((v: any) => {
+        // Calculate cost for this variant
+        const cost = v.items ? v.items.reduce((sum: number, i: any) => sum + (Number(i.total_cost) || (Number(i.quantity) * Number(i.unit_price)) || 0), 0) : 0;
+        
+        const extraPrice = Number(v.extraPrice) || 0; 
+        const finalPrice = Number(formData.price) + extraPrice;
+        
+        let margin = 0;
+        if (finalPrice > 0) {
+            margin = ((finalPrice - cost) / finalPrice) * 100;
+        }
+        
+        return {
+            name: v.name,
+            cost,
+            finalPrice,
+            margin
+        };
+    });
+});
+
+const averageMargin = computed(() => {
+    const vars = allVariantCalculations.value;
+    if (vars.length === 0) return 0;
+    // We only care about margin average for display? 
+    // Or weighted? Simple average as requested.
+    const total = vars.reduce((sum, v) => sum + v.margin, 0);
+    return (total / vars.length).toFixed(0);
+});
+
+const formattedVariantCosts = computed(() => {
+     return allVariantCalculations.value.map(v => `$${v.cost.toFixed(2)}`).join(' | ');
 });
 
 

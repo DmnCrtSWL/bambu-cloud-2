@@ -17,12 +17,14 @@ const emit = defineEmits(['close', 'add-to-cart']);
 const quantity = ref(1);
 const selectedOptions = ref({});
 const notes = ref('');
+const isScrolledToBottom = ref(false); // Track if user has seen all content
 
 // Reset state when product changes or modal opens
 const init = () => {
   quantity.value = 1;
   selectedOptions.value = {};
   notes.value = '';
+  isScrolledToBottom.value = false; // Reset scroll tracking
   
   if (props.product.options) {
     props.product.options.forEach(opt => {
@@ -114,10 +116,36 @@ const toggleBodyScroll = (lock) => {
   }
 };
 
+const checkScroll = (e) => {
+  const el = e.target;
+  // Use a small threshold (e.g. 20px) to make it feel responsive
+  if (el.scrollHeight - el.scrollTop - el.clientHeight < 50) {
+    isScrolledToBottom.value = true;
+  }
+};
+
+import { nextTick } from 'vue';
+
+const checkInitialScroll = () => {
+    nextTick(() => {
+        const el = document.querySelector('.scroll-container');
+        if (el) {
+            // If content is smaller than container, show button immediately
+            if (el.scrollHeight <= el.clientHeight) {
+                isScrolledToBottom.value = true;
+            } else {
+                // Manually trigger check in case it starts at bottom? Unlikely.
+                isScrolledToBottom.value = false;
+            }
+        }
+    });
+};
+
 watch(() => props.isOpen, (newVal) => {
   if (newVal) {
     init();
     toggleBodyScroll(true);
+    checkInitialScroll();
   } else {
     toggleBodyScroll(false);
   }
@@ -140,7 +168,7 @@ onUnmounted(() => {
           </svg>
         </button>
 
-        <div class="scroll-container">
+        <div class="scroll-container" @scroll="checkScroll">
           <!-- Product Image -->
           <div class="image-container">
             <img :src="product.image" :alt="product.title" class="product-image">
@@ -219,10 +247,18 @@ onUnmounted(() => {
 
         <!-- Add Button Only -->
         <div class="actions-footer">
-          <button class="add-btn" @click="addToCart">
-            <span>Agregar {{ quantity }} al pedido</span>
-            <span>${{ totalPrice.toFixed(2) }}</span>
-          </button>
+          <Transition name="fade-up">
+            <button v-show="isScrolledToBottom" class="add-btn" @click="addToCart">
+              <span>Agregar {{ quantity }} al pedido</span>
+              <span>${{ totalPrice.toFixed(2) }}</span>
+            </button>
+          </Transition>
+          <div v-show="!isScrolledToBottom" class="scroll-hint">
+             <p>Por favor revisa todas las opciones</p>
+             <svg class="animate-bounce" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M7 13l5 5 5-5M7 6l5 5 5-5"/>
+             </svg>
+          </div>
         </div>
 
       </div>
@@ -536,6 +572,37 @@ onUnmounted(() => {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+.fade-up-enter-active,
+.fade-up-leave-active {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.fade-up-enter-from,
+.fade-up-leave-to {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.scroll-hint {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #9ca3af;
+    font-size: 0.85rem;
+    gap: 4px;
+    padding: 0.5rem;
+}
+
+.animate-bounce {
+  animation: bounce 1.5s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(-25%); animation-timing-function: cubic-bezier(0.8,0,1,1); }
+  50% { transform: none; animation-timing-function: cubic-bezier(0,0,0.2,1); }
 }
 
 /* Mobile full width styles */
