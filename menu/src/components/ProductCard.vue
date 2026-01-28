@@ -99,12 +99,14 @@ defineEmits(['add']);
   overflow: hidden;
   height: auto;
   display: flex;
-  flex-direction: column; /* Default Mobile */
+  flex-direction: row; /* Changed to row for mobile too */
   width: 100%;
   position: relative;
   cursor: pointer;
   transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
   border: 1px solid transparent;
+  padding: 10px; /* Added padding to base */
+  gap: 12px; /* Added gap to base */
 }
 
 /* Best Seller Highlight */
@@ -131,16 +133,58 @@ defineEmits(['add']);
 
 /* Base Components (Mobile First) */
 .image-container {
-  display: none; 
+  display: block; /* Show on mobile */
+  width: 100px;  /* Smaller for mobile */
+  height: 100px; /* Fixed square or auto height? Fixed is safer for layout */
+  flex: 0 0 100px;
+  position: relative;
+  /* HTML has card-content first, so we use order to move image to left if desired, 
+     BUT desktop css uses order: 1 for image, order: 2 for content. 
+     Wait, if HTML is content then image.
+     If we want Image | Content.
+     We need Image to be order 1, Content order 2.
+  */
+  order: 1; 
+  background-color: #e0e6e7;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.placeholder-image {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(55, 97, 103, 0.1);
+  color: var(--color-brand);
+}
+
+.placeholder-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+  opacity: 0.5;
 }
 
 .card-content {
-  padding: 1rem;
+  /* padding: 1rem; -- Reduced padding for mobile since we have limited space */
+  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.25rem;
   width: 100%;
+  flex: 1;
+  order: 2; /* Content on right */
+  justify-content: space-between; /* Ensure footer pushes down or evenly spaced */
 }
+
+
 
 .product-title {
   font-family: 'Montserrat', sans-serif;
@@ -279,7 +323,7 @@ defineEmits(['add']);
     flex-direction: row; /* Horizontal layout */
     min-height: 170px; /* Reduced height for balance */
     height: auto; 
-    align-items: stretch;
+    align-items: center; /* Center image vertically */
     background-color: #ffffff; 
     box-shadow: 0 4px 20px rgba(0,0,0,0.05); 
     border: 1px solid #f3f4f6;
@@ -303,7 +347,7 @@ defineEmits(['add']);
     display: block;
     width: 140px; /* Fixed width for consistency */
     flex: 0 0 140px;
-    height: 100%;
+    height: 140px; /* Centered visually */
     position: relative;
     order: 1; 
     background-color: #e0e6e7;

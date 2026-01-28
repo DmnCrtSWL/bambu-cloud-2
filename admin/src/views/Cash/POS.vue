@@ -1,5 +1,5 @@
 <template>
-  <AdminLayout :hide-sidebar="true"> <!-- Optional: Add prop to AdminLayout to hide sidebar for full POS experience if supported, otherwise standard -->
+  <AdminLayout> <!-- Sidebar re-enabled based on user feedback -->
     
     <!-- Mobile Restriction Overlay -->
     <div class="lg:hidden fixed inset-0 z-[9999] bg-gray-900 flex items-center justify-center p-6 text-center">
@@ -15,10 +15,10 @@
     </div>
 
     <!-- Main POS Interface -->
-    <div class="hidden lg:flex h-[calc(100vh-140px)] overflow-hidden gap-6">
+    <div class="hidden lg:flex h-[calc(100vh-140px)] overflow-hidden gap-4">
         
         <!-- LEFT PANEL: Product Catalog (70%) -->
-        <div class="flex-1 flex flex-col bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="flex-1 min-w-0 flex flex-col bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
             
             <!-- Header: Search & Categories -->
             <div class="p-4 border-b border-gray-100 dark:border-gray-700 space-y-4">
@@ -52,7 +52,7 @@
 
 
             <div class="flex-1 overflow-y-auto p-4 flex flex-col">
-                <div class="grid grid-cols-3 xl:grid-cols-4 gap-4 content-start flex-1">
+                <div class="grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 content-start flex-1">
                     <button 
                         v-for="product in paginatedProducts" 
                         :key="product.id"
@@ -94,8 +94,8 @@
             </div>
         </div>
 
-        <!-- RIGHT PANEL ... (unchanged) -->
-        <div class="w-[380px] flex flex-col bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden relative">
+        <!-- RIGHT PANEL -->
+        <div class="w-[380px] shrink-0 flex flex-col bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden relative">
             
             <div class="p-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50">
                 <!-- Custom Sale -->
@@ -119,10 +119,10 @@
                     :key="index"
                     class="p-3 bg-white dark:bg-gray-700 rounded-xl border border-gray-100 dark:border-gray-600 shadow-sm flex items-center justify-between group"
                 >
-                    <div class="flex-1">
-                        <div class="font-bold text-gray-800 dark:text-white mr-2">{{ item.name }}</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-bold text-gray-800 dark:text-white mr-2 break-words text-sm">{{ item.name }}</div>
                         <div class="text-brand-600 font-semibold text-sm">${{ (item.price * item.quantity).toFixed(2) }}</div>
-                         <div v-if="item.variations?.length" class="text-xs text-gray-500">
+                         <div v-if="item.variations?.length" class="text-xs text-gray-500 break-words leading-tight mt-0.5">
                             {{ item.variations.join(', ') }}
                         </div>
                     </div>
@@ -453,7 +453,7 @@ const currentBulkOrderIds = ref([]); // IDs for bulk CXC liquidation
 const cart = ref([]);
 const products = ref([]); 
 const currentPage = ref(1);
-const itemsPerPage = 10;
+const itemsPerPage = 6;
 
 // Variant Logic State
 const currentProduct = ref(null);
