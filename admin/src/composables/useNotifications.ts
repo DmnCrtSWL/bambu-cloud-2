@@ -3,7 +3,10 @@ import { ref, computed } from 'vue'
 // Singleton State (shared across the app)
 const notifications = ref<any[]>([])
 const hasUnread = ref(false)
-const lastSeenOrderId = ref<number | null>(null)
+// Initialize lastSeen from storage if possible to catch updates across reloads
+const storedLastId = localStorage.getItem('last_seen_order_id')
+const lastSeenOrderId = ref<number | null>(storedLastId ? parseInt(storedLastId) : null)
+
 const isPolling = ref(false)
 let pollingInterval: any = null
 
@@ -11,20 +14,22 @@ export function useNotifications() {
 
     const fetchNewOrders = async () => {
         try {
-            const res = await fetch('http://localhost:3001/api/orders?status=new')
+            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+            const res = await fetch(`${apiUrl}/api/orders?status=new`)
             if (res.ok) {
                 const orders = await res.json()
 
                 // If no orders at all, nothing to do
                 if (orders.length === 0) return
 
-                // Sort descending by ID
+                // Sort descending by ID to find the newest
                 orders.sort((a: any, b: any) => b.id - a.id)
                 const latestOrder = orders[0]
 
-                // On first load, just set the baseline
+                // On very first use ever (clean slate), just sync without noise
                 if (lastSeenOrderId.value === null) {
                     lastSeenOrderId.value = latestOrder.id
+                    localStorage.setItem('last_seen_order_id', latestOrder.id.toString())
                     return
                 }
 
@@ -34,7 +39,9 @@ export function useNotifications() {
 
                     if (newOrders.length > 0) {
                         addNotification(newOrders)
+                        // Update tracking
                         lastSeenOrderId.value = latestOrder.id
+                        localStorage.setItem('last_seen_order_id', latestOrder.id.toString())
                     }
                 }
             }
@@ -47,19 +54,19 @@ export function useNotifications() {
         const mainOrder = newOrders[0]
         const otherCount = newOrders.length - 1
 
-        let message = `${mainOrder.customerName || 'Un cliente'} ha realizado una nueva orden.`
+        let message = `Nueva orden #${mainOrder.id} de ${mainOrder.customerName || 'Cliente'}`
         if (otherCount > 0) {
-            message = `${mainOrder.customerName || 'Un cliente'} y ${otherCount} clientes más añadieron una orden.`
+            message = `${otherCount + 1} nuevas órdenes recibidas`
         }
 
         const notif = {
             id: Date.now(),
             type: 'Order',
-            userImage: 'https://ui-avatars.com/api/?name=Orden+Nueva&background=random', // Placeholder
-            userName: 'Nueva Orden',
-            action: 'recibida',
+            userImage: '', // Placeholder can be handled in UI or empty
+            userName: mainOrder.customerName || 'Sistema',
+            action: 'nueva orden',
             project: '',
-            message: message, // Custom field for simpliicty
+            message: message,
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
             details: newOrders,
             read: false
@@ -70,9 +77,20 @@ export function useNotifications() {
         hasUnread.value = true
 
         // Play Sound
+        playSound()
+    }
+
+    const playSound = () => {
         try {
             const audio = new Audio('/alert.mp3')
-            audio.play().catch(e => { /* Audio play blocked */ })
+            const promise = audio.play()
+
+            if (promise !== undefined) {
+                promise.catch(error => {
+                    console.warn('Auto-play blocked by browser. Interaction needed.', error)
+                    // Optional: Show a quiet toast asking user to enable interaction if critical
+                })
+            }
         } catch (e) {
             console.error('Error playing notification sound', e)
         }
@@ -85,7 +103,9 @@ export function useNotifications() {
         // Initial fetch immediately
         fetchNewOrders()
 
-        // Poll every 5 seconds
+        // Poll every 5 seconds (Standard polling)
+        // If "tab throttling" is an issue, a Web Worker would be needed, 
+        // but 5s is usually fine.
         pollingInterval = setInterval(fetchNewOrders, 5000)
     }
 
@@ -98,16 +118,6 @@ export function useNotifications() {
     const latestUnread = computed(() => {
         return notifications.value.find(n => !n.read)
     })
-
-    // Grouped Summary for Bell Icon (optional, if we want just one item there)
-    // The user said: "En las notificaciones no debe hacer una fila por cada orden sino juntarlos"
-    // The logic in `addNotification` ALREADY groups the *batch* of new orders found in one poll cycle into ONE notification card.
-    // This satisfies "Ana Laura y 9 clientes mas" if 10 orders came in within the 5s window.
-    // If they come in separately (poll 1 found 1, poll 2 found 1), they will be separate notifications.
-    // This is usually preferred behavior (distinct events).
-    // If the user wants ALL pending orders grouped into a SINGLE persistent "New Orders" line in the dropdown, 
-    // we would need to merge them. But "Notification History" usually implies a timeline.
-    // I will stick to the "Batch Grouping" approach implemented above.
 
     return {
         notifications,

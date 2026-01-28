@@ -206,7 +206,7 @@ router.post('/', async (req, res) => {
     } catch (err) {
         await client.query('ROLLBACK');
         console.error('Error creating order:', err);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: err.message });
     } finally {
         client.release();
     }

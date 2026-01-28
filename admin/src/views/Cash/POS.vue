@@ -825,7 +825,7 @@ const processPayment = async (method) => {
                 customerPhone: method === 'CXC' ? cxcCustomer.value.phone : '',
                 location: 'Barra', 
                 paymentMethod: method,
-                deliveryTime: new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }), 
+                deliveryTime: new Date().toTimeString().slice(0, 5), // "HH:MM" format 
                 items: cart.value.map(item => ({
                     id: item.id && item.id.toString().startsWith('custom-') ? null : item.id, 
                     title: item.name,
@@ -862,11 +862,25 @@ const processPayment = async (method) => {
             localStorage.removeItem('pos_cart_state');
             alert('¡Venta registrada correctamente!');
         } else {
-            alert('Error al registrar venta');
+            const errData = await res.json().catch(() => ({}));
+            console.error('Server Error:', errData);
+            
+            const errMsg = errData.error || 'Error desconocido';
+            
+            // Check for Stale User ID (Foreign Key Violation)
+            if (errMsg.includes('user_id') || errMsg.includes('foreign key') || errMsg.includes('users')) {
+                 alert('Tu sesión no es válida (el usuario no existe). Se cerrará la sesión para corregirlo.');
+                 localStorage.removeItem('user');
+                 localStorage.removeItem('token');
+                 window.location.href = '/login'; // Redirect to login
+                 return;
+            }
+
+            alert('Error al registrar venta: ' + errMsg);
         }
     } catch (e) {
         console.error(e);
-        alert('Error de conexión');
+        alert('Error de conexión: ' + e.message);
     }
 };
 
