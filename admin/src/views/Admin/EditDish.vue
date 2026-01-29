@@ -522,12 +522,12 @@ const averageMargin = computed(() => {
     if (vars.length === 0) return 0;
     // We only care about margin average for display? 
     // Or weighted? Simple average as requested.
-    const total = vars.reduce((sum, v) => sum + v.margin, 0);
+    const total = vars.reduce((sum: number, v: any) => sum + v.margin, 0);
     return (total / vars.length).toFixed(0);
 });
 
 const formattedVariantCosts = computed(() => {
-     return allVariantCalculations.value.map(v => `$${v.cost.toFixed(2)}`).join(' | ');
+     return allVariantCalculations.value.map((v: any) => `$${v.cost.toFixed(2)}`).join(' | ');
 });
 
 
