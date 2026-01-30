@@ -114,6 +114,14 @@ router.put('/:id', async (req, res) => {
         );
 
         if (variants && Array.isArray(variants)) {
+            // Soft-delete removed variants
+            const incomingIds = variants.filter(v => v.id).map(v => v.id);
+            if (incomingIds.length === 0) {
+                await db.query(`UPDATE recipe_variants SET deleted_at = (NOW() AT TIME ZONE 'America/Mexico_City') WHERE recipe_id = $1`, [id]);
+            } else {
+                await db.query(`UPDATE recipe_variants SET deleted_at = (NOW() AT TIME ZONE 'America/Mexico_City') WHERE recipe_id = $1 AND NOT (id = ANY($2::int[]))`, [id, incomingIds]);
+            }
+
             for (const v of variants) {
                 let variantId = v.id;
                 if (variantId) {
