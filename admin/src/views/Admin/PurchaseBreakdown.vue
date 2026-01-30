@@ -70,7 +70,7 @@
                      <!-- Qty (1 col) -->
                     <div class="col-span-6 md:col-span-1">
                         <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">Cant.</label>
-                        <input type="number" v-model.number="newItem.quantity" @input="calculateSubtotal" class="h-[38px] w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" min="0.01" step="0.01" required />
+                        <input type="number" v-model.number="newItem.quantity" @input="calculateSubtotal" class="h-[38px] w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" min="0.00001" step="0.00001" required />
                     </div>
                      <!-- Unit (1 col) -->
                     <div class="col-span-6 md:col-span-1">
@@ -91,7 +91,7 @@
                      <!-- Subtotal (1 col) - Readonly -->
                     <div class="col-span-6 md:col-span-1">
                         <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">$ Subtotal</label>
-                        <input type="number" v-model.number="newItem.subtotal" @input="calculateUnitPrice" class="h-[38px] w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 font-medium" />
+                        <input type="number" v-model.number="newItem.subtotal" @input="calculateUnitPrice" class="h-[38px] w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 font-medium" step="0.00001" />
                     </div>
                      <!-- Discount (1 col) -->
                     <div class="col-span-6 md:col-span-1">
@@ -146,10 +146,10 @@
                             </td>
                             <td class="px-4 py-3 text-sm text-gray-500">{{ item.quantity }}</td>
                             <td class="px-4 py-3 text-sm text-gray-500">{{ item.unit }}</td>
-                            <td class="px-4 py-3 text-sm text-gray-500">${{ item.unitPrice }}</td>
-                            <td class="px-4 py-3 text-sm text-gray-500">${{ (item.quantity * item.unitPrice).toFixed(2) }}</td>
+                            <td class="px-4 py-3 text-sm text-gray-500">${{ item.unitPrice.toFixed(5) }}</td>
+                            <td class="px-4 py-3 text-sm text-gray-500">${{ (item.quantity * item.unitPrice).toFixed(5) }}</td>
                             <td class="px-4 py-3 text-sm text-gray-500">${{ item.discount }}</td>
-                             <td class="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">${{ item.total.toFixed(2) }}</td>
+                             <td class="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">${{ item.total.toFixed(5) }}</td>
                             <td class="px-4 py-3 text-right">
                                 <button @click="removeItem(index)" class="text-red-500 hover:text-red-700">
                                     &times;
@@ -219,7 +219,7 @@ const newItem = reactive({
 const calculateSubtotal = () => {
     // When Qty or Unit Price changes -> Update Subtotal
     if (newItem.quantity && newItem.unitPrice) {
-        newItem.subtotal = parseFloat((newItem.quantity * newItem.unitPrice).toFixed(2));
+        newItem.subtotal = parseFloat((newItem.quantity * newItem.unitPrice).toFixed(5));
     } else {
         newItem.subtotal = 0;
     }
@@ -228,8 +228,8 @@ const calculateSubtotal = () => {
 const calculateUnitPrice = () => {
     // When Subtotal changes -> Update Unit Price
     if (newItem.quantity > 0 && newItem.subtotal) {
-        // Calculate unit price, keep precision high (up to 4 dec) to avoid rounding errors on way back
-        newItem.unitPrice = parseFloat((newItem.subtotal / newItem.quantity).toFixed(4));
+        // Calculate unit price, keep precision high (up to 5 dec) to avoid rounding errors on way back
+        newItem.unitPrice = parseFloat((newItem.subtotal / newItem.quantity).toFixed(5));
     }
 }
 
