@@ -181,10 +181,10 @@
                 size="md" 
                 variant="primary" 
                 @click="saveBreakdown" 
-                :disabled="!isBalanced || (purchase && purchase.status === 'Desglosado')"
+                :disabled="!isBalanced"
                 class="w-full sm:w-auto min-w-[180px]"
             >
-                {{ purchase && purchase.status === 'Desglosado' ? 'Desglose Guardado' : 'Guardar Desglose' }}
+                {{ purchase && purchase.status === 'Desglosado' ? 'Actualizar Desglose' : 'Guardar Desglose' }}
             </Button>
         </div>
 

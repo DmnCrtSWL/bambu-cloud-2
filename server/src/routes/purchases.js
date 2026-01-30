@@ -148,7 +148,10 @@ router.post('/:id/items', async (req, res) => {
     }
 
     try {
-        // 1. Insert items
+        // 1. Clear existing items (to allow updates)
+        await db.query(`DELETE FROM purchase_items WHERE purchase_id = $1`, [id]);
+
+        // 2. Insert items
         for (const item of items) {
             if (!item.productName || !item.productName.trim()) continue;
 
