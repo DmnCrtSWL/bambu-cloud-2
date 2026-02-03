@@ -143,7 +143,7 @@ const submitOrder = async () => {
    };
  
    try {
-     let apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+     let apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
      apiUrl = apiUrl.replace(/\/$/, '');
      
      const response = await fetch(`${apiUrl}/api/orders`, {
