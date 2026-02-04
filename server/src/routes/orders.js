@@ -22,7 +22,7 @@ router.get("/", async (req, res) => {
 
     let query = `
             SELECT o.*, 
-            to_char(o.created_at AT TIME ZONE 'UTC', 'HH12:MI a.m.') as formatted_time,
+            to_char(o.created_at AT TIME ZONE 'America/Mexico_City', 'HH12:MI a.m.') as formatted_time,
             (
                 SELECT json_agg(
                     json_build_object(
@@ -54,11 +54,11 @@ router.get("/", async (req, res) => {
       }
 
       if (startDate) {
-        conditions.push(`o.created_at >= $${params.length + 1}`);
+        conditions.push(`(o.created_at AT TIME ZONE 'America/Mexico_City') >= $${params.length + 1}::timestamp`);
         params.push(startDate);
       }
       if (endDate) {
-        conditions.push(`o.created_at <= $${params.length + 1}`);
+        conditions.push(`(o.created_at AT TIME ZONE 'America/Mexico_City') <= $${params.length + 1}::timestamp`);
         params.push(endDate);
       }
 

@@ -30,8 +30,8 @@ router.get('/daily-sales', async (req, res) => {
                 SELECT o.payment_method, SUM(o.total) as total
                 FROM orders o
                 LEFT JOIN accounts_receivable ar ON o.id = ar.order_id
-                WHERE (o.created_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City') >= $1::timestamp 
-                AND (o.created_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City') < $2::timestamp
+                WHERE (o.created_at AT TIME ZONE 'America/Mexico_City') >= $1::timestamp 
+                AND (o.created_at AT TIME ZONE 'America/Mexico_City') < $2::timestamp
                 AND o.payment_method NOT IN ('CXC', 'Cortesía')
                 AND ar.id IS NULL
                 ${userFilterOrder}
@@ -59,8 +59,8 @@ router.get('/daily-sales', async (req, res) => {
                 SELECT SUM(o.total) as total
                 FROM orders o
                 LEFT JOIN accounts_receivable ar ON o.id = ar.order_id
-                WHERE (o.created_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City') >= $1::timestamp 
-                AND (o.created_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City') < $2::timestamp
+                WHERE (o.created_at AT TIME ZONE 'America/Mexico_City') >= $1::timestamp 
+                AND (o.created_at AT TIME ZONE 'America/Mexico_City') < $2::timestamp
                 AND o.payment_method = 'Cortesía'
                 AND ar.id IS NULL
                 ${userFilterOrder}
