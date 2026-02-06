@@ -61,62 +61,70 @@
       </div>
 
       <!-- Overview Cards Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- Overview Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
         
-        <!-- Card 1: Utilidad Neta (Spans 2 cols) -->
-        <div class="col-span-1 md:col-span-2 lg:col-span-2 bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm relative overflow-hidden group">
-            <div class="flex justify-between items-start z-10 relative">
-                <div>
-                     <div class="flex items-center gap-2 mb-1">
-                        <div class="p-1.5 rounded-lg bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400">
-                           <DollarSignIcon class="w-4 h-4" />
-                        </div>
-                        <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Utilidad Neta del Periodo</h3>
-                     </div>
-                     
-                     <div class="mt-4 flex items-baseline gap-2">
-                        <span class="text-4xl font-bold text-gray-900 dark:text-white">
-                            {{ formatCurrency(stats.netProfit) }}
-                        </span>
-                     </div>
-
-                     <div class="mt-2 flex items-center gap-2">
-                         <span 
-                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium"
-                            :class="profitChange >= 0 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'"
-                         >
-                            <TrendingUpIcon v-if="profitChange >= 0" class="w-3 h-3 mr-1" />
-                            <TrendingDownIcon v-else class="w-3 h-3 mr-1" />
-                            {{ Math.abs(profitChange).toFixed(1) }}%
-                         </span>
-                         <span class="text-xs text-gray-500 dark:text-gray-400">vs periodo anterior</span>
-                     </div>
-                     
-                     <p class="mt-4 text-xs text-brand-500 font-medium">
-                        {{ stats.netProfit >= 0 ? '¡Ganaste dinero!' : 'Pérdida en el periodo' }}
-                     </p>
-                </div>
-
-                <!-- Sparkline Chart -->
-                <div class="w-[200px] h-[100px] absolute right-0 bottom-0 opacity-90">
-                    <apexchart
-                        type="area"
-                        height="120"
-                        width="100%"
-                        :options="chartOptions"
-                        :series="chartSeries"
-                    ></apexchart>
-                </div>
-            </div>
-        </div>
-
-        <!-- Card 2: CXC Total (1 col) -->
+        <!-- Card 1: Ingresos Acumulados -->
         <div class="col-span-1 bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm">
             <div class="flex items-center gap-2 mb-3">
-                <div class="p-1.5 rounded-lg bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400">
-                   <FileTextIcon class="w-4 h-4" />
+                <div class="p-1.5 rounded-lg bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400">
+                   <DollarSignIcon class="w-4 h-4" />
                 </div>
-                <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">CXC Pendientes</h3>
+                <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Ingresos</h3>
+            </div>
+            
+            <div class="mt-2">
+                <span class="text-3xl font-bold text-gray-900 dark:text-white">
+                    {{ formatCurrency(stats.income) }}
+                </span>
+            </div>
+
+            <!-- Removed percentage and description -->
+        </div>
+
+        <!-- Card 2: Egresos -->
+        <div class="col-span-1 bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm">
+            <div class="flex items-center gap-2 mb-3">
+                <div class="p-1.5 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400">
+                   <TrendingDownIcon class="w-4 h-4" />
+                </div>
+                <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Egresos</h3>
+            </div>
+            
+            <div class="mt-2">
+                <span class="text-3xl font-bold text-gray-900 dark:text-white">
+                    {{ formatCurrency(stats.expenses) }}
+                </span>
+            </div>
+
+            <!-- Removed percentage and description -->
+        </div>
+
+        <!-- Card 3: Balance -->
+        <div class="col-span-1 bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm">
+            <div class="flex items-center gap-2 mb-3">
+                <div class="p-1.5 rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
+                   <WalletIcon class="w-4 h-4" />
+                </div>
+                <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Balance</h3>
+            </div>
+            
+            <div class="mt-2">
+                <span class="text-3xl font-bold text-gray-900 dark:text-white">
+                    {{ formatCurrency(stats.balance) }}
+                </span>
+            </div>
+
+            <!-- Removed percentage and description -->
+        </div>
+
+        <!-- Card 4: CXC -->
+        <div class="col-span-1 bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm relative">
+            <div class="flex items-center gap-2 mb-3">
+                <div class="p-1.5 rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
+                   <WalletIcon class="w-4 h-4" />
+                </div>
+                <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Cuentas por Cobrar (CXC)</h3>
             </div>
             
             <div class="mt-2">
@@ -124,56 +132,26 @@
                     {{ formatCurrency(stats.totalCXC) }}
                 </span>
             </div>
-
-            <p class="mt-3 text-xs text-gray-500 dark:text-gray-400">
-                Total por cobrar
-            </p>
         </div>
 
-        <!-- Card 3: Profit Margin (1 col) -->
+        <!-- Card 5: Cortesías -->
         <div class="col-span-1 bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm relative">
             <div class="flex items-center gap-2 mb-3">
-                <div class="p-1.5 rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
-                   <TrendingUpIcon class="w-4 h-4" />
+                <div class="p-1.5 rounded-lg bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400">
+                   <GiftIcon class="w-4 h-4" />
                 </div>
-                <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Margen de Utilidad</h3>
+                <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Cortesías</h3>
             </div>
             
-            <div class="flex items-center justify-between">
-                <div>
-                    <div class="flex items-baseline gap-1">
-                        <span class="text-3xl font-bold text-gray-900 dark:text-white">
-                            {{ stats.profitMargin.current.toFixed(1) }}
-                        </span>
-                        <span class="text-lg text-gray-500 dark:text-gray-400">%</span>
-                    </div>
-                    
-                    <div class="mt-2 flex items-center gap-1">
-                        <span class="text-xs text-gray-500 dark:text-gray-400">Promedio histórico:</span>
-                        <span class="text-xs font-semibold" :class="stats.profitMargin.current >= stats.profitMargin.historical ? 'text-green-600 dark:text-green-400' : 'text-orange-600 dark:text-orange-400'">
-                            {{ stats.profitMargin.historical.toFixed(1) }}%
-                        </span>
-                    </div>
-
-                    <p class="mt-3 text-xs font-medium" :class="getMarginHealthColor(stats.profitMargin.current)">
-                        {{ getMarginHealthText(stats.profitMargin.current) }}
-                    </p>
-                </div>
-
-                <!-- Radial Gauge -->
-                <div class="w-20 h-20">
-                    <apexchart
-                        type="radialBar"
-                        height="80"
-                        :options="gaugeOptions"
-                        :series="[Math.min(stats.profitMargin.current, 100)]"
-                    ></apexchart>
-                </div>
+            <div class="mt-2">
+                <span class="text-3xl font-bold text-gray-900 dark:text-white">
+                    {{ formatCurrency(stats.courtesies) }}
+                </span>
             </div>
         </div>
 
-        <!-- Card 4: Top Selling Items (2 cols) -->
-        <div class="col-span-1 md:col-span-2 lg:col-span-2 bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm">
+        <!-- Card 5: Top Selling Items (Full Width or split) -->
+        <div class="col-span-1 md:col-span-2 lg:col-span-5 xl:col-span-3 bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm">
             <div class="flex items-center gap-2 mb-4">
                 <div class="p-1.5 rounded-lg bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400">
                    <TrendingUpIcon class="w-4 h-4" />
@@ -198,8 +176,8 @@
             </p>
         </div>
 
-        <!-- Card 5: Top Profitable Items (2 cols) -->
-        <div class="col-span-1 md:col-span-2 lg:col-span-2 bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm">
+        <!-- Card 6: Top Profitable Items (Full Width or split) -->
+        <div class="col-span-1 md:col-span-2 lg:col-span-5 xl:col-span-2 bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm">
             <div class="flex items-center gap-2 mb-4">
                 <div class="p-1.5 rounded-lg bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400">
                    <DollarSignIcon class="w-4 h-4" />
@@ -232,7 +210,7 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import AdminLayout from '@/components/layout/AdminLayout.vue';
-import { DollarSignIcon, TrendingUpIcon, TrendingDownIcon, FileTextIcon, ChevronDownIcon } from 'lucide-vue-next';
+import { DollarSignIcon, TrendingUpIcon, TrendingDownIcon, ChevronDownIcon, WalletIcon, GiftIcon } from 'lucide-vue-next';
 import VueApexCharts from "vue3-apexcharts";
 
 // Components for chart
@@ -241,8 +219,15 @@ const apexchart = VueApexCharts;
 const stats = ref({
     netProfit: 0,
     prevNetProfit: 0,
+    income: 0,
+    prevIncome: 0,
+    expenses: 0,
+    prevExpenses: 0,
+    balance: 0,
+    prevBalance: 0,
     trend: [],
     totalCXC: 0,
+    courtesies: 0,
     profitMargin: {
         current: 0,
         historical: 0
@@ -273,45 +258,7 @@ const formattedMonth = computed(() => {
     return str.charAt(0).toUpperCase() + str.slice(1);
 });
 
-const profitChange = computed(() => {
-    if (stats.value.prevNetProfit === 0) return 0; // Avoid infinity
-    return ((stats.value.netProfit - stats.value.prevNetProfit) / Math.abs(stats.value.prevNetProfit)) * 100;
-});
-
-const chartSeries = computed(() => [{
-    name: 'Utilidad',
-    data: stats.value.trend.map(t => t.value)
-}]);
-
-const chartOptions = computed(() => ({
-    chart: {
-        type: 'area',
-        toolbar: { show: false },
-        sparkline: { enabled: true }
-    },
-    stroke: {
-        curve: 'smooth',
-        width: 2,
-        colors: ['#0EB325'] // Brand Green or similar
-    },
-    fill: {
-        type: 'gradient',
-        gradient: {
-            opacityFrom: 0.5,
-            opacityTo: 0.0,
-        },
-        colors: ['#0EB325']
-    },
-    tooltip: {
-        theme: 'dark', // consistent with app
-        x: { show: false },
-        y: {
-            formatter: function (val) {
-                return "$" + val.toFixed(2);
-            }
-        }
-    }
-}));
+// Computed properties for charts removed
 
 const topItemsChartSeries = computed(() => [{
     name: 'Cantidad Vendida',
@@ -434,51 +381,7 @@ const topProfitableChartOptions = computed(() => ({
     }
 }));
 
-const gaugeOptions = computed(() => ({
-    chart: {
-        type: 'radialBar',
-        sparkline: { enabled: true }
-    },
-    plotOptions: {
-        radialBar: {
-            hollow: {
-                size: '60%'
-            },
-            track: {
-                background: '#e7e7e7',
-                strokeWidth: '100%'
-            },
-            dataLabels: {
-                show: false
-            }
-        }
-    },
-    colors: [getMarginColor(stats.value.profitMargin.current)],
-    stroke: {
-        lineCap: 'round'
-    }
-}));
-
-const getMarginColor = (margin) => {
-    if (margin >= 30) return '#0EB325'; // Green - Excellent
-    if (margin >= 20) return '#3B82F6'; // Blue - Good
-    if (margin >= 10) return '#F59E0B'; // Orange - Fair
-    return '#EF4444'; // Red - Poor
-};
-
-const getMarginHealthColor = (margin) => {
-    if (margin >= 30) return 'text-green-600 dark:text-green-400';
-    if (margin >= 20) return 'text-blue-600 dark:text-blue-400';
-    if (margin >= 10) return 'text-orange-600 dark:text-orange-400';
-    return 'text-red-600 dark:text-red-400';
-};
-
-const getMarginHealthText = (margin) => {
-    if (margin >= 30) return '¡Excelente salud!';
-    if (margin >= 20) return 'Negocio saludable';
-    if (margin >= 10) return 'Requiere atención';
-    return 'Problema estructural';
-};
+// Helper functions removed
 
 const formatCurrency = (val) => {
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val);

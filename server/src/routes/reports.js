@@ -201,16 +201,28 @@ router.get('/dashboard-stats', async (req, res) => {
                 AND deleted_at IS NULL
              `;
 
-            const [incRes, expRes, purRes] = await Promise.all([
+            // 4. Courtesies
+            const courtesyQuery = `
+                SELECT COALESCE(SUM(total), 0) as total
+                FROM orders
+                WHERE (created_at AT TIME ZONE 'America/Mexico_City') >= $1::timestamp 
+                AND (created_at AT TIME ZONE 'America/Mexico_City') < $2::timestamp
+                AND status = 'completed'
+                AND payment_method = 'Cortesía'
+             `;
+
+            const [incRes, expRes, purRes, courtesyRes] = await Promise.all([
                 db.query(incomeQuery, params),
                 db.query(expenseQuery, params),
-                db.query(purchaseQuery, params)
+                db.query(purchaseQuery, params),
+                db.query(courtesyQuery, params)
             ]);
 
             return {
                 income: Number(incRes.rows[0].total_income || 0),
                 expenses: Number(expRes.rows[0].total || 0),
-                purchases: Number(purRes.rows[0].total || 0)
+                purchases: Number(purRes.rows[0].total || 0),
+                courtesies: Number(courtesyRes.rows[0].total || 0)
             };
         };
 
@@ -345,9 +357,22 @@ router.get('/dashboard-stats', async (req, res) => {
             cost: Number(r.total_cost)
         }));
 
+        const totalExpenses = currentStats.expenses + currentStats.purchases;
+        const prevTotalExpenses = prevStats.expenses + prevStats.purchases;
+
+        const balance = currentStats.income - totalExpenses;
+        const prevBalance = prevStats.income - prevTotalExpenses;
+
         res.json({
             netProfit,
             prevNetProfit,
+            income: currentStats.income,
+            prevIncome: prevStats.income,
+            expenses: totalExpenses,
+            prevExpenses: prevTotalExpenses,
+            balance,
+            prevBalance,
+            courtesies: currentStats.courtesies, // Add this line
             trend,
             totalCXC,
             profitMargin: {
