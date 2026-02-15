@@ -7,6 +7,7 @@ import ProductCard from './components/ProductCard.vue';
 import FloatingStoreButton from './components/FloatingStoreButton.vue';
 import MobileFooterNav from './components/MobileFooterNav.vue';
 import DevelopmentModal from './components/DevelopmentModal.vue';
+import ChatModal from './components/ChatModal.vue';
 import ProductModal from './components/ProductModal.vue';
 import SearchModal from './components/SearchModal.vue';
 import SectionSeparator from './components/SectionSeparator.vue';
@@ -134,6 +135,9 @@ const handleProductClick = (product) => {
 // Development Modal State
 const isDevelopmentModalOpen = ref(false);
 const openDevelopmentModal = () => isDevelopmentModalOpen.value = true;
+
+// Chat Modal State
+const isChatOpen = ref(false);
 
 // Cart State
 const cartItems = ref([]);
@@ -329,7 +333,7 @@ onUnmounted(() => {
     :is-visible="isHeaderVisible"
     @update:search-query="searchQuery = $event"
     @open-search="isSearchModalOpen = true" 
-    @open-message="openDevelopmentModal"
+    @open-message="isChatOpen = true"
     @open-user="openDevelopmentModal"
     @logo-click="handleLogoClick"
     @open-cart="isCartOpen = true"
@@ -428,7 +432,7 @@ onUnmounted(() => {
     v-if="!isCheckoutOpen"
     :is-visible="isMobileFooterVisible"
     :cart-count="totalCartCount"
-    @open-message="openDevelopmentModal"
+    @open-message="isChatOpen = true"
     @open-search="isSearchModalOpen = true"
     @open-user="openDevelopmentModal"
     @open-map="openDevelopmentModal"
@@ -453,6 +457,11 @@ onUnmounted(() => {
   <DevelopmentModal 
     :is-open="isDevelopmentModalOpen"
     @close="isDevelopmentModalOpen = false"
+  />
+
+  <ChatModal 
+    :is-open="isChatOpen"
+    @close="isChatOpen = false"
   />
 
   <SearchModal 
