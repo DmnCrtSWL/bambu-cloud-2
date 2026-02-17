@@ -5,8 +5,9 @@ const db = require('../config/db');
 // GET all menu items with variants (Optimized)
 router.get('/', async (req, res) => {
     try {
+        console.log('GET /api/menu-items request received');
         // 1. Fetch Items
-        const itemsResult = await db.query(`
+        const itemsQuery = `
             SELECT 
                 m.id,
                 m.name,
@@ -16,37 +17,15 @@ router.get('/', async (req, res) => {
                 m.type,
                 m.recipe_id,
                 to_char(m.created_at, 'YYYY-MM-DD') as date,
-                COALESCE(
-                    (
-                        SELECT SUM(
-                            (ri.quantity::numeric) * COALESCE(
-                                (
-                                    SELECT pi.unit_price::numeric
-                                    FROM purchase_items pi 
-                                    JOIN purchases p ON pi.purchase_id = p.id 
-                                    WHERE p.deleted_at IS NULL 
-                                    AND pi.deleted_at IS NULL
-                                    AND LOWER(TRIM(pi.product_name)) = LOWER(TRIM(ri.product_name))
-                                    ORDER BY p.purchase_date DESC, p.created_at DESC 
-                                    LIMIT 1
-                                ), 
-                                0
-                            )
-                        )
-                        FROM recipe_items ri
-                        WHERE ri.variant_id = (
-                            SELECT rv.id 
-                            FROM recipe_variants rv 
-                            WHERE rv.recipe_id = m.recipe_id 
-                            ORDER BY rv.id 
-                            LIMIT 1
-                        )
-                    ), 
-                0) as real_cost
+                0 as real_cost
+                -- TODO: Re-implement real_cost calculation safely. 
+                -- Previous subquery caused 500 errors in production.
             FROM menu_items m
             WHERE m.deleted_at IS NULL
             ORDER BY m.created_at DESC
-        `);
+        `;
+
+        const itemsResult = await db.query(itemsQuery);
 
         // 2. Fetch All Variants with Cost
         const variantsResult = await db.query(`
@@ -126,7 +105,7 @@ router.get('/', async (req, res) => {
 
         res.json(items);
     } catch (err) {
-        console.error(err);
+        console.error('Error in GET /api/menu-items:', err);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
