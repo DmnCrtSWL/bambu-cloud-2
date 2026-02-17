@@ -38,10 +38,10 @@ router.get('/', async (req, res) => {
                 miv.recipe_variant_id, 
                 miv.inventory_product_name, 
                 miv.replaced_ingredient_name,
-                miv.group_order,
+                -- miv.group_order, -- Disabled due to DB mismatch in Prod
                 0 as variant_cost
             FROM menu_item_variants miv
-            ORDER BY miv.menu_item_id, miv.group_order ASC, miv.id ASC
+            ORDER BY miv.menu_item_id, miv.id ASC -- Fallback to ID sort
         `);
 
         // 3. Map variants to items
@@ -58,14 +58,11 @@ router.get('/', async (req, res) => {
         const items = itemsResult.rows.map(item => {
             if (item.type === 'variable' && variantsMap[item.id]) {
                 const groups = {};
-                // Since query acts on order, insertion into object keys order is usually preserved in JS mostly,
-                // but to be safe let's track order or trust the array iteration.
-                // Re-verify: we iterate result rows which ARE ordered.
                 variantsMap[item.id].forEach(v => {
                     if (!groups[v.group_name]) {
                         groups[v.group_name] = {
                             groupName: v.group_name,
-                            groupOrder: v.group_order,
+                            groupOrder: 0, // Default to 0 since column is missing in prod
                             options: []
                         };
                     }
@@ -76,8 +73,8 @@ router.get('/', async (req, res) => {
                         variantCost: parseFloat(v.variant_cost)
                     });
                 });
-                // Sort by groupOrder explicitly to be safe
-                item.variantGroups = Object.values(groups).sort((a, b) => a.groupOrder - b.groupOrder);
+                // Sort by ID/Creation implicitly or name if needed. Disabling groupOrder sort.
+                item.variantGroups = Object.values(groups);
             } else {
                 item.variantGroups = [];
             }
