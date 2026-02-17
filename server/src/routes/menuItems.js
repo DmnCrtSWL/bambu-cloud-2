@@ -39,30 +39,7 @@ router.get('/', async (req, res) => {
                 miv.inventory_product_name, 
                 miv.replaced_ingredient_name,
                 miv.group_order,
-                /*
-                COALESCE(
-                    (
-                        SELECT SUM(
-                            (ri.quantity::numeric) * COALESCE(
-                                (
-                                    SELECT pi.unit_price::numeric
-                                    FROM purchase_items pi 
-                                    JOIN purchases p ON pi.purchase_id = p.id 
-                                    WHERE p.deleted_at IS NULL 
-                                    AND pi.deleted_at IS NULL
-                                    AND LOWER(TRIM(pi.product_name)) = LOWER(TRIM(ri.product_name))
-                                    ORDER BY p.purchase_date DESC, p.created_at DESC 
-                                    LIMIT 1
-                                ), 
-                                0
-                            )
-                        )
-                        FROM recipe_items ri
-                        WHERE ri.variant_id = miv.recipe_variant_id
-                    ), 
-                0) as variant_cost
-                */
-               0 as variant_cost
+                0 as variant_cost
             FROM menu_item_variants miv
             ORDER BY miv.menu_item_id, miv.group_order ASC, miv.id ASC
         `);
