@@ -1,0 +1,335 @@
+2026-02-16T16:57:26.360Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T16:57:31.357Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T16:57:36.361Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T16:57:41.357Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T16:57:46.357Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T16:57:51.357Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T16:57:56.359Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T16:58:01.359Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T16:58:06.357Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T16:58:11.356Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T16:58:16.358Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T16:58:21.357Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T16:58:26.358Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T16:58:31.365Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T16:58:36.359Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T16:58:41.357Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T16:58:46.358Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T16:58:51.358Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T16:58:56.359Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T16:59:01.359Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T16:59:06.360Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T16:59:11.358Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T16:59:16.359Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T16:59:21.358Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T16:59:26.358Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T16:59:31.357Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T16:59:36.355Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T16:59:41.361Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T16:59:46.357Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T16:59:51.359Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T16:59:56.375Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T17:00:01.357Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T17:00:06.360Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T17:00:12.008Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T17:00:17.007Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T17:00:22.008Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T17:00:27.007Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T17:00:32.005Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T17:00:37.006Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T17:00:42.011Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T17:00:47.007Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T17:00:52.008Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T17:00:57.005Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T17:01:02.009Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T17:01:07.007Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T17:01:39.009Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T17:02:32.796Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T17:02:36.354Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T17:02:41.358Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T17:02:46.359Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T17:02:51.358Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T17:02:56.357Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T17:03:01.357Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T17:03:06.356Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T17:03:11.359Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T17:03:16.356Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T17:03:22.009Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T17:03:23.148Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T17:03:27.005Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T17:03:32.009Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T17:03:37.005Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T17:03:42.007Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T17:03:47.006Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T17:03:52.008Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T17:09:37.801Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T17:09:42.804Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20
+2026-02-16T17:09:45.440Z - Error fetching orders: database "ricardo" does not exist
+error: database "ricardo" does not exist
+    at /Users/ricardo/Documents/Deploy/Bambu Cloud/server/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ricardo/Documents/Deploy/Bambu Cloud/server/src/routes/orders.js:82:20

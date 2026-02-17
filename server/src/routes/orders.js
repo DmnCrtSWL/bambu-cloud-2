@@ -12,12 +12,12 @@ router.get("/", async (req, res) => {
 
     // Validation for dates to prevent 500 errors
     if (startDate && !/^\d{4}-\d{2}-\d{2}/.test(startDate)) {
-         console.error(`Invalid startDate received: ${startDate}`);
-         return res.status(400).json({ error: 'Invalid startDate format. Use YYYY-MM-DD' });
+      console.error(`Invalid startDate received: ${startDate}`);
+      return res.status(400).json({ error: 'Invalid startDate format. Use YYYY-MM-DD' });
     }
     if (endDate && !/^\d{4}-\d{2}-\d{2}/.test(endDate)) {
-         console.error(`Invalid endDate received: ${endDate}`);
-         return res.status(400).json({ error: 'Invalid endDate format. Use YYYY-MM-DD' });
+      console.error(`Invalid endDate received: ${endDate}`);
+      return res.status(400).json({ error: 'Invalid endDate format. Use YYYY-MM-DD' });
     }
 
     let query = `
@@ -74,7 +74,7 @@ router.get("/", async (req, res) => {
 
     // Use FIFO (ASC) for Kanban (active orders), LIFO (DESC) for Sales History
     if (!status && !startDate && !endDate) {
-      query += ` ORDER BY o.created_at ASC`;
+      query += ` ORDER BY o.delivery_time ASC, o.created_at ASC`;
     } else {
       query += ` ORDER BY o.created_at DESC`;
     }

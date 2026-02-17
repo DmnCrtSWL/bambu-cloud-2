@@ -159,53 +159,68 @@
                     </div>
 
                     <!-- Custom Manual Groups -->
-                    <div v-for="(group, gIdx) in customGroups" :key="gIdx" class="p-4 bg-gray-50 rounded-xl dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 relative group">
-                        <button @click="removeCustomGroup(gIdx)" class="absolute top-2 right-2 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <TrashIcon class="w-4 h-4" />
-                        </button>
+                    <draggable 
+                        v-model="customGroups" 
+                        item-key="id"
+                        handle=".drag-handle"
+                        :animation="200"
+                        class="space-y-6"
+                    >
+                        <template #item="{ element: group, index: gIdx }">
+                            <div class="p-4 bg-gray-50 rounded-xl dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 relative group">
+                                <button @click="removeCustomGroup(gIdx)" class="absolute top-2 right-2 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <TrashIcon class="w-4 h-4" />
+                                </button>
+                                
+                                <!-- Drag Handle -->
+                                <div class="drag-handle absolute top-2 left-2 cursor-move opacity-0 group-hover:opacity-100 transition-opacity p-1 text-gray-400 hover:text-gray-600">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="12" r="1"/><circle cx="9" cy="5" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+                                </div>
 
-                        <div class="mb-3">
-                            <label class="text-xs text-gray-500 mb-1 block">Nombre del Grupo</label>
-                            <input 
-                                v-model="group.name"
-                                type="text" 
-                                placeholder="Ej. Tipo de Leche"
-                                class="dark:bg-dark-900 h-9 w-full rounded border border-gray-300 bg-white px-3 text-sm text-gray-800 focus:border-brand-300 focus:ring-brand-500/10"
-                            />
-                        </div>
+                                <div class="mb-3 pl-6">
+                                    <label class="text-xs text-gray-500 mb-1 block">Nombre del Grupo</label>
+                                    <input 
+                                        v-model="group.name"
+                                        type="text" 
+                                        placeholder="Ej. Tipo de Leche"
+                                        class="dark:bg-dark-900 h-9 w-full rounded border border-gray-300 bg-white px-3 text-sm text-gray-800 focus:border-brand-300 focus:ring-brand-500/10"
+                                    />
+                                </div>
 
-                        <div class="space-y-3">
-                             <div v-for="(v, vIdx) in group.options" :key="vIdx" class="grid grid-cols-12 gap-3 items-center">
-                                 <input v-model="v.name" type="text" placeholder="Opción" class="col-span-5 h-10 rounded-lg border border-gray-300 dark:border-gray-600 px-3 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all" />
-                                 <div class="relative col-span-2">
-                                     <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 text-xs font-medium">+ $</span>
-                                     <input v-model.number="v.extraPrice" type="number" min="0" class="pl-8 w-full h-10 rounded-lg border border-gray-300 dark:border-gray-600 px-3 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all" />
-                                 </div>
-                                 <div class="col-span-4 flex items-center justify-end gap-3">
-                                     <div class="flex-1 text-xs text-right truncate">
-                                         <span v-if="v.replacedIngredientName && v.inventoryProductName" class="text-green-600 dark:text-green-400 font-medium bg-green-50 dark:bg-green-900/30 px-2 py-1 rounded">
-                                             {{ v.replacedIngredientName }} → {{ v.inventoryProductName }}
-                                         </span>
-                                         <span v-else class="text-gray-400 dark:text-gray-500 italic">Sin sustitución</span>
+                                <div class="space-y-3 pl-6">
+                                     <div v-for="(v, vIdx) in group.options" :key="vIdx" class="grid grid-cols-12 gap-3 items-center">
+                                         <input v-model="v.name" type="text" placeholder="Opción" class="col-span-5 h-10 rounded-lg border border-gray-300 dark:border-gray-600 px-3 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:border-brand-300 focus:ring-2 focus:ring-brand-500/20" />
+                                         <div class="relative col-span-2">
+                                             <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 text-xs font-medium">+ $</span>
+                                             <input v-model="v.extraPrice" type="number" min="0" class="pl-8 w-full h-10 rounded-lg border border-gray-300 dark:border-gray-600 px-3 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:border-brand-300 focus:ring-2 focus:ring-brand-500/20" />
+                                         </div>
+                                         <div class="col-span-4 flex items-center justify-end gap-3">
+                                             <div class="flex-1 text-xs text-right truncate">
+                                                 <span v-if="v.replacedIngredientName && v.inventoryProductName" class="text-green-600 dark:text-green-400 font-medium bg-green-50 dark:bg-green-900/30 px-2 py-1 rounded">
+                                                     {{ v.replacedIngredientName }} → {{ v.inventoryProductName }}
+                                                 </span>
+                                                 <span v-else class="text-gray-400 dark:text-gray-500 italic">Sin sustitución</span>
+                                             </div>
+                                             <button 
+                                                 @click="openSubstitutionModal(gIdx, vIdx)"
+                                                 type="button"
+                                                 class="p-2 text-gray-400 hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-lg transition-colors"
+                                                 title="Configurar sustitución de inventario"
+                                             >
+                                                 <LightningIcon class="w-5 h-5 text-brand-600" />
+                                             </button>
+                                         </div>
+                                         <button @click="removeOptionFromGroup(gIdx, vIdx)" class="col-span-1 text-gray-400 hover:text-red-500 flex justify-center p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"><TrashIcon class="w-4 h-4" /></button>
                                      </div>
-                                     <button 
-                                         @click="openSubstitutionModal(gIdx, vIdx)"
-                                         type="button"
-                                         class="p-2 text-gray-400 hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-lg transition-colors"
-                                         title="Configurar sustitución de inventario"
-                                     >
-                                         <LightningIcon class="w-5 h-5 text-brand-600" />
+                                     <button @click="addOptionToGroup(gIdx)" class="text-xs text-brand-600 dark:text-brand-400 font-medium hover:underline flex items-center gap-1 mt-3 px-1">
+                                         + Agregar Opción
                                      </button>
-                                 </div>
-                                 <button @click="removeOptionFromGroup(gIdx, vIdx)" class="col-span-1 text-gray-400 hover:text-red-500 flex justify-center p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"><TrashIcon class="w-4 h-4" /></button>
-                             </div>
-                             <button @click="addOptionToGroup(gIdx)" class="text-xs text-brand-600 dark:text-brand-400 font-medium hover:underline flex items-center gap-1 mt-3 px-1">
-                                 + Agregar Opción
-                             </button>
-                        </div>
-                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </draggable>
 
-                    <Button size="sm" variant="outline" class="w-full border-dashed" @click="addCustomGroup">
+                    <Button size="sm" variant="outline" class="w-full border-dashed mt-4" @click="addCustomGroup">
                         + Agregar Nuevo Grupo de Variaciones
                     </Button>
                 </div>
@@ -319,7 +334,9 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue';
+import draggable from 'vuedraggable';
 import { useRouter } from 'vue-router';
+
 import AdminLayout from '@/components/layout/AdminLayout.vue';
 import Button from '@/components/ui/Button.vue';
 import SubstitutionModal from '@/components/SubstitutionModal.vue';

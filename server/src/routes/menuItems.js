@@ -48,7 +48,6 @@ router.get('/', async (req, res) => {
             ORDER BY m.created_at DESC
         `);
 
-        // 2. Fetch All Variants
         // 2. Fetch All Variants with Cost
         const variantsResult = await db.query(`
             SELECT 
@@ -59,6 +58,7 @@ router.get('/', async (req, res) => {
                 miv.recipe_variant_id, 
                 miv.inventory_product_name, 
                 miv.replaced_ingredient_name,
+                miv.group_order,
                 COALESCE(
                     (
                         SELECT SUM(
@@ -81,7 +81,7 @@ router.get('/', async (req, res) => {
                     ), 
                 0) as variant_cost
             FROM menu_item_variants miv
-            ORDER BY miv.menu_item_id, miv.group_name
+            ORDER BY miv.menu_item_id, miv.group_order ASC, miv.id ASC
         `);
 
         // 3. Map variants to items
@@ -98,10 +98,14 @@ router.get('/', async (req, res) => {
         const items = itemsResult.rows.map(item => {
             if (item.type === 'variable' && variantsMap[item.id]) {
                 const groups = {};
+                // Since query acts on order, insertion into object keys order is usually preserved in JS mostly,
+                // but to be safe let's track order or trust the array iteration.
+                // Re-verify: we iterate result rows which ARE ordered.
                 variantsMap[item.id].forEach(v => {
                     if (!groups[v.group_name]) {
                         groups[v.group_name] = {
                             groupName: v.group_name,
+                            groupOrder: v.group_order,
                             options: []
                         };
                     }
@@ -112,7 +116,8 @@ router.get('/', async (req, res) => {
                         variantCost: parseFloat(v.variant_cost)
                     });
                 });
-                item.variantGroups = Object.values(groups);
+                // Sort by groupOrder explicitly to be safe
+                item.variantGroups = Object.values(groups).sort((a, b) => a.groupOrder - b.groupOrder);
             } else {
                 item.variantGroups = [];
             }
@@ -166,14 +171,15 @@ router.post('/', async (req, res) => {
 
         // 2. Insert Variants if type is variable
         if (type === 'variable' && variantGroups && Array.isArray(variantGroups)) {
+            let groupIndex = 0;
             for (const group of variantGroups) {
                 if (group.groupName && group.options && Array.isArray(group.options)) {
                     for (const opt of group.options) {
                         await client.query(`
                             INSERT INTO menu_item_variants (
-                                menu_item_id, group_name, name, extra_price, recipe_variant_id, inventory_product_name, replaced_ingredient_name
+                                menu_item_id, group_name, name, extra_price, recipe_variant_id, inventory_product_name, replaced_ingredient_name, group_order
                             )
-                            VALUES ($1, $2, $3, $4, $5, $6, $7)
+                            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
                         `, [
                             menuItemId,
                             group.groupName,
@@ -181,9 +187,11 @@ router.post('/', async (req, res) => {
                             opt.extraPrice || 0,
                             opt.recipeVariantId || null,
                             opt.inventoryProductName || null,
-                            opt.replacedIngredientName || null
+                            opt.replacedIngredientName || null,
+                            groupIndex
                         ]);
                     }
+                    groupIndex++;
                 }
             }
         }
@@ -221,9 +229,10 @@ router.get('/:id', async (req, res) => {
         // Fetch variants if applicable
         if (item.type === 'variable') {
             const varRes = await db.query(`
-                SELECT group_name, name, extra_price, recipe_variant_id, inventory_product_name, replaced_ingredient_name
+                SELECT group_name, name, extra_price, recipe_variant_id, inventory_product_name, replaced_ingredient_name, group_order
                 FROM menu_item_variants
                 WHERE menu_item_id = $1
+                ORDER BY group_order ASC, id ASC
             `, [id]);
 
             // Reconstruct variantGroups structure
@@ -232,6 +241,7 @@ router.get('/:id', async (req, res) => {
                 if (!groups[v.group_name]) {
                     groups[v.group_name] = {
                         groupName: v.group_name,
+                        groupOrder: v.group_order,
                         options: []
                     };
                 }
@@ -243,7 +253,9 @@ router.get('/:id', async (req, res) => {
                     replacedIngredientName: v.replaced_ingredient_name
                 });
             });
-            item.variantGroups = Object.values(groups);
+            // The query already orders by group_order, so Object.values should roughly respect it,
+            // but for safety we sort again.
+            item.variantGroups = Object.values(groups).sort((a, b) => a.groupOrder - b.groupOrder);
         } else {
             item.variantGroups = [];
         }
@@ -295,14 +307,15 @@ router.put('/:id', async (req, res) => {
         await client.query('DELETE FROM menu_item_variants WHERE menu_item_id = $1', [id]);
 
         if (type === 'variable' && variantGroups && Array.isArray(variantGroups)) {
+            let groupIndex = 0;
             for (const group of variantGroups) {
                 if (group.groupName && group.options && Array.isArray(group.options)) {
                     for (const opt of group.options) {
                         await client.query(`
                             INSERT INTO menu_item_variants (
-                                menu_item_id, group_name, name, extra_price, recipe_variant_id, inventory_product_name, replaced_ingredient_name
+                                menu_item_id, group_name, name, extra_price, recipe_variant_id, inventory_product_name, replaced_ingredient_name, group_order
                             )
-                            VALUES ($1, $2, $3, $4, $5, $6, $7)
+                            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
                         `, [
                             id,
                             group.groupName,
@@ -310,9 +323,11 @@ router.put('/:id', async (req, res) => {
                             opt.extraPrice || 0,
                             opt.recipeVariantId || null,
                             opt.inventoryProductName || null,
-                            opt.replacedIngredientName || null
+                            opt.replacedIngredientName || null,
+                            groupIndex
                         ]);
                     }
+                    groupIndex++;
                 }
             }
         }
