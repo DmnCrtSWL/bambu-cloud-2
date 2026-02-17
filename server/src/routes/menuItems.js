@@ -87,11 +87,7 @@ router.get('/', async (req, res) => {
         res.json(items);
     } catch (err) {
         console.error('Error in GET /api/menu-items:', err);
-        res.status(500).json({
-            error: err.message,
-            stack: process.env.NODE_ENV === 'production' ? 'HIDDEN' : err.stack,
-            details: 'Debugging active: Please share this error with support.'
-        });
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
 
