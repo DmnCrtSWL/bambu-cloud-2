@@ -134,9 +134,9 @@ router.post('/', async (req, res) => {
                     for (const opt of group.options) {
                         await client.query(`
                             INSERT INTO menu_item_variants (
-                                menu_item_id, group_name, name, extra_price, recipe_variant_id, inventory_product_name, replaced_ingredient_name, group_order
+                                menu_item_id, group_name, name, extra_price, recipe_variant_id, inventory_product_name, replaced_ingredient_name
                             )
-                            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+                            VALUES ($1, $2, $3, $4, $5, $6, $7)
                         `, [
                             menuItemId,
                             group.groupName,
@@ -144,8 +144,7 @@ router.post('/', async (req, res) => {
                             opt.extraPrice || 0,
                             opt.recipeVariantId || null,
                             opt.inventoryProductName || null,
-                            opt.replacedIngredientName || null,
-                            groupIndex
+                            opt.replacedIngredientName || null
                         ]);
                     }
                     groupIndex++;
@@ -278,9 +277,9 @@ router.put('/:id', async (req, res) => {
                     for (const opt of group.options) {
                         await client.query(`
                             INSERT INTO menu_item_variants (
-                                menu_item_id, group_name, name, extra_price, recipe_variant_id, inventory_product_name, replaced_ingredient_name, group_order
+                                menu_item_id, group_name, name, extra_price, recipe_variant_id, inventory_product_name, replaced_ingredient_name
                             )
-                            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+                            VALUES ($1, $2, $3, $4, $5, $6, $7)
                         `, [
                             id,
                             group.groupName,
@@ -288,8 +287,7 @@ router.put('/:id', async (req, res) => {
                             opt.extraPrice || 0,
                             opt.recipeVariantId || null,
                             opt.inventoryProductName || null,
-                            opt.replacedIngredientName || null,
-                            groupIndex
+                            opt.replacedIngredientName || null
                         ]);
                     }
                     groupIndex++;
