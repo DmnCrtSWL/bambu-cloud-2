@@ -11,6 +11,7 @@ router.get('/', async (req, res) => {
             SELECT 
                 m.id,
                 m.name,
+                m.description,
                 m.price,
                 m.category,
                 m.status,
