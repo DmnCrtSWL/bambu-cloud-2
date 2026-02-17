@@ -18,7 +18,6 @@ const getCategoryId = (catName) => {
 // GET Public Menu
 router.get('/menu', async (req, res) => {
     try {
-        // 1. Fetch active menu items
         const itemsResult = await db.query(`
             SELECT m.id, m.name as title, m.description, m.price, m.category, m.type, m.image_url as image,
             COALESCE(SUM(oi.quantity), 0) as popularity
