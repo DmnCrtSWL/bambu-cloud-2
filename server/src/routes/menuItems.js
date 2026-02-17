@@ -38,6 +38,7 @@ router.get('/', async (req, res) => {
                 miv.inventory_product_name, 
                 miv.replaced_ingredient_name,
                 miv.group_order,
+                /*
                 COALESCE(
                     (
                         SELECT SUM(
@@ -59,6 +60,8 @@ router.get('/', async (req, res) => {
                         WHERE ri.variant_id = miv.recipe_variant_id
                     ), 
                 0) as variant_cost
+                */
+               0 as variant_cost
             FROM menu_item_variants miv
             ORDER BY miv.menu_item_id, miv.group_order ASC, miv.id ASC
         `);
