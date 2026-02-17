@@ -186,10 +186,18 @@ router.get('/:id', async (req, res) => {
         // Fetch variants if applicable
         if (item.type === 'variable') {
             const varRes = await db.query(`
-                SELECT group_name, name, extra_price, recipe_variant_id, inventory_product_name, replaced_ingredient_name, group_order
+                SELECT 
+                    group_name, 
+                    name, 
+                    extra_price, 
+                    recipe_variant_id, 
+                    inventory_product_name, 
+                    replaced_ingredient_name, 
+                    -- group_order -- Disabled
+                    0 as group_order
                 FROM menu_item_variants
                 WHERE menu_item_id = $1
-                ORDER BY group_order ASC, id ASC
+                ORDER BY id ASC -- Fallback sort
             `, [id]);
 
             // Reconstruct variantGroups structure
@@ -198,7 +206,7 @@ router.get('/:id', async (req, res) => {
                 if (!groups[v.group_name]) {
                     groups[v.group_name] = {
                         groupName: v.group_name,
-                        groupOrder: v.group_order,
+                        groupOrder: 0, // Fallback
                         options: []
                     };
                 }
@@ -212,7 +220,7 @@ router.get('/:id', async (req, res) => {
             });
             // The query already orders by group_order, so Object.values should roughly respect it,
             // but for safety we sort again.
-            item.variantGroups = Object.values(groups).sort((a, b) => a.groupOrder - b.groupOrder);
+            item.variantGroups = Object.values(groups);
         } else {
             item.variantGroups = [];
         }
