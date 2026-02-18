@@ -15,7 +15,7 @@ import CartDrawer from './components/CartDrawer.vue';
 import VirtualWaiterModal from './components/VirtualWaiterModal.vue';
 import { computed, ref, onMounted, onUnmounted, watch } from 'vue';
 import CheckoutView from './components/CheckoutView.vue';
-import { Egg, Coffee, Sandwich, GlassWater, Utensils, Sun, LayoutGrid } from 'lucide-vue-next';
+import { Egg, Coffee, Sandwich, GlassWater, Utensils, Sun, LayoutGrid, Cookie } from 'lucide-vue-next';
 
 // Dynamic Products State
 const products = ref([]);
@@ -31,16 +31,16 @@ const getCategoryOrder = () => {
 
   if (hour >= 7 && hour < 8) {
     // 07:00 - 08:00
-    orderIds = ['cafe', 'desayunos', 'huevos', 'sandwiches', 'menu_dia', 'bebidas'];
+    orderIds = ['cafe', 'desayunos', 'huevos', 'sandwiches', 'dulceria', 'menu_dia', 'bebidas'];
   } else if (hour >= 8 && hour < 11) {
     // 08:00 - 11:00
-    orderIds = ['desayunos', 'sandwiches', 'huevos', 'cafe', 'menu_dia', 'bebidas'];
+    orderIds = ['desayunos', 'sandwiches', 'huevos', 'cafe', 'dulceria', 'menu_dia', 'bebidas'];
   } else if (hour >= 11 && hour < 17) {
     // 11:00 - 17:00
-    orderIds = ['menu_dia', 'sandwiches', 'huevos', 'cafe', 'desayunos', 'bebidas'];
+    orderIds = ['menu_dia', 'sandwiches', 'huevos', 'cafe', 'dulceria', 'desayunos', 'bebidas'];
   } else {
     // 17:00 onwards (and early morning < 7)
-    orderIds = ['sandwiches', 'cafe', 'huevos', 'menu_dia', 'desayunos', 'bebidas'];
+    orderIds = ['sandwiches', 'cafe', 'huevos', 'dulceria', 'menu_dia', 'desayunos', 'bebidas'];
   }
 
   const allCategories = {
@@ -49,7 +49,8 @@ const getCategoryOrder = () => {
     sandwiches: { id: 'sandwiches', title: 'Sandwiches', icon: Sandwich },
     desayunos: { id: 'desayunos', title: 'Desayunos', icon: Sun },
     menu_dia: { id: 'menu_dia', title: 'Menú del Día', icon: Utensils },
-    huevos: { id: 'huevos', title: 'Huevos', icon: Egg }
+    huevos: { id: 'huevos', title: 'Huevos', icon: Egg },
+    dulceria: { id: 'dulceria', title: 'Dulcería', icon: Cookie }
   };
 
   return orderIds.map(id => allCategories[id]);

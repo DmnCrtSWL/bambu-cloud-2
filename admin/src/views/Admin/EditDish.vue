@@ -61,6 +61,7 @@
                             <option value="Desayunos">Desayunos</option>
                             <option value="Menú del Día">Menú del Día</option>
                             <option value="Huevos">Huevos</option>
+                            <option value="Dulcería">Dulcería</option>
                           </select>
                            <span class="absolute z-30 text-gray-500 -translate-y-1/2 pointer-events-none right-4 top-1/2 dark:text-gray-400">
                             <ChevronDownIcon class="w-5 h-5" />
