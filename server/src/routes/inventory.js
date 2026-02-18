@@ -27,6 +27,17 @@ router.get('/', async (req, res) => {
                 FROM inventory_usage
                 GROUP BY LOWER(TRIM(product_name)), LOWER(TRIM(unit))
             ),
+            adjusted AS (
+                SELECT
+                    LOWER(TRIM(product_name)) as join_name,
+                    MAX(product_name) as display_name,
+                    LOWER(TRIM(unit)) as join_unit,
+                    MAX(unit) as display_unit,
+                    SUM(quantity) as total_adjusted,
+                    MIN(created_at) as first_adjustment_date
+                FROM inventory_adjustments
+                GROUP BY LOWER(TRIM(product_name)), LOWER(TRIM(unit))
+            ),
             latest_cost_type AS (
                 SELECT DISTINCT ON (LOWER(TRIM(pi.product_name)), LOWER(TRIM(pi.unit)))
                     LOWER(TRIM(pi.product_name)) as join_name,
@@ -36,34 +47,86 @@ router.get('/', async (req, res) => {
                 JOIN purchases p ON pi.purchase_id = p.id
                 WHERE p.deleted_at IS NULL
                 ORDER BY LOWER(TRIM(pi.product_name)), LOWER(TRIM(pi.unit)), p.purchase_date DESC
+            ),
+            all_products AS (
+                SELECT join_name, join_unit FROM bought
+                UNION
+                SELECT join_name, join_unit FROM adjusted
             )
             SELECT 
-                b.display_name as "productName",
-                b.display_unit as "unit",
-                b.total_quantity as "totalQuantity",
+                COALESCE(b.display_name, adj.display_name) as "productName",
+                COALESCE(b.display_unit, adj.display_unit) as "unit",
+                COALESCE(b.total_quantity, 0) as "totalQuantity",
                 COALESCE(u.total_used, 0) as "usedQuantity",
-                b.total_spent as "totalSpent",
+                COALESCE(adj.total_adjusted, 0) as "adjustedQuantity",
+                COALESCE(b.total_spent, 0) as "totalSpent",
                 b.last_purchase_date as "lastPurchaseDate",
+                adj.first_adjustment_date as "firstAdjustmentDate",
                 COALESCE(lct.cost_type, 'Directo') as "costType"
-            FROM bought b
-            LEFT JOIN used u ON b.join_name = u.join_name AND b.join_unit = u.join_unit
-            LEFT JOIN latest_cost_type lct ON b.join_name = lct.join_name AND b.join_unit = lct.join_unit
+            FROM all_products ap
+            LEFT JOIN bought b ON ap.join_name = b.join_name AND ap.join_unit = b.join_unit
+            LEFT JOIN adjusted adj ON ap.join_name = adj.join_name AND ap.join_unit = adj.join_unit
+            LEFT JOIN used u ON ap.join_name = u.join_name AND ap.join_unit = u.join_unit
+            LEFT JOIN latest_cost_type lct ON ap.join_name = lct.join_name AND ap.join_unit = lct.join_unit
             ORDER BY "productName" ASC
         `);
 
-        const inventory = rows.map(row => ({
-            productName: row.productName,
-            quantity: Number(row.totalQuantity),
-            unit: row.unit,
-            averageCost: row.totalQuantity > 0 ? (Number(row.totalSpent) / Number(row.totalQuantity)).toFixed(2) : '0.00',
-            lastPurchase: row.lastPurchaseDate ? new Date(row.lastPurchaseDate).toISOString().split('T')[0] : 'N/A',
-            stock: Number(row.totalQuantity) - Number(row.usedQuantity),
-            costType: row.costType
-        }));
+        const inventory = rows.map(row => {
+            let lastPurchase = 'N/A';
+            if (row.lastPurchaseDate) {
+                lastPurchase = new Date(row.lastPurchaseDate).toISOString().split('T')[0];
+            } else if (row.firstAdjustmentDate) {
+                lastPurchase = new Date(row.firstAdjustmentDate).toISOString().split('T')[0];
+            }
+
+            let avgCost = '0.00';
+            if (row.totalQuantity > 0) {
+                avgCost = (Number(row.totalSpent) / Number(row.totalQuantity)).toFixed(2);
+            } else if (Number(row.totalSpent) === 0 && Number(row.totalQuantity) === 0) {
+                avgCost = '-'; // Manual product
+            }
+
+            let costType = row.costType;
+            if (Number(row.totalSpent) === 0 && Number(row.totalQuantity) === 0 && !row.lastPurchaseDate) {
+                costType = '-'; // Manual product
+            }
+
+            return {
+                productName: row.productName,
+                quantity: Number(row.totalQuantity),
+                unit: row.unit,
+                averageCost: avgCost,
+                lastPurchase: lastPurchase,
+                stock: (Number(row.totalQuantity) + Number(row.adjustedQuantity)) - Number(row.usedQuantity),
+                costType: costType
+            };
+        });
 
         res.json(inventory);
     } catch (err) {
         console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Manual Inventory Adjustment
+router.post('/adjust', require('../middleware/auth'), async (req, res) => {
+    const { productName, quantity, unit, reason } = req.body;
+    const adminId = req.user.id; // From auth middleware
+
+    if (!productName || !quantity || !unit) {
+        return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    try {
+        await db.query(`
+            INSERT INTO inventory_adjustments (product_name, quantity, unit, reason, admin_id)
+            VALUES ($1, $2, $3, $4, $5)
+        `, [productName, quantity, unit, reason, adminId]);
+
+        res.json({ message: 'Adjustment recorded successfully' });
+    } catch (err) {
+        console.error('Error recording adjustment:', err);
         res.status(500).json({ error: 'Internal server error' });
     }
 });

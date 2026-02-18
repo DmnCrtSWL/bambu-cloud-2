@@ -37,12 +37,19 @@
                  <SearchIcon class="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
              </div>
 
-              <Button variant="primary" size="sm" @click="printInventory">
+             <Button variant="primary" size="sm" @click="printInventory">
                  Imprimir Inventario
               </Button>
              <Button variant="primary" size="sm">
                  Lista de Compras
               </Button>
+             <button 
+                @click="openNewProductModal"
+                class="flex items-center justify-center w-8 h-8 rounded-full bg-brand-500 text-white hover:bg-brand-600 transition-colors shadow-sm"
+                title="Nuevo Producto"
+             >
+                 <PlusIcon class="w-5 h-5" />
+             </button>
          </div>
        </div>
 
@@ -88,7 +95,14 @@
                   </span>
                 </td>
                 <td class="px-5 py-4 sm:px-6">
-                   <p class="text-gray-800 font-medium text-theme-sm dark:text-white/90">{{ Number(item.stock).toFixed(2) }}</p>
+                   <input 
+                    type="number" 
+                    step="any"
+                    :value="Number(item.stock)"
+                    @keyup.enter="handleStockEdit(item, $event)"
+                    @blur="handleStockEdit(item, $event)"
+                    class="w-24 px-2 py-1 rounded border border-transparent hover:border-gray-200 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 bg-transparent text-gray-800 font-medium text-theme-sm dark:text-white/90 transition-colors"
+                   />
                 </td>
                 <td class="px-5 py-4 sm:px-6">
                    <p class="text-gray-500 text-theme-sm dark:text-gray-400">{{ item.unit }}</p>
@@ -161,6 +175,75 @@
        </div>
 
     </div>
+       <!-- New Product Modal -->
+       <Modal v-if="showNewProductModal" :fullScreenBackdrop="true" @close="closeNewProductModal">
+            <template #body>
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-lg mx-4 overflow-hidden relative" @click.stop>
+                    <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Nuevo Producto</h3>
+                        <button @click="closeNewProductModal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                            &times;
+                        </button>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nombre del Producto</label>
+                            <input 
+                                type="text"
+                                v-model="newProductForm.productName"
+                                placeholder="Ej. Servilletas"
+                                class="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 focus:ring-2 focus:ring-brand-500"
+                            />
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Existencias Iniciales</label>
+                                <input 
+                                    type="number"
+                                    step="any"
+                                    v-model="newProductForm.quantity"
+                                    class="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 focus:ring-2 focus:ring-brand-500"
+                                />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Unidad</label>
+                                <select 
+                                    v-model="newProductForm.unit"
+                                    class="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 focus:ring-2 focus:ring-brand-500"
+                                >
+                                    <option value="" disabled>Seleccionar...</option>
+                                    <option v-for="u in availableUnits" :key="u" :value="u">{{ u }}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700/50 flex justify-end gap-3">
+                        <Button variant="outline" @click="closeNewProductModal">Cancelar</Button>
+                        <Button variant="primary" @click="saveNewProduct">Guardar</Button>
+                    </div>
+                </div>
+            </template>
+       </Modal>
+       
+       <!-- Edit Stock Confirmation Modal -->
+       <Modal v-if="showEditConfirm" :fullScreenBackdrop="true" @close="cancelEdit">
+            <template #body>
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-md mx-4 overflow-hidden relative" @click.stop>
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-2">Confirmar ajuste de stock</h3>
+                        <p class="text-gray-600 dark:text-gray-300 mb-6">
+                            ¿Estás seguro que deseas actualizar el stock de <span class="font-bold">{{ editItem?.productName }}</span> 
+                            de <span class="font-bold">{{ editItem?.oldStock }}</span> a <span class="font-bold">{{ editItem?.newStock }}</span>?
+                        </p>
+                        <div class="flex justify-end gap-3">
+                            <Button variant="outline" @click="cancelEdit">Cancelar</Button>
+                            <Button variant="primary" @click="confirmEdit">Confirmar</Button>
+                        </div>
+                    </div>
+                </div>
+            </template>
+       </Modal>
   </AdminLayout>
 </template>
 
@@ -168,7 +251,9 @@
 import { ref, onMounted, computed } from "vue";
 import AdminLayout from "@/components/layout/AdminLayout.vue";
 import Button from "@/components/ui/Button.vue";
-import { SearchIcon } from 'lucide-vue-next';
+import Modal from "@/components/ui/Modal.vue";
+import Alert from "@/components/ui/Alert.vue";
+import { SearchIcon, PlusIcon } from 'lucide-vue-next';
 
 import { authFetch } from '@/utils/api';
 
@@ -226,6 +311,129 @@ const paginatedInventory = computed(() => {
 
 const printInventory = () => {
     window.print();
+};
+
+const availableUnits = ['Pzas', 'Gr', 'Kg', 'Lt', 'Ml'];
+
+// New Product Modal Logic
+const showNewProductModal = ref(false);
+const newProductForm = ref({
+    productName: '',
+    quantity: 0,
+    unit: ''
+});
+
+const openNewProductModal = () => {
+    newProductForm.value = {
+        productName: '',
+        quantity: 0,
+        unit: ''
+    };
+    showNewProductModal.value = true;
+};
+
+const closeNewProductModal = () => {
+    showNewProductModal.value = false;
+};
+
+const saveNewProduct = async () => {
+    if (!newProductForm.value.productName || !newProductForm.value.unit) {
+        alert('Por favor complete nombre y unidad');
+        return;
+    }
+
+    try {
+        const response = await authFetch('/api/inventory/adjust', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                productName: newProductForm.value.productName,
+                quantity: newProductForm.value.quantity,
+                unit: newProductForm.value.unit,
+                reason: 'Inventario Inicial (Nuevo Producto)'
+            })
+        });
+
+        if (response.ok) {
+            closeNewProductModal();
+            fetchInventory();
+        } else {
+            alert('Error creando producto');
+        }
+    } catch (error) {
+        console.error('Error creating product:', error);
+        alert('Error creando producto');
+    }
+};
+
+// Inline Edit Logic
+const showEditConfirm = ref(false);
+const editItem = ref<{
+    productName: string;
+    oldStock: number;
+    newStock: number;
+    unit: string;
+} | null>(null);
+
+const handleStockEdit = (item: any, event: Event) => {
+    const input = event.target as HTMLInputElement;
+    const newValue = parseFloat(input.value);
+    
+    if (isNaN(newValue)) {
+        // Reset valid if invalid
+        input.value = item.stock.toString();
+        return;
+    }
+    // Compare with small epsilon for floats or direct check
+    if (Math.abs(newValue - item.stock) < 0.0001) return;
+
+    // Prevent multiple modals if blur happens after enter
+    if (showEditConfirm.value && editItem.value?.productName === item.productName) return;
+
+    editItem.value = {
+        productName: item.productName,
+        oldStock: item.stock,
+        newStock: newValue,
+        unit: item.unit
+    };
+    showEditConfirm.value = true;
+};
+
+const cancelEdit = () => {
+    showEditConfirm.value = false;
+    editItem.value = null;
+    fetchInventory(); // Reset inputs to original values via re-render
+};
+
+const confirmEdit = async () => {
+    if (!editItem.value) return;
+
+    const diff = editItem.value.newStock - editItem.value.oldStock;
+
+    try {
+        const response = await authFetch('/api/inventory/adjust', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                productName: editItem.value.productName,
+                quantity: diff,
+                unit: editItem.value.unit,
+                reason: 'Ajuste Manual (Edición en Tabla)'
+            })
+        });
+
+        if (response.ok) {
+            showEditConfirm.value = false;
+            editItem.value = null;
+            fetchInventory();
+        } else {
+            const err = await response.json();
+            alert(`Error actualizando stock: ${err.error || 'Error desconocido'}`);
+        }
+    } catch (error: any) {
+        console.error('Error updating stock:', error);
+        alert(`Error de conexión: ${error.message}`);
+    }
 };
 
 onMounted(() => {
