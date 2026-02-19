@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router';
 export function useInactivity() {
     const isLocked = ref(false);
     const router = useRouter();
-    let timer: ReturnType<typeof setTimeout>;
+    let timer: ReturnType<typeof setTimeout> | undefined;
 
     // Time in milliseconds (1 minute)
     const TIMEOUT = 60 * 1000;
@@ -14,21 +14,8 @@ export function useInactivity() {
 
         clearTimeout(timer);
 
-        // Check user role
-        try {
-            const userStr = localStorage.getItem('user');
-            if (userStr) {
-                const user = JSON.parse(userStr);
-                // Only run timer for Operativo
-                if (user.role === 'Operativo') {
-                    timer = setTimeout(() => {
-                        lockScreen();
-                    }, TIMEOUT);
-                }
-            }
-        } catch (e) {
-            console.error('Error parsing user for inactivity check:', e);
-        }
+        // Inactivity lock disabled for 'Operativo' user as per request.
+        // Logic removed.
     };
 
     const lockScreen = () => {
