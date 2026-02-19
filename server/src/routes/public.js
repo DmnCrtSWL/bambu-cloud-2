@@ -36,7 +36,7 @@ router.get('/menu', async (req, res) => {
         const variantsResult = await db.query(`
             SELECT menu_item_id, group_name, name, extra_price 
             FROM menu_item_variants
-            ORDER BY menu_item_id, group_name, id
+            ORDER BY menu_item_id, id
             `);
 
         const variantsMap = {};
