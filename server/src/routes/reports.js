@@ -43,16 +43,16 @@ router.get('/daily-sales', async (req, res) => {
                 FROM accounts_receivable ar
                 JOIN orders o ON ar.order_id = o.id
                 WHERE ar.status = 'paid'
-                AND ar.updated_at >= $1::timestamp 
-                AND ar.updated_at < $2::timestamp
+                AND (ar.updated_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City') >= $1::timestamp 
+                AND (ar.updated_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City') < $2::timestamp
                 ${userFilterColl}
                 GROUP BY ar.payment_method
             ),
             cxc_generated AS (
                 SELECT SUM(amount) as total
                 FROM accounts_receivable ar
-                WHERE created_at >= $1::timestamp 
-                AND created_at < $2::timestamp
+                WHERE (created_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City') >= $1::timestamp 
+                AND (created_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City') < $2::timestamp
                 AND status = 'active'
                 ${userFilterAR}
             ),
@@ -178,8 +178,8 @@ router.get('/dashboard-stats', async (req, res) => {
                     SELECT SUM(ar.paid_amount) as total
                     FROM accounts_receivable ar
                     WHERE ar.status = 'paid'
-                    AND (ar.updated_at AT TIME ZONE 'America/Mexico_City') >= $1::timestamp 
-                    AND (ar.updated_at AT TIME ZONE 'America/Mexico_City') < $2::timestamp
+                    AND (ar.updated_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City') >= $1::timestamp 
+                    AND (ar.updated_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City') < $2::timestamp
                     AND ar.payment_method NOT IN ('Cortesía')
                  )
                  SELECT 
@@ -255,12 +255,12 @@ router.get('/dashboard-stats', async (req, res) => {
                 UNION ALL
                 -- Collections
                 SELECT 
-                    (ar.updated_at AT TIME ZONE 'America/Mexico_City')::date as day,
+                    (ar.updated_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City')::date as day,
                     SUM(ar.paid_amount) as val
                 FROM accounts_receivable ar
                 WHERE ar.status = 'paid'
-                AND (ar.updated_at AT TIME ZONE 'America/Mexico_City') >= $1::timestamp 
-                AND (ar.updated_at AT TIME ZONE 'America/Mexico_City') < $2::timestamp
+                AND (ar.updated_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City') >= $1::timestamp 
+                AND (ar.updated_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City') < $2::timestamp
                 AND ar.payment_method NOT IN ('Cortesía')
                 GROUP BY 1
             ),
