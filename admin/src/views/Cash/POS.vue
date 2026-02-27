@@ -793,22 +793,16 @@ const confirmCourtesy = () => {
 const processPayment = async (method) => {
     // Intercept CXC
     if (method === 'CXC') {
-        // If we don't have a confirmed CXC customer yet (modal closed), open modal
-        // We use isCXCModalOpen check implicitly by flow.
-        // If this function is called from the Payment Modal, we need to switch to CXC modal.
-        if (!isCXCModalOpen.value && (!cxcCustomer.value.name || !confirm(`¿Confirmar cobro CXC a ${cxcCustomer.value.name}?`))) {
-             // Reset state if opening fresh
-             if (!isCXCModalOpen.value) {
-                cxcCustomer.value = { id: null, name: '', phone: '' };
-                customerSearchResults.value = [];
-             }
-             
-             isPaymentModalOpen.value = false;
-             isCXCModalOpen.value = true;
-             return;
+        // If customer data is already set (confirmCXC was called), proceed directly.
+        // Otherwise open CXC modal to collect customer info.
+        if (!cxcCustomer.value.name || !cxcCustomer.value.phone) {
+            cxcCustomer.value = { id: null, name: '', phone: '' };
+            customerSearchResults.value = [];
+            isPaymentModalOpen.value = false;
+            isCXCModalOpen.value = true;
+            return;
         }
-        // If we are here, it means confirmCXC called us OR we confirmed through prompt (if we want that flow).
-        // Since confirmCXC calls processPayment('CXC') after setting data, we proceed.
+        // Customer data already confirmed via CXC modal — proceed directly, no extra confirm().
     } else if (method === 'Cortesía') {
         if (!isCourtesyModalOpen.value && (!courtesyAuthText.value)) {
              isPaymentModalOpen.value = false;
