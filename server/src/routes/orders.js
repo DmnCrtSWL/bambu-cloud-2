@@ -22,7 +22,13 @@ router.get("/", async (req, res) => {
 
     let query = `
             SELECT o.*, 
-            to_char(o.created_at AT TIME ZONE 'America/Mexico_City', 'HH12:MI a.m.') as formatted_time,
+            to_char(
+               CASE 
+                   WHEN o.payment_method = 'CXC' AND ar.status = 'paid' THEN (ar.updated_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City')
+                   ELSE (o.created_at AT TIME ZONE 'America/Mexico_City')
+               END, 
+               'HH12:MI a.m.'
+            ) as formatted_time,
             (
                 SELECT json_agg(
                     json_build_object(
@@ -39,6 +45,7 @@ router.get("/", async (req, res) => {
                 WHERE oi.order_id = o.id
             ) as items
             FROM orders o
+            LEFT JOIN accounts_receivable ar ON o.id = ar.order_id
         `;
 
     const params = [];
@@ -53,12 +60,30 @@ router.get("/", async (req, res) => {
         params.push(status);
       }
 
+      // If we are applying dates, or if we are searching history, 
+      // exclude CXC orders that are still active (unpaid) so they don't show up in the sales list.
+      if (startDate || endDate || status === 'completed') {
+        conditions.push(`(o.payment_method != 'CXC' OR ar.status = 'paid')`);
+      }
+
       if (startDate) {
-        conditions.push(`(o.created_at AT TIME ZONE 'America/Mexico_City') >= $${params.length + 1}::timestamp`);
+        conditions.push(`
+          (
+            (o.payment_method = 'CXC' AND ar.status = 'paid' AND (ar.updated_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City') >= $${params.length + 1}::timestamp)
+            OR
+            (o.payment_method != 'CXC' AND (o.created_at AT TIME ZONE 'America/Mexico_City') >= $${params.length + 1}::timestamp)
+          )
+        `);
         params.push(startDate);
       }
       if (endDate) {
-        conditions.push(`(o.created_at AT TIME ZONE 'America/Mexico_City') <= $${params.length + 1}::timestamp`);
+        conditions.push(`
+          (
+            (o.payment_method = 'CXC' AND ar.status = 'paid' AND (ar.updated_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City') <= $${params.length + 1}::timestamp)
+            OR
+            (o.payment_method != 'CXC' AND (o.created_at AT TIME ZONE 'America/Mexico_City') <= $${params.length + 1}::timestamp)
+          )
+        `);
         params.push(endDate);
       }
 
@@ -76,7 +101,12 @@ router.get("/", async (req, res) => {
     if (!status && !startDate && !endDate) {
       query += ` ORDER BY o.delivery_time ASC, o.created_at ASC`;
     } else {
-      query += ` ORDER BY o.created_at DESC`;
+      query += ` ORDER BY 
+          CASE 
+              WHEN o.payment_method = 'CXC' AND ar.status = 'paid' THEN ar.updated_at 
+              ELSE o.created_at 
+          END DESC
+      `;
     }
 
     const result = await db.query(query, params);
