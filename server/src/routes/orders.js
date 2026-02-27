@@ -29,6 +29,12 @@ router.get("/", async (req, res) => {
                END, 
                'HH12:MI a.m.'
             ) as formatted_time,
+            CASE
+                WHEN o.payment_method = 'CXC' AND ar.status = 'active' THEN 0
+                ELSE o.total
+            END as total,
+            o.total as original_total,
+            ar.status as cxc_status,
             (
                 SELECT json_agg(
                     json_build_object(
@@ -60,18 +66,12 @@ router.get("/", async (req, res) => {
         params.push(status);
       }
 
-      // If we are applying dates, or if we are searching history, 
-      // exclude CXC orders that are still active (unpaid) so they don't show up in the sales list.
-      if (startDate || endDate || status === 'completed') {
-        conditions.push(`(o.payment_method != 'CXC' OR ar.status = 'paid')`);
-      }
-
       if (startDate) {
         conditions.push(`
           (
             (o.payment_method = 'CXC' AND ar.status = 'paid' AND (ar.updated_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City') >= $${params.length + 1}::timestamp)
             OR
-            (o.payment_method != 'CXC' AND (o.created_at AT TIME ZONE 'America/Mexico_City') >= $${params.length + 1}::timestamp)
+            ((o.payment_method != 'CXC' OR ar.status = 'active') AND (o.created_at AT TIME ZONE 'America/Mexico_City') >= $${params.length + 1}::timestamp)
           )
         `);
         params.push(startDate);
@@ -81,7 +81,7 @@ router.get("/", async (req, res) => {
           (
             (o.payment_method = 'CXC' AND ar.status = 'paid' AND (ar.updated_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City') <= $${params.length + 1}::timestamp)
             OR
-            (o.payment_method != 'CXC' AND (o.created_at AT TIME ZONE 'America/Mexico_City') <= $${params.length + 1}::timestamp)
+            ((o.payment_method != 'CXC' OR ar.status = 'active') AND (o.created_at AT TIME ZONE 'America/Mexico_City') <= $${params.length + 1}::timestamp)
           )
         `);
         params.push(endDate);

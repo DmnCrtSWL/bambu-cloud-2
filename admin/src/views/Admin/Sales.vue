@@ -181,7 +181,15 @@
 
                  <!-- Total -->
                  <td class="px-5 py-4 sm:px-6 whitespace-nowrap">
-                   <p class="text-brand-600 font-bold text-theme-sm dark:text-brand-400">${{ Math.ceil(parseFloat(order.total)).toFixed(2) }}</p>
+                   <div v-if="order.paymentMethod === 'CXC' && order.cxc_status === 'active'" class="flex flex-col">
+                       <p class="text-gray-500 font-bold text-theme-sm dark:text-gray-400 line-through decoration-brand-500/50">
+                           ${{ Math.ceil(parseFloat(order.original_total || order.total)).toFixed(2) }}
+                       </p>
+                       <span class="text-[10px] font-medium text-brand-600 bg-brand-50 dark:bg-brand-900/30 dark:text-brand-400 px-1.5 py-0.5 rounded-sm inline-block w-max mt-0.5">Pendiente</span>
+                   </div>
+                   <p v-else class="text-brand-600 font-bold text-theme-sm dark:text-brand-400">
+                       ${{ Math.ceil(parseFloat(order.total)).toFixed(2) }}
+                   </p>
                  </td>
 
                  <!-- Actions -->
