@@ -958,6 +958,9 @@ const processPayment = async (method) => {
             currentBulkOrderIds.value = [];
             // Clear persisted state on successful payment
             localStorage.removeItem('pos_cart_state');
+            cxcCustomer.value = { id: null, name: '', phone: '' };
+            customerSearchResults.value = [];
+            customerSearchTerm.value = '';
             alert('¡Venta registrada correctamente!');
         } else {
             const errData = await res.json().catch(() => ({}));
