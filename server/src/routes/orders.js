@@ -24,13 +24,13 @@ router.get("/", async (req, res) => {
             SELECT o.*, 
             to_char(
                CASE 
-                   WHEN o.payment_method = 'CXC' AND ar.status = 'paid' THEN (ar.updated_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City')
+                   WHEN ar.id IS NOT NULL AND ar.status = 'paid' THEN (ar.updated_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City')
                    ELSE (o.created_at AT TIME ZONE 'America/Mexico_City')
                END, 
                'HH12:MI a.m.'
             ) as formatted_time,
             CASE
-                WHEN o.payment_method = 'CXC' AND ar.status = 'active' THEN 0
+                WHEN ar.id IS NOT NULL AND ar.status = 'active' THEN 0
                 ELSE o.total
             END as total,
             o.total as original_total,
@@ -69,9 +69,9 @@ router.get("/", async (req, res) => {
       if (startDate) {
         conditions.push(`
           (
-            (o.payment_method = 'CXC' AND ar.status = 'paid' AND (ar.updated_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City') >= $${params.length + 1}::timestamp)
+            (ar.id IS NOT NULL AND ar.status = 'paid' AND (ar.updated_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City') >= $${params.length + 1}::timestamp)
             OR
-            ((o.payment_method != 'CXC' OR ar.status = 'active') AND (o.created_at AT TIME ZONE 'America/Mexico_City') >= $${params.length + 1}::timestamp)
+            ((ar.id IS NULL OR ar.status = 'active') AND (o.created_at AT TIME ZONE 'America/Mexico_City') >= $${params.length + 1}::timestamp)
           )
         `);
         params.push(startDate);
@@ -79,9 +79,9 @@ router.get("/", async (req, res) => {
       if (endDate) {
         conditions.push(`
           (
-            (o.payment_method = 'CXC' AND ar.status = 'paid' AND (ar.updated_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City') <= $${params.length + 1}::timestamp)
+            (ar.id IS NOT NULL AND ar.status = 'paid' AND (ar.updated_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Mexico_City') <= $${params.length + 1}::timestamp)
             OR
-            ((o.payment_method != 'CXC' OR ar.status = 'active') AND (o.created_at AT TIME ZONE 'America/Mexico_City') <= $${params.length + 1}::timestamp)
+            ((ar.id IS NULL OR ar.status = 'active') AND (o.created_at AT TIME ZONE 'America/Mexico_City') <= $${params.length + 1}::timestamp)
           )
         `);
         params.push(endDate);
@@ -103,7 +103,7 @@ router.get("/", async (req, res) => {
     } else {
       query += ` ORDER BY 
           CASE 
-              WHEN o.payment_method = 'CXC' AND ar.status = 'paid' THEN ar.updated_at 
+              WHEN ar.id IS NOT NULL AND ar.status = 'paid' THEN ar.updated_at 
               ELSE o.created_at 
           END DESC
       `;
