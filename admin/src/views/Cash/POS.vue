@@ -830,34 +830,71 @@ const processPayment = async (method) => {
 
         // SCENARIO 0: Bulk Liquidation (Multiple Orders)
         if (currentBulkOrderIds.value.length > 0) {
-             const updates = currentBulkOrderIds.value.map(id => 
-                fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/orders/${id}`, {
+            // 1. Fetch current totals of original CXC orders from the server
+            const originalOrderFetches = currentBulkOrderIds.value.map(id =>
+                fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/orders?id=${id}`)
+                    .then(r => r.json())
+                    .then(rows => rows[0])
+            );
+            const originalOrders = await Promise.all(originalOrderFetches);
+            const originalTotal = originalOrders.reduce((sum, o) => sum + Number(o?.total || 0), 0);
+            const cartTotal = total.value;
+            const extraAmount = Math.max(0, cartTotal - originalTotal);
+
+            // 2. Update each original CXC order: mark as paid with its own total
+            const updates = currentBulkOrderIds.value.map((id, idx) => {
+                const origTotal = Number(originalOrders[idx]?.total || 0);
+                return fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/orders/${id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         paymentMethod: method,
                         status: 'completed',
-                        // We use the same total/items? 
-                        // Actually each order has its own total. 
-                        // But we are "paying" them. 
-                        // The PUT endpoint updates payment_method and status.
-                        // It also updates accounts_receivable status to 'paid'.
-                        // We don't need to send 'total' to update unless we want to change it.
-                        // We likely want to keep original total. 
-                        // So we send only payment info.
+                        total: origTotal,  // Keep original total for this order's AR record
                         userName: user ? user.username : 'Sistema',
                         userId: user ? user.id : null,
-                         // CXC payload (if re-crediting?)
                         cxcCustomerId: method === 'CXC' ? cxcCustomer.value.id : null,
                         cxcCustomerName: method === 'CXC' ? cxcCustomer.value.name : null,
                         cxcCustomerPhone: method === 'CXC' ? cxcCustomer.value.phone : null
                     })
-                })
-             );
-             
-             await Promise.all(updates);
-             res = { ok: true }; // Assume success if code reaches here without generic error?
-             // Ideally check all responses. but for now assume OK.
+                });
+            });
+            await Promise.all(updates);
+
+            // 3. If extra items were added in the cart beyond the original CXC amounts,
+            //    create a new supplementary completed order for the difference so it shows in the corte.
+            if (extraAmount > 0.01) {
+                // We create a "Complemento" order with a single line item representing the extra amount.
+                // This avoids any ambiguity about which specific items are "new" vs. "original".
+                const extraPayload = {
+                    customerName: 'Complemento CXC',
+                    customerPhone: '',
+                    location: 'Barra',
+                    paymentMethod: method,
+                    deliveryTime: new Date().toTimeString().slice(0, 5),
+                    items: [{
+                        id: null,
+                        title: 'Complemento CXC',
+                        price: extraAmount,
+                        quantity: 1,
+                        variations: [],
+                        note: `Diferencia en liquidación CXC`
+                    }],
+                    generalNote: `Complemento liquidación CXC`,
+                    total: extraAmount,
+                    discount: 0,
+                    userId: user ? user.id : null,
+                    userName: user ? user.username : 'Sistema',
+                    status: 'completed'
+                };
+                await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/orders`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(extraPayload)
+                });
+            }
+
+            res = { ok: true };
         }
         // SCENARIO 1: Existing Single Order (Loaded from Kanban) -> UPDATE it
         else if (currentOrderId.value) {
